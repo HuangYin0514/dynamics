@@ -39,7 +39,7 @@ class InitialConditionDataset(Dataset):
           n0 (int)
         """
         super(type(self)).__init__()
-        data = scipy.io.loadmat("./burgers_shock.mat")
+        data = scipy.io.loadmat("1D_Burgers_Equation/burgers_shock.mat")
 
         t = data["t"].flatten()[:, None]
         x = data["x"].flatten()[:, None]
