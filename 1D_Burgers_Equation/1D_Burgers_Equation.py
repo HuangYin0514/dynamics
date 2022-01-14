@@ -150,7 +150,7 @@ if __name__ == "__main__":
         activation=torch.tanh,
     )
     # create PINN instance
-    pinn = pf.PINN(model, 2, 1, pde_loss, initial_condition, [], use_gpu=True)
+    pinn = pf.PINN(model, 2, 1, pde_loss, initial_condition, [], use_gpu=False)
 
     # train pinn
     pinn.fit(
