@@ -224,7 +224,7 @@ if __name__ == "__main__":
     )
     plt.xlabel(r"$t$")
     plt.ylabel(r"$x$")
-    plt.title(r"$u(x,t)$")
+    plt.title("error = {}".format(np.sum(np.abs(Exact.T - pred.T))))
     plt.colorbar()
 
     plt.tight_layout() 
@@ -232,4 +232,4 @@ if __name__ == "__main__":
     plt.savefig("res.png")
     
     
-    print("error = {}".format(np.sum(np.abs(Exact.T - pred.T))))
+    # print("error = {}".format(np.sum(np.abs(Exact.T - pred.T))))
