@@ -156,7 +156,7 @@ if __name__ == "__main__":
 
     # train pinn
     pinn.fit(
-        3,
+        50000,
         checkpoint_path="checkpoint.pt",
         restart=True,
         lbfgs_finetuning=False,
