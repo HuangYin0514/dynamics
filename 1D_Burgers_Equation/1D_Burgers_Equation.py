@@ -26,8 +26,10 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = True
 # device
 device = "cuda" if torch.cuda.is_available() else "cpu"
+use_gpu = False
 if device == "cuda":
     print("using cuda ...")
+    use_gpu = True
 
 
 class InitialConditionDataset(Dataset):
@@ -150,11 +152,11 @@ if __name__ == "__main__":
         activation=torch.tanh,
     )
     # create PINN instance
-    pinn = pf.PINN(model, 2, 1, pde_loss, initial_condition, [], use_gpu=True)
+    pinn = pf.PINN(model, 2, 1, pde_loss, initial_condition, [], use_gpu=use_gpu)
 
     # train pinn
     pinn.fit(
-        50000,
+        3,
         checkpoint_path="checkpoint.pt",
         restart=True,
         lbfgs_finetuning=False,
@@ -164,9 +166,7 @@ if __name__ == "__main__":
     # ========Plotting========
 
     pinn.load_model("best_model_pinn.pt")  # load best PINN model for plotting
-    data = scipy.io.loadmat(
-        "NeuralSolvers-master/examples/1D_Burgers_Equation/burgers_shock.mat"
-    )
+    data = scipy.io.loadmat("1D_Burgers_Equation/burgers_shock.mat")
 
     t = data["t"].flatten()[:, None]
     x = data["x"].flatten()[:, None]
@@ -181,9 +181,11 @@ if __name__ == "__main__":
     lb = X_star.min(0)
     ub = X_star.max(0)
 
-    pred = pinn(Tensor(X_star).to(device))#cuda
+    pred = pinn(Tensor(X_star).to(device))  # cuda
     pred = pred.detach().cpu().numpy()
     pred = pred.reshape(X.shape)
+
+    plt.subplot(3, 1, 1)
     plt.imshow(
         pred.T,
         interpolation="nearest",
@@ -196,4 +198,34 @@ if __name__ == "__main__":
     plt.ylabel(r"$x$")
     plt.title(r"$u(x,t)$")
     plt.colorbar()
+
+    plt.subplot(3, 1, 2)
+    plt.imshow(
+        Exact.T,
+        interpolation="nearest",
+        cmap="rainbow",
+        extent=[t.min(), t.max(), x.min(), x.max()],
+        origin="lower",
+        aspect="auto",
+    )
+    plt.xlabel(r"$t$")
+    plt.ylabel(r"$x$")
+    plt.title(r"$u(x,t)$")
+    plt.colorbar()
+
+    plt.subplot(3, 1, 3)
+    plt.imshow(
+        np.abs(Exact.T - pred.T),
+        interpolation="nearest",
+        cmap="rainbow",
+        extent=[t.min(), t.max(), x.min(), x.max()],
+        origin="lower",
+        aspect="auto",
+    )
+    plt.xlabel(r"$t$")
+    plt.ylabel(r"$x$")
+    plt.title(r"$u(x,t)$")
+    plt.colorbar()
+
+    plt.tight_layout() 
     plt.show()
