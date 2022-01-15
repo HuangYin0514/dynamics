@@ -45,7 +45,7 @@ class BoundaryConditionDataset(Dataset):
           n0 (int)
         """
         super(type(self)).__init__()
-        data = scipy.io.loadmat('NLS.mat')
+        data = scipy.io.loadmat('1D_Schroedinger/NLS.mat')
         t = data['tt'].flatten()[:, None]
         idx_t = np.random.choice(t.shape[0], nb, replace=False)
         tb = t[idx_t, :]
@@ -75,7 +75,7 @@ class InitialConditionDataset(Dataset):
           n0 (int)
         """
         super(type(self)).__init__()
-        data = scipy.io.loadmat('NLS.mat')
+        data = scipy.io.loadmat('1D_Schroedinger/NLS.mat')
         x = data['x'].flatten()[:, None]
         t = data['tt'].flatten()[:, None]
         Exact = data['uu']
@@ -119,9 +119,11 @@ class PDEDataset(Dataset):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--num_epochs", dest="num_epochs", type=int, default=10000, help='Number of training iterations')
+    # parser.add_argument("--num_epochs", dest="num_epochs", type=int, default=3, help='Number of training iterations')
     parser.add_argument('--n0', dest='n0', type=int, default=50, help='Number of input points for initial condition')
     parser.add_argument('--nb', dest='nb', type=int, default=50, help='Number of input points for boundary condition')
     parser.add_argument('--nf', dest='nf', type=int, default=20000, help='Number of input points for pde loss')
+    # parser.add_argument('--nf', dest='nf', type=int, default=20, help='Number of input points for pde loss')
     parser.add_argument('--num_hidden', dest='num_hidden', type=int, default=4, help='Number of hidden layers')
     parser.add_argument('--hidden_size', dest='hidden_size', type=int, default=100, help='Size of hidden layers')
     parser.add_argument('--annealing', dest='annealing', type=int, default=0, help='Enables annealing with 1')
@@ -180,19 +182,19 @@ if __name__ == "__main__":
                           lb=lb,
                           ub=ub)
 
-    logger = pf.WandbLogger('1D Schrödinger Equation', args, 'aipp')
+    # logger = pf.WandbLogger('1D Schrödinger Equation', args, 'aipp')
     pinn = pf.PINN(model, 2, 2, pde_loss, initial_condition, [periodic_bc_u,
                                                               periodic_bc_v,
                                                               periodic_bc_u_x,
                                                               periodic_bc_v_x], use_gpu=use_gpu)
     pinn.fit(args.num_epochs, checkpoint_path='checkpoint.pt',
-             restart=False, logger=logger, activate_annealing=args.annealing, annealing_cycle=args.annealing_cycle,
+             restart=True, logger=None, activate_annealing=args.annealing, annealing_cycle=args.annealing_cycle,
              writing_cycle=500,
              track_gradient=args.track_gradient)
     pinn.load_model('best_model_pinn.pt')
 
     # Plotting
-    data = scipy.io.loadmat('NLS.mat')
+    data = scipy.io.loadmat('1D_Schroedinger/NLS.mat')
     t = data['tt'].flatten()[:, None]
     x = data['x'].flatten()[:, None]
     Exact = data['uu']
@@ -211,9 +213,34 @@ if __name__ == "__main__":
     pred_v = pred[:, 1].detach().cpu().numpy()
     H_pred = np.sqrt(pred_u ** 2 + pred_v**2)
     H_pred = H_pred.reshape(X.shape)
+    plt.figure()
     plt.imshow(H_pred.T, interpolation='nearest', cmap='YlGnBu',
                   extent=[lb[1], ub[1], lb[0], ub[0]],
                   origin='lower', aspect='auto')
     plt.colorbar()
-    plt.show()
+    # plt.show()
+    plt.savefig("H_pred.png")
+    
+    
+    plt.figure()
+    plt.imshow(Exact_h, interpolation='nearest', cmap='YlGnBu',
+                  extent=[lb[1], ub[1], lb[0], ub[0]],
+                  origin='lower', aspect='auto')
+    plt.colorbar()
+    # plt.show()
+    plt.savefig("Exact_h.png")
+    
+        
+    plt.figure()
+    plt.imshow(np.abs(Exact_h-H_pred.T), interpolation='nearest', cmap='YlGnBu',
+                  extent=[lb[1], ub[1], lb[0], ub[0]],
+                  origin='lower', aspect='auto')
+    plt.colorbar()
+    # plt.show()
+    plt.savefig("error.png")
+    
+
+    
+    
+    
 
