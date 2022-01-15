@@ -1,3 +1,4 @@
+import imp
 import sys
 from argparse import ArgumentParser
 
@@ -11,6 +12,27 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 import PINNFramework as pf
+
+import torch
+import random
+
+# env setting ==============================================================================
+# Fix random seed
+random_seed = 2021
+torch.manual_seed(random_seed)
+torch.cuda.manual_seed_all(random_seed)
+torch.cuda.manual_seed(random_seed)
+np.random.seed(random_seed)  # Numpy module.
+random.seed(random_seed)  # Python random module.
+torch.backends.cudnn.deterministic = True
+# speed up compution
+torch.backends.cudnn.benchmark = True
+# device
+device = "cuda" if torch.cuda.is_available() else "cpu"
+use_gpu = False
+if device == "cuda":
+    print("using cuda ...")
+    use_gpu = True
 
 
 class BoundaryConditionDataset(Dataset):
@@ -162,7 +184,7 @@ if __name__ == "__main__":
     pinn = pf.PINN(model, 2, 2, pde_loss, initial_condition, [periodic_bc_u,
                                                               periodic_bc_v,
                                                               periodic_bc_u_x,
-                                                              periodic_bc_v_x], use_gpu=True)
+                                                              periodic_bc_v_x], use_gpu=use_gpu)
     pinn.fit(args.num_epochs, checkpoint_path='checkpoint.pt',
              restart=False, logger=logger, activate_annealing=args.annealing, annealing_cycle=args.annealing_cycle,
              writing_cycle=500,
@@ -184,7 +206,7 @@ if __name__ == "__main__":
     v_star = Exact_v.T.flatten()[:, None]
     h_star = Exact_h.T.flatten()[:, None]
 
-    pred = model(Tensor(X_star).cuda())
+    pred = model(Tensor(X_star).to(device))
     pred_u = pred[:, 0].detach().cpu().numpy()
     pred_v = pred[:, 1].detach().cpu().numpy()
     H_pred = np.sqrt(pred_u ** 2 + pred_v**2)
@@ -194,4 +216,4 @@ if __name__ == "__main__":
                   origin='lower', aspect='auto')
     plt.colorbar()
     plt.show()
-W
+
