@@ -184,8 +184,8 @@ class PDEDataset(Dataset):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    # parser.add_argument("--num_epochs", dest="num_epochs", type=int, default=10000, help='Number of training iterations')
-    parser.add_argument("--num_epochs", dest="num_epochs", type=int, default=3, help='Number of training iterations')
+    parser.add_argument("--num_epochs", dest="num_epochs", type=int, default=10000, help='Number of training iterations')
+    # parser.add_argument("--num_epochs", dest="num_epochs", type=int, default=3, help='Number of training iterations')
     parser.add_argument('--n0', dest='n0', type=int, default=50, help='Number of input points for initial condition')
     parser.add_argument('--nb', dest='nb', type=int, default=50, help='Number of input points for boundary condition')
     parser.add_argument('--nf', dest='nf', type=int, default=20000, help='Number of input points for pde loss')
