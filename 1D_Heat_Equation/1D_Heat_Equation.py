@@ -273,13 +273,15 @@ if __name__ == "__main__":
     pred_u = pred.detach().cpu().numpy()
     
     H_pred = pred_u.reshape(X.shape)
+    plt.figure()
     plt.imshow(H_pred.T, interpolation='nearest', cmap='YlGnBu',
                 extent= [lb[1], ub[1], lb[0], ub[0]],
                 origin='lower', aspect='auto')
     plt.ylabel('x (cm)')
     plt.xlabel('t (seconds)')
     plt.colorbar().set_label('Temperature (°C)')
-    plt.show()
+    plt.savefig("H_pred.png")
+    # plt.show()
 
 
 
@@ -304,15 +306,17 @@ T = T.reshape(-1,1)
 U=(np.exp(-alpha*T))*np.sin(np.pi*X/L)
 U = U.reshape(200,200)
 
+plt.figure()
 plt.imshow(U.T, interpolation='nearest', cmap='YlGnBu',
                 extent= [lb[1], ub[1], lb[0], ub[0]],
                 origin='lower', aspect='auto')
-
+plt.title('Analytical_Solution')
 plt.ylabel('x (cm)')
 plt.xlabel('t (seconds)')
 plt.axis()
 plt.colorbar().set_label('Temperature (°C)')
-plt.show()
+# plt.show()
+plt.savefig("Analytical_Solution.png")
 
 
 
@@ -344,17 +348,19 @@ F_u = heat1d(X_star, pred)
 F_u = F_u.detach().cpu().numpy()
 F_u = F_u.reshape(200,200)
 
-
-plt.title('PDE residual')
+plt.figure()
+plt.title('PDE_residual')
 plt.ylabel('x (cm)')
 plt.xlabel('t (seconds)')
 plt.imshow(F_u.T, cmap='jet', aspect='auto', extent= [lb[1], ub[1], lb[0], ub[0]],
                 origin='lower')
 plt.colorbar().set_label('F_u')
+# plt.show()
+plt.savefig("PDE_residual.png")
 
 
 
-
+plt.figure()
 # PINN vs analytical solution at t_idx=0
 plt.plot(x, H_pred[0,:], '--')
 plt.plot(x, U[0,:], '-')
@@ -362,7 +368,8 @@ plt.title('PINN vs analytical solution at t_idx=0 ({} s)'.format(t[0]))
 plt.legend(['PINN', 'Analytical solution'])
 plt.xlabel('x / cm')
 plt.ylabel('Temperature / °C')
-plt.show()
+plt.savefig("PINN—analytical_solution_at0.png")
+# plt.show()
 
 mae = np.sum(np.abs(H_pred[0,:]- U[0,:]).mean(axis=None))
 print('MAE:', mae)
@@ -377,13 +384,15 @@ print('Relative error (%):', rel_error*100)
 
 
 # PINN vs analytical solution at t_idx = 50
+plt.figure()
 plt.plot(x, H_pred[50,:], '--')
 plt.plot(x, U[50,:], '-')
 plt.title('PINN vs analytical solution at t_idx=50 ({} s)'.format(t[50]))
 plt.legend(['PINN', 'Analytical solution'])
 plt.xlabel('x / cm')
 plt.ylabel('Temperature / °C')
-plt.show()
+plt.savefig("PINN—analytical_solution_at50.png")
+# plt.show()
 
 mae = np.sum(np.abs(H_pred[50,:]- U[50,:]).mean(axis=None))
 print('MAE:', mae)
@@ -398,13 +407,15 @@ print('Relative error (%):', rel_error*100)
 
 
 # PINN vs analytical solution at t_idx = 100
+plt.figure()
 plt.plot(x, H_pred[100,:], '--')
 plt.plot(x, U[100,:], '-')
 plt.title('PINN vs analytical solution at t_idx=100 ({} s)'.format(t[100]))
 plt.legend(['PINN', 'Analytical solution'])
 plt.xlabel('x / cm')
 plt.ylabel('Temperature / °C')
-plt.show()
+plt.savefig("PINN—analytical_solution_at100.png")
+# plt.show()
 
 mae = np.sum(np.abs(H_pred[100,:]- U[100,:]).mean(axis=None))
 print('MAE:', mae)
@@ -419,13 +430,15 @@ print('Relative error (%):', rel_error*100)
 
 
 # PINN vs analytical solution at t_idx=199
+plt.figure()
 plt.plot(x, H_pred[199,:], '--')
 plt.plot(x, U[199,:], '-')
 plt.title('PINN vs analytical solution at t_idx=199 ({}s)'.format(t[199]))
 plt.legend(['PINN', 'Analytical solution'])
 plt.xlabel('x / cm')
 plt.ylabel('Temperature / °C')
-plt.show()
+plt.savefig("PINN—analytical_solution_at199.png")
+# plt.show()
 
 mae = np.sum(np.abs(H_pred[199,:]- U[199,:]).mean(axis=None))
 print('MAE:', mae)
@@ -440,6 +453,7 @@ print('Relative error (%):', rel_error*100)
 
 
 # PINN results at different time points
+plt.figure()
 plt.plot(x, H_pred[0,:], '-')
 plt.plot(x, H_pred[50,:], '--')
 plt.plot(x, H_pred[199,:], '--')
@@ -447,12 +461,14 @@ plt.title('PINN solution at different t values')
 plt.legend(['t_idx = 0 ({}s)'.format(t[0]),'t_idx = 50 ({}s)'.format(t[50]), 't_idx = 199 ({}s)'.format(t[199])])
 plt.xlabel('position / mm')
 plt.ylabel('Temperature / °C')
-plt.show()
+plt.savefig("PINN_results_at_different_time_points.png")
+# plt.show()
 
 
 
 
 # Analytical solution at different time points
+plt.figure()
 plt.plot(x, U[0,:], '-')
 plt.plot(x, U[50,:], '--')
 plt.plot(x, U[199,:], '--')
@@ -460,4 +476,6 @@ plt.title('Analytical solution at different t values')
 plt.legend(['t_idx = 0 ({}s)'.format(t[0]),'t_idx = 50 ({}s)'.format(t[50]), 't_idx = 199 ({}s)'.format(t[199])])
 plt.xlabel('position / mm')
 plt.ylabel('Temperature / °C')
-plt.show()
+plt.savefig("Analytical_solution_at_different_t_values.png")
+
+# plt.show()
