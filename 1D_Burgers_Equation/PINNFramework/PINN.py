@@ -758,6 +758,7 @@ class PINN(nn.Module):
                         ),
                         flush=True,
                     )
+                    print(123)
 
                 if logger is not None and not (epoch + 1) % writing_cycle:
                     logger.log_scalar(
