@@ -228,4 +228,8 @@ if __name__ == "__main__":
     plt.colorbar()
 
     plt.tight_layout() 
-    plt.show()
+    # plt.show()
+    plt.savefig("res.png")
+    
+    
+    print("error = {}".format(np.sum(np.abs(Exact.T - pred.T))))
