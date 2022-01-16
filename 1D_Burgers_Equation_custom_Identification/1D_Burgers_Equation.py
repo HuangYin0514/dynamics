@@ -25,7 +25,7 @@ if __name__ == "__main__":
     N_u = 2000
     layers = [2, 20, 20, 20, 20, 20, 20, 20, 20, 1]
 
-    data = scipy.io.loadmat('1D_Burgers_Equation_custom_ Identification/data/burgers_shock.mat')
+    data = scipy.io.loadmat('1D_Burgers_Equation_custom_Identification/data/burgers_shock.mat')
 
     t = data['t'].flatten()[:,None]
     x = data['x'].flatten()[:,None]
@@ -49,30 +49,27 @@ if __name__ == "__main__":
     X_u_train = X_star[idx,:]
     u_train = u_star[idx,:]
 
-    noise = 0.01    
-
-    # create training set
-    u_train = u_train + noise*np.std(u_train)*np.random.randn(u_train.shape[0], u_train.shape[1])
-
     # training
     model = PhysicsInformedNN(X_u_train, u_train, layers, lb, ub)
-    model.train(10000)   
+    model.train(0)
     
     
     # evaluations
     u_pred, f_pred = model.predict(X_star)
 
-    lambda_1_value_noisy = model.lambda_1.detach().cpu().numpy()
-    lambda_2_value_noisy = model.lambda_2.detach().cpu().numpy()
-    lambda_2_value_noisy = np.exp(lambda_2_value_noisy)
-
-    error_lambda_1_noisy = np.abs(lambda_1_value_noisy - 1.0) * 100
-    error_lambda_2_noisy = np.abs(lambda_2_value_noisy - nu) / nu * 100
-
     error_u = np.linalg.norm(u_star-u_pred,2)/np.linalg.norm(u_star,2)
-    
+
+    U_pred = griddata(X_star, u_pred.flatten(), (X, T), method='cubic')
+
+    lambda_1_value = model.lambda_1.detach().cpu().numpy()
+    lambda_2_value = model.lambda_2.detach().cpu().numpy()
+    lambda_2_value = np.exp(lambda_2_value)
+
+    error_lambda_1 = np.abs(lambda_1_value - 1.0) * 100
+    error_lambda_2 = np.abs(lambda_2_value - nu) / nu * 100
+
     print('Error u: %e' % (error_u))    
-    print('Error l1: %.5f%%' % (error_lambda_1_noisy))                             
-    print('Error l2: %.5f%%' % (error_lambda_2_noisy))  
+    print('Error l1: %.5f%%' % (error_lambda_1))                             
+    print('Error l2: %.5f%%' % (error_lambda_2))  
     
-    print('u_t + {}u*u_x - {}u_xx = 0'.format(lambda_1_value_noisy,lambda_2_value_noisy))
+    print('u_t + {}u*u_x - {}u_xx = 0'.format(lambda_1_value,lambda_2_value))
