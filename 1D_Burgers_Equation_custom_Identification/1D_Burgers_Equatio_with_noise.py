@@ -8,9 +8,19 @@ from scipy.interpolate import griddata
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.gridspec as gridspec
 from model import *
+import random
 
-np.random.seed(1234)
-
+# env setting ==============================================================================
+# Fix random seed
+random_seed = 2021
+torch.manual_seed(random_seed)
+torch.cuda.manual_seed_all(random_seed)
+torch.cuda.manual_seed(random_seed)
+np.random.seed(random_seed)  # Numpy module.
+random.seed(random_seed)  # Python random module.
+torch.backends.cudnn.deterministic = True
+# speed up compution
+torch.backends.cudnn.benchmark = True
 # CUDA support
 if torch.cuda.is_available():
     device = torch.device("cuda")
