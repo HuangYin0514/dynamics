@@ -41,6 +41,7 @@ if __name__ == "__main__":
     lb = X_star.min(0)
     ub = X_star.max(0)
 
+    # 左 上 下 边界
     xx1 = np.hstack((X[0:1, :].T, T[0:1, :].T))
     uu1 = Exact[0:1, :].T
     xx2 = np.hstack((X[:, 0:1], T[:, 0:1]))
@@ -62,11 +63,12 @@ if __name__ == "__main__":
 
     u_pred, f_pred = model.predict(X_star)
     error_u = np.linalg.norm(u_star - u_pred, 2) / np.linalg.norm(u_star, 2)
-    print("Error u: %e" % (error_u))
+    print("Relatively Error u: %e" % (error_u))
     U_pred = griddata(X_star, u_pred.flatten(), (X, T), method="cubic")
     Error = np.abs(Exact - U_pred)
+    print("Absolute Error u: {}" .format(np.sum(Error)))
+    
 
-    """ The aesthetic setting has changed. """
 
     ####### Row 0: u(t,x) ##################
     fig = plt.figure(figsize=(9, 5))
@@ -89,8 +91,18 @@ if __name__ == "__main__":
         X_u_train[:, 1],
         X_u_train[:, 0],
         "kx",
-        label="Data (%d points)" % (u_train.shape[0]),
+        label="Data ({} points)".format(u_train.shape[0]),
         markersize=4,  # marker size doubled
+        clip_on=False,
+        alpha=1.0,
+    )
+    
+    ax.plot(
+        X_f_train[:, 1],
+        X_f_train[:, 0],
+        "kx",
+        label="Data ({} points)".format(X_f_train.shape[0]),
+        markersize=1,  # marker size doubled
         clip_on=False,
         alpha=1.0,
     )
@@ -111,13 +123,10 @@ if __name__ == "__main__":
     )
     ax.set_title("$u(t,x)$", fontsize=20)  # font size doubled
     ax.tick_params(labelsize=15)
+    plt.savefig("pred.png")
 
-    plt.show()
 
     ####### Row 1: u(t,x) slices ##################
-
-    """ The aesthetic setting has changed. """
-
     fig = plt.figure(figsize=(14, 10))
     ax = fig.add_subplot(111)
 
@@ -183,5 +192,36 @@ if __name__ == "__main__":
         + ax.get_yticklabels()
     ):
         item.set_fontsize(15)
+    plt.savefig("item.png")
 
-    plt.show()
+
+    ####### ERROR for model ##################
+    fig = plt.figure(figsize=(9, 5))
+    ax = fig.add_subplot(111)
+
+    h = ax.imshow(
+        np.abs((U_pred- Exact).T),
+        interpolation="nearest",
+        cmap="rainbow",
+        extent=[t.min(), t.max(), x.min(), x.max()],
+        origin="lower",
+        aspect="auto",
+    )
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.10)
+    cbar = fig.colorbar(h, cax=cax)
+    cbar.ax.tick_params(labelsize=15)
+
+    ax.set_xlabel("$t$", size=20)
+    ax.set_ylabel("$x$", size=20)
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.9, -0.05),
+        ncol=5,
+        frameon=False,
+        prop={"size": 15},
+    )
+    ax.set_title("$u(t,x)$", fontsize=20)  # font size doubled
+    ax.tick_params(labelsize=15)
+
+    plt.savefig("error.png")
