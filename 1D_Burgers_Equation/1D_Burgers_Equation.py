@@ -153,7 +153,7 @@ if __name__ == "__main__":
 
     # train pinn
     pinn.fit(
-        50000,
+        3,
         checkpoint_path="checkpoint.pt",
         restart=True,
         lbfgs_finetuning=False,
@@ -228,5 +228,10 @@ if __name__ == "__main__":
     # plt.show()
     plt.savefig("res.png")
     
+    error_u = np.linalg.norm(Exact - pred, 2) / np.linalg.norm(Exact, 2)
+    print("Relatively Error u: %e" % (error_u))
+    Error = np.abs(Exact - pred)
+    print("Absolute Error u: {}".format(np.sum(Error)))
+
     
     # print("error = {}".format(np.sum(np.abs(Exact.T - pred.T))))
