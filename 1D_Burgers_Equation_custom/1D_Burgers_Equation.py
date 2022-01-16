@@ -66,9 +66,7 @@ if __name__ == "__main__":
     print("Relatively Error u: %e" % (error_u))
     U_pred = griddata(X_star, u_pred.flatten(), (X, T), method="cubic")
     Error = np.abs(Exact - U_pred)
-    print("Absolute Error u: {}" .format(np.sum(Error)))
-    
-
+    print("Absolute Error u: {}".format(np.sum(Error)))
 
     ####### Row 0: u(t,x) ##################
     fig = plt.figure(figsize=(9, 5))
@@ -96,7 +94,7 @@ if __name__ == "__main__":
         clip_on=False,
         alpha=1.0,
     )
-    
+
     ax.plot(
         X_f_train[:, 1],
         X_f_train[:, 0],
@@ -124,7 +122,6 @@ if __name__ == "__main__":
     ax.set_title("$u(t,x)$", fontsize=20)  # font size doubled
     ax.tick_params(labelsize=15)
     plt.savefig("pred.png")
-
 
     ####### Row 1: u(t,x) slices ##################
     fig = plt.figure(figsize=(14, 10))
@@ -194,13 +191,12 @@ if __name__ == "__main__":
         item.set_fontsize(15)
     plt.savefig("item.png")
 
-
     ####### ERROR for model ##################
     fig = plt.figure(figsize=(9, 5))
     ax = fig.add_subplot(111)
 
     h = ax.imshow(
-        np.abs((U_pred- Exact).T),
+        np.abs((U_pred - Exact).T),
         interpolation="nearest",
         cmap="rainbow",
         extent=[t.min(), t.max(), x.min(), x.max()],
