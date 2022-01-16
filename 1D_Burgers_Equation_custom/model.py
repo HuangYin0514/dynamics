@@ -65,8 +65,8 @@ class PhysicsInformedNN:
         self.optimizer = torch.optim.LBFGS(
             self.dnn.parameters(),
             lr=1.0,
-            max_iter=3,
-            max_eval=3,
+            max_iter=50000,
+            max_eval=50000,
             history_size=50,
             tolerance_grad=1e-5,
             tolerance_change=1.0 * np.finfo(float).eps,
@@ -117,6 +117,8 @@ class PhysicsInformedNN:
                 "Iter %d, Loss: %.5e, Loss_u: %.5e, Loss_f: %.5e"
                 % (self.iter, loss.item(), loss_u.item(), loss_f.item())
             )
+            print(self.optimizer.state_dict()['param_groups'][0]['lr'])
+        
         return loss
 
     def train(self):
