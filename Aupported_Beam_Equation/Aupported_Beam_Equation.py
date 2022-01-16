@@ -26,7 +26,7 @@ if __name__ == "__main__":
     N_f = 10000
     layers = [2, 20, 20, 20, 20, 20, 20, 20, 20, 1]
 
-    data = scipy.io.loadmat("1D_Burgers_Equation_custom/data/burgers_shock.mat")
+    data = scipy.io.loadmat("Aupported_Beam_Equation/data/burgers_shock.mat")
 
     t = data["t"].flatten()[:, None]
     x = data["x"].flatten()[:, None]
