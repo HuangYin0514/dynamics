@@ -1,5 +1,3 @@
-import imp
-import sys
 
 import numpy as np
 import scipy.io
@@ -9,7 +7,6 @@ from torch import Tensor, ones, stack, load
 from torch.autograd import grad
 from torch.utils.data import Dataset
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 import random
 import PINNFramework as pf
 
