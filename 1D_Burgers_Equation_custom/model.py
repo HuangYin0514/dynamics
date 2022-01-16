@@ -73,6 +73,7 @@ class PhysicsInformedNN:
             line_search_fn="strong_wolfe",  # can be "strong_wolfe"
         )
 
+
         self.iter = 0
 
     def net_u(self, x, t):
@@ -117,8 +118,8 @@ class PhysicsInformedNN:
                 "Iter %d, Loss: %.5e, Loss_u: %.5e, Loss_f: %.5e"
                 % (self.iter, loss.item(), loss_u.item(), loss_f.item())
             )
-            print(self.optimizer.state_dict()['param_groups'][0]['lr'])
-        
+            # print(self.optimizer.state_dict()["param_groups"][0]["lr"])
+
         return loss
 
     def train(self):
