@@ -96,7 +96,7 @@ class PhysicsInformedNN:
         # optimizers: using the same settings
         self.optimizer = torch.optim.LBFGS(
             self.dnn.parameters(),
-            lr=0.01,
+            lr=1.0,
             max_iter=5000,
             max_eval=5000,
             history_size=50,

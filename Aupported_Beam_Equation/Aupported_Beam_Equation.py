@@ -66,6 +66,7 @@ if __name__ == "__main__":
     )
     X_u_derivative_xx_trian = X_u_derivative_xx_trian[idx, :]
     u_derivative_xx_trian = u_derivative_xx_trian[idx, :]
+    
 
     idx = np.random.choice(xx1.shape[0], int(N_u / 4), replace=False)
     X_u_derivative_t_trian = xx1[idx, :]
