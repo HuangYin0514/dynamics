@@ -11,7 +11,7 @@ from model import *
 
 
 if __name__ == '__main__':
-    data = scipy.io.loadmat("pred.mat")
+    data = scipy.io.loadmat("pred-4.mat")
     u_pred = np.real(data["u_pred"])
     
     

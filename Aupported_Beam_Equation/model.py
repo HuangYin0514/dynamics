@@ -81,7 +81,7 @@ class PhysicsInformedNN:
         self.nu = nu
 
         Rho = 1000
-        E = 1.5e8
+        E = 1.5e+8
         I = (2e-6) / 3
         P = 1000
         v = -0.15
@@ -142,7 +142,7 @@ class PhysicsInformedNN:
             u, x, grad_outputs=torch.ones_like(u), retain_graph=True, create_graph=True
         )[0]
         u_xx = torch.autograd.grad(
-            u,
+            u_x,
             x,
             grad_outputs=torch.ones_like(u_x),
             retain_graph=True,

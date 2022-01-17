@@ -90,3 +90,45 @@ if __name__ == "__main__":
     U_pred = griddata(X_star, u_pred.flatten(), (X, T), method="cubic")
 
     scipy.io.savemat("pred.mat", {'u_pred':u_pred})
+    
+    
+    ####### Row 0: u(t,x) ##################
+    fig = plt.figure(figsize=(9, 5))
+    ax = fig.add_subplot(111)
+
+    h = ax.imshow(
+        U_pred.T,
+        interpolation="nearest",
+        cmap="rainbow",
+        extent=[t.min(), t.max(), x.min(), x.max()],
+        origin="lower",
+        aspect="auto",
+    )
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.10)
+    cbar = fig.colorbar(h, cax=cax)
+    cbar.ax.tick_params(labelsize=15)
+
+    ax.plot(
+        X_u_derivative_t_trian[:, 1],
+        X_u_derivative_t_trian[:, 0],
+        "kx",
+        label="Data ({} points)".format(u_train.shape[0]),
+        markersize=4,  # marker size doubled
+        clip_on=False,
+        alpha=1.0,
+    )
+
+
+    ax.set_xlabel("$t$", size=20)
+    ax.set_ylabel("$x$", size=20)
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.9, -0.05),
+        ncol=5,
+        frameon=False,
+        prop={"size": 15},
+    )
+    ax.set_title("$u(t,x)$", fontsize=20)  # font size doubled
+    ax.tick_params(labelsize=15)
+    plt.savefig("pred.png")
