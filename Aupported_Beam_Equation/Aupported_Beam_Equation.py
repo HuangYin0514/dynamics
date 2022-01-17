@@ -30,8 +30,8 @@ if __name__ == "__main__":
 
     t = np.linspace(0, 1, 100).flatten()[:, None]
     x = np.linspace(0, 1, 256).flatten()[:, None]
-    # Exact = np.zeros([100,256])
-    Exact = np.real(data["usol"]).T
+    Exact = np.zeros([100,256])
+    # Exact = np.real(data["usol"]).T
 
     X, T = np.meshgrid(x, t)
 
