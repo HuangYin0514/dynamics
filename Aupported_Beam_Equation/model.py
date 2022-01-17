@@ -96,12 +96,12 @@ class PhysicsInformedNN:
         # optimizers: using the same settings
         self.optimizer = torch.optim.LBFGS(
             self.dnn.parameters(),
-            lr=0.1,
+            lr=1,
             max_iter=5000,
             max_eval=5000,
             history_size=50,
-            tolerance_grad=1e-14,
-            tolerance_change=1.0 * np.finfo(float).eps*1e-14,
+            tolerance_grad=1e-24,
+            tolerance_change=1.0 * np.finfo(float).eps*1e-24,
             line_search_fn="strong_wolfe",  # can be "strong_wolfe"
         )
 
