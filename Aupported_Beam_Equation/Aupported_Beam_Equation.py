@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
     idx = np.random.choice(xx1.shape[0], int(N_u / 2), replace=False)
     X_u_derivative_t_trian = xx1[idx, :]
-    u_derivative_t_trian = xx1[idx, :]
+    u_derivative_t_trian = uu1[idx, :]
 
     model = PhysicsInformedNN(
         X_u_train,

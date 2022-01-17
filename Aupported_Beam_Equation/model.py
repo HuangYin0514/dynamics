@@ -215,7 +215,6 @@ class PhysicsInformedNN:
 
         u_pred = self.net_u(self.x_u, self.t_u)
         f_pred = self.net_f(self.x_f, self.t_f)
-        f_pred = self.net_f(self.x_f, self.t_f)
         loss_u = torch.mean((self.u - u_pred) ** 2)
         loss_f = torch.mean(f_pred ** 2)
         
@@ -228,7 +227,7 @@ class PhysicsInformedNN:
 
         loss.backward()
         self.iter += 1
-        if self.iter % 100 == 0:
+        if self.iter % 1 == 0:
             print(
                 "Iter %d, Loss: %.5e, Loss_u: %.5e, Loss_f: %.5e"
                 % (self.iter, loss.item(), loss_u.item(), loss_f.item())

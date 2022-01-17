@@ -11,7 +11,7 @@ from model import *
 
 
 if __name__ == '__main__':
-    data = scipy.io.loadmat("pred-4.mat")
+    data = scipy.io.loadmat("pred-5.mat")
     u_pred = np.real(data["u_pred"])
     
     
@@ -24,10 +24,11 @@ if __name__ == '__main__':
     U_pred = griddata(X_star, u_pred.flatten(), (X, T), method="cubic")
     print(U_pred.shape)
     
-    fig = plt.figure(figsize=(9, 5))
+    fig = plt.figure()
+    # fig = plt.figure(figsize=(9, 5))
     ax = fig.add_subplot(111)
 
-    ax.plot(t, U_pred[:, 100], "r--", linewidth=2, label="Prediction")
+    ax.plot(t, U_pred[:, 255], "r--", linewidth=2, label="Prediction")
     ax.set_xlabel("$t$")
     ax.set_ylabel("$u(t,x)$")
     ax.set_title("$x = 1$", fontsize=15)
