@@ -227,7 +227,7 @@ class PhysicsInformedNN:
 
         loss.backward()
         self.iter += 1
-        if self.iter % 1 == 0:
+        if self.iter % 100 == 0:
             print(
                 "Iter %d, Loss: %.5e, Loss_u: %.5e, Loss_f: %.5e"
                 % (self.iter, loss.item(), loss_u.item(), loss_f.item())
