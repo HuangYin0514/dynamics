@@ -105,16 +105,16 @@ class PhysicsInformedNN:
             line_search_fn="strong_wolfe",  # can be "strong_wolfe"
         )
 
-        # self.optimizer = torch.optim.LBFGS(
-        #     self.dnn.parameters(),
-        #     lr=1.0,
-        #     max_iter=5,
-        #     max_eval=5,
-        #     history_size=50,
-        #     tolerance_grad=1e-5,
-        #     tolerance_change=1.0 * np.finfo(float).eps,
-        #     line_search_fn="strong_wolfe",  # can be "strong_wolfe"
-        # )
+        self.optimizer = torch.optim.LBFGS(
+            self.dnn.parameters(),
+            lr=1.0,
+            max_iter=5,
+            max_eval=5,
+            history_size=50,
+            tolerance_grad=1e-5,
+            tolerance_change=1.0 * np.finfo(float).eps,
+            line_search_fn="strong_wolfe",  # can be "strong_wolfe"
+        )
 
         self.iter = 0
 
