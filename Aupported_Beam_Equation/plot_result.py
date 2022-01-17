@@ -11,7 +11,7 @@ from model import *
 
 
 if __name__ == '__main__':
-    data = scipy.io.loadmat("pred-11.mat")
+    data = scipy.io.loadmat("pred-12.mat")
     u_pred = np.real(data["u_pred"])
     
     
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     # fig = plt.figure(figsize=(9, 5))
     ax = fig.add_subplot(111)
 
-    ax.plot(t, U_pred[:, 1]*1e+4, "r--", linewidth=2, label="Prediction")
+    ax.plot(t, U_pred[:, 200]*1e+3, "r--", linewidth=2, label="Prediction")
     ax.set_xlabel("$t$")
     ax.set_ylabel("$u(t,x)$")
     ax.set_title("$x = 1$", fontsize=15)
