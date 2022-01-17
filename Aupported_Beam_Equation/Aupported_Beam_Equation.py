@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     N_u = 100
     N_f = 10000
-    layers = [2, 20, 20, 20, 20, 1]
+    layers = [2, 20, 20, 20, 1]
 
     data = scipy.io.loadmat("Aupported_Beam_Equation/data/burgers_shock.mat")
 
