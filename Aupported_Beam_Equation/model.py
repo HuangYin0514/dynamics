@@ -220,7 +220,7 @@ class PhysicsInformedNN:
         loss_u_xx = torch.mean((self.u_derivative_xx - u_xx_pred) ** 2)
         loss_u_t = torch.mean((self.u_derivative_t - u_t_pred) ** 2)
 
-        loss = (loss_u + loss_f + loss_u_xx + loss_u_t)*1
+        loss = (loss_u + loss_f + loss_u_xx + loss_u_t)*1000
         
 
         # loss = (loss_u + loss_f)*10000
