@@ -97,8 +97,8 @@ class PhysicsInformedNN:
         self.optimizer = torch.optim.LBFGS(
             self.dnn.parameters(),
             lr=0.1,
-            max_iter=50000,
-            max_eval=50000,
+            max_iter=5000,
+            max_eval=5000,
             history_size=50,
             tolerance_grad=1e-14,
             tolerance_change=1.0 * np.finfo(float).eps*1e-14,
