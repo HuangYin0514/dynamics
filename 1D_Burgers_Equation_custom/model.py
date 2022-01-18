@@ -61,7 +61,7 @@ class PhysicsInformedNN:
         # deep neural networks
         self.dnn = DNN(layers).to(device)
 
-        optimizers: using the same settings
+        # optimizers: using the same settings
         self.optimizer = torch.optim.LBFGS(
             self.dnn.parameters(),
             lr=1.0,
