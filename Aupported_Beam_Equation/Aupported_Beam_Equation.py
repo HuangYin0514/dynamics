@@ -70,7 +70,11 @@ if __name__ == "__main__":
 
     idx = np.random.choice(xx1.shape[0], int(N_u / 4), replace=False)
     X_u_derivative_t_trian = xx1[idx, :]
-    u_derivative_t_trian = uu1[idx, :]
+    u_derivative_t_trian = uu1[idx, :] 
+
+
+
+
 
     model = PhysicsInformedNN(
         X_u_train,
@@ -88,7 +92,6 @@ if __name__ == "__main__":
     model.train()
 
     u_pred, f_pred = model.predict(X_star)
-    U_pred = griddata(X_star, u_pred.flatten(), (X, T), method="cubic")
 
     scipy.io.savemat("pred.mat", {'u_pred':u_pred})
     
