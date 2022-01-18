@@ -226,4 +226,5 @@ if __name__ == "__main__":
     result_path = "result/1D_Burgers_Equation_custom/"
     if not os.path.exists(result_path):
         os.makedirs(result_path)
+    print(u_pred)
     scipy.io.savemat(result_path + "pred.mat", {"u_pred": u_pred})
