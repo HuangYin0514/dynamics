@@ -67,19 +67,35 @@ class PhysicsInformedNN:
         self.x_f = torch.tensor(X_f[:, 0:1], requires_grad=True).float().to(device)
         self.t_f = torch.tensor(X_f[:, 1:2], requires_grad=True).float().to(device)
         self.u = torch.tensor(u).float().to(device)
-        
-        self.x_u_derivative_xx = torch.tensor(X_u_derivative_xx[:, 0:1], requires_grad=True).float().to(device)
-        self.t_u_derivative_xx = torch.tensor(X_u_derivative_xx[:, 1:2], requires_grad=True).float().to(device)
+
+        self.x_u_derivative_xx = (
+            torch.tensor(X_u_derivative_xx[:, 0:1], requires_grad=True)
+            .float()
+            .to(device)
+        )
+        self.t_u_derivative_xx = (
+            torch.tensor(X_u_derivative_xx[:, 1:2], requires_grad=True)
+            .float()
+            .to(device)
+        )
         self.u_derivative_xx = torch.tensor(u_derivative_xx).float().to(device)
-        
-        self.x_u_derivative_t = torch.tensor(X_u_derivative_t[:, 0:1], requires_grad=True).float().to(device)
-        self.t_u_derivative_t = torch.tensor(X_u_derivative_t[:, 1:2], requires_grad=True).float().to(device)
+
+        self.x_u_derivative_t = (
+            torch.tensor(X_u_derivative_t[:, 0:1], requires_grad=True)
+            .float()
+            .to(device)
+        )
+        self.t_u_derivative_t = (
+            torch.tensor(X_u_derivative_t[:, 1:2], requires_grad=True)
+            .float()
+            .to(device)
+        )
         self.u_derivative_t = torch.tensor(u_derivative_t).float().to(device)
-        
+
         self.layers = layers
 
         Rho = 1000
-        E = 1.5e+8
+        E = 1.5e8
         I = (2e-6) / 3
         P = 1000
         v = -0.15
@@ -95,14 +111,13 @@ class PhysicsInformedNN:
         self.optimizer = torch.optim.LBFGS(
             self.dnn.parameters(),
             lr=1.0,
-            max_iter=5000,
-            max_eval=5000,
+            max_iter=50000,
+            max_eval=50000,
             history_size=50,
-            tolerance_grad=1e-40,
-            tolerance_change=1.0 * np.finfo(float).eps*1e-40,
+            tolerance_grad=1e-5,
+            tolerance_change=1.0 * np.finfo(float).eps,
             line_search_fn="strong_wolfe",  # can be "strong_wolfe"
         )
-
 
         if not torch.cuda.is_available():
             self.optimizer = torch.optim.LBFGS(
@@ -121,7 +136,6 @@ class PhysicsInformedNN:
     def net_u(self, x, t):
         u = self.dnn(torch.cat([x, t], dim=1))
         return u
-
 
     def net_u_t(self, x, t):
         u = self.dnn(torch.cat([x, t], dim=1))
@@ -214,14 +228,15 @@ class PhysicsInformedNN:
         f_pred = self.net_f(self.x_f, self.t_f)
         loss_u = torch.mean((self.u - u_pred) ** 2)
         loss_f = torch.mean(f_pred ** 2)
-        
-        u_xx_pred = self.net_u_xx(self.x_u_derivative_xx, self.t_u_derivative_xx)  # TODO
+
+        u_xx_pred = self.net_u_xx(
+            self.x_u_derivative_xx, self.t_u_derivative_xx
+        )  # TODO
         u_t_pred = self.net_u_t(self.x_u_derivative_t, self.t_u_derivative_t)  # TODO
         loss_u_xx = torch.mean((self.u_derivative_xx - u_xx_pred) ** 2)
         loss_u_t = torch.mean((self.u_derivative_t - u_t_pred) ** 2)
 
-        loss = (loss_u + loss_f + loss_u_xx + loss_u_t)
-        
+        loss = loss_u + loss_f + loss_u_xx + loss_u_t
 
         # loss = (loss_u + loss_f)*10000
 
