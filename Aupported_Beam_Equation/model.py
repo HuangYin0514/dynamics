@@ -120,6 +120,7 @@ class PhysicsInformedNN:
         )
 
         if not torch.cuda.is_available():
+            print("using cpu for optim...")
             self.optimizer = torch.optim.LBFGS(
                 self.dnn.parameters(),
                 lr=1.0,

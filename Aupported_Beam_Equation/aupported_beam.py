@@ -40,7 +40,7 @@ if __name__ == "__main__":
     nu = 0.01 / np.pi
     noise = 0.0
 
-    N_u = 100
+    N_u = 300
     N_f = 10000
     layers = [2, 20, 20, 20, 1]
 
