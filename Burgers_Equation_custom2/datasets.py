@@ -21,22 +21,23 @@ class InitialConditionDataset:
 
         # data ----------------------------------------------------------------
         # data = scipy.io.loadmat("Aupported_Beam_Equation/data/burgers_shock.mat")
+        n_t = 100
+        n_x = 256
+        t = np.linspace(0, 1, n_t).flatten()[:, None]
+        x = np.linspace(-1, 1, n_x).flatten()[:, None]
+        Exact = np.zeros([n_t, n_x])  # Exact （t，x）
 
-        t = np.linspace(0, 2, 200).flatten()[:, None] 
-        x = np.linspace(0, 1, 256).flatten()[:, None]
-        Exact = np.zeros([200, 256])  # Exact （t，x）
-
-        X, T = np.meshgrid(x, t)  # X(100,256) T(100,256)
-        X_star = np.hstack((X.flatten()[:, None], T.flatten()[:, None]))  # (25600, 2)
+        X, T = np.meshgrid(x, t)  # X(n_t,n_x) T(n_t,n_x)
+        X_star = np.hstack((X.flatten()[:, None], T.flatten()[:, None]))  # (n_x*n_t, 2)
 
         # Doman bounds----------------------------------------------------------------
 
         xx1 = np.hstack((X[0:1, :].T, T[0:1, :].T))  # 左
-        uu1 = np.zeros([256, 1])
+        uu1 = np.zeros([n_x, 1])
         xx2 = np.hstack((X[:, 0:1], T[:, 0:1]))  # 下
-        uu2 = np.zeros([200, 1])
+        uu2 = np.zeros([n_t, 1])
         xx3 = np.hstack((X[:, -1:], T[:, -1:]))  # 上
-        uu3 = np.zeros([200, 1])
+        uu3 = np.zeros([n_t, 1])
 
         # all bounds constaints
         X_u_train = np.vstack([xx1, xx2, xx3])
@@ -51,30 +52,10 @@ class InitialConditionDataset:
         X_u_train = X_u_train[idx, :]
         u_train = u_train[idx, :]
 
-        # u_xx constraints
-        X_u_derivative_xx_trian = np.vstack([xx2, xx3])
-        u_derivative_xx_trian = np.vstack([uu2, uu3])
-        idx = np.random.choice(
-            X_u_derivative_xx_trian.shape[0], int(N_u / 4), replace=False
-        )
-        X_u_derivative_xx_trian = X_u_derivative_xx_trian[idx, :]
-        u_derivative_xx_trian = u_derivative_xx_trian[idx, :]
-
-        # u_t constraints
-        idx = np.random.choice(xx1.shape[0], int(N_u /2), replace=False)
-        X_u_derivative_t_trian = xx1[idx, :]
-        u_derivative_t_trian = (
-            0.04 * X_u_derivative_t_trian * (1 - X_u_derivative_t_trian)
-        )[:, 0][:, None]
-
         self.X_star = X_star
         self.X_f_train = X_f_train
         self.X_u_train = X_u_train
         self.u_train = u_train
-        self.X_u_derivative_xx_trian = X_u_derivative_xx_trian
-        self.u_derivative_xx_trian = u_derivative_xx_trian
-        self.X_u_derivative_t_trian = X_u_derivative_t_trian
-        self.u_derivative_t_trian = u_derivative_t_trian
 
     def getData(self):
         return (
@@ -82,8 +63,4 @@ class InitialConditionDataset:
             self.X_f_train,
             self.X_u_train,
             self.u_train,
-            self.X_u_derivative_xx_trian,
-            self.u_derivative_xx_trian,
-            self.X_u_derivative_t_trian,
-            self.u_derivative_t_trian,
         )
