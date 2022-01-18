@@ -61,7 +61,7 @@ class InitialConditionDataset:
         u_derivative_xx_trian = u_derivative_xx_trian[idx, :]
 
         # u_t constraints
-        idx = np.random.choice(xx1.shape[0], int(N_u / 4), replace=False)
+        idx = np.random.choice(xx1.shape[0], int(N_u /2), replace=False)
         X_u_derivative_t_trian = xx1[idx, :]
         u_derivative_t_trian = (
             0.04 * X_u_derivative_t_trian * (1 - X_u_derivative_t_trian)

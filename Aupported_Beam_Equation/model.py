@@ -231,14 +231,12 @@ class PhysicsInformedNN:
 
         u_xx_pred = self.net_u_xx(
             self.x_u_derivative_xx, self.t_u_derivative_xx
-        )  # TODO
-        u_t_pred = self.net_u_t(self.x_u_derivative_t, self.t_u_derivative_t)  # TODO
+        ) 
+        u_t_pred = self.net_u_t(self.x_u_derivative_t, self.t_u_derivative_t) 
         loss_u_xx = torch.mean((self.u_derivative_xx - u_xx_pred) ** 2)
         loss_u_t = torch.mean((self.u_derivative_t - u_t_pred) ** 2)
 
-        loss = loss_u + loss_f + loss_u_xx + loss_u_t
-
-        # loss = (loss_u + loss_f)*10000
+        loss = (loss_u + loss_f + loss_u_xx + loss_u_t)
 
         loss.backward()
         self.iter += 1
