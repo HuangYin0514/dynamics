@@ -44,8 +44,8 @@ if __name__ == "__main__":
     N_f = 10000
     layers = [2, 20, 20, 20, 1]
 
-    lb = np.array([0.0, 0.0])
-    ub = np.array([1.0, 2.0])
+    lb = np.array([0.0, 0.0]) 
+    ub = np.array([1.0, 2.0]) #(X,T)
 
     (
         X_star,

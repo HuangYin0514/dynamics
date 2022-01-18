@@ -22,7 +22,7 @@ class InitialConditionDataset:
         # data ----------------------------------------------------------------
         # data = scipy.io.loadmat("Aupported_Beam_Equation/data/burgers_shock.mat")
 
-        t = np.linspace(0, 1, 256).flatten()[:, None]
+        t = np.linspace(0, 2, 256).flatten()[:, None] 
         x = np.linspace(0, 1, 256).flatten()[:, None]
         Exact = np.zeros([256, 256])  # Exact （t，x）
 
