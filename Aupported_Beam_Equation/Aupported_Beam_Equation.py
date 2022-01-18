@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     u_pred, f_pred = model.predict(X_star)
 
-    result_path = "result/" + "aupported_beam_equation/"
+    result_path = "result/aupported_beam_equation/"
     if not os.path.exists(result_path):
         os.makedirs(result_path)
     scipy.io.savemat(result_path + "pred.mat", {"u_pred": u_pred})
