@@ -6,7 +6,7 @@ import scipy.io
 import torch
 
 
-class InitialConditionDataset():
+class InitialConditionDataset:
     def __init__(self, N_u, N_f, lb, ub):
         """
         Constructor of the initial condition dataset
@@ -63,8 +63,9 @@ class InitialConditionDataset():
         # u_t constraints
         idx = np.random.choice(xx1.shape[0], int(N_u / 4), replace=False)
         X_u_derivative_t_trian = xx1[idx, :]
-        u_derivative_t_trian = uu1[idx, :]
-
+        u_derivative_t_trian = (
+            0.04 * X_u_derivative_t_trian * (1 - X_u_derivative_t_trian)
+        )[:, 0][:, None]
 
         self.X_star = X_star
         self.X_f_train = X_f_train
@@ -86,5 +87,3 @@ class InitialConditionDataset():
             self.X_u_derivative_t_trian,
             self.u_derivative_t_trian,
         )
-
-  
