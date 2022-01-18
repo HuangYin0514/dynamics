@@ -10,7 +10,7 @@ from Trainer import *
 
 
 def init_random_state():
-    random_seed = 2021
+    random_seed = 1234
     torch.manual_seed(random_seed)
     torch.cuda.manual_seed_all(random_seed)
     torch.cuda.manual_seed(random_seed)
