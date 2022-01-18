@@ -87,14 +87,4 @@ class InitialConditionDataset():
             self.u_derivative_t_trian,
         )
 
-    # def __getitem__(self, idx):
-    #     """
-    #     Returns data for initial state
-    #     """
-    #     return torch.Tensor(self.x_lb).float(), torch.Tensor(self.x_ub).float()
-
-    # def __len__(self):
-    #     """
-    #     There exists no batch processing. So the size is 1
-    #     """
-    #     return 1
+  

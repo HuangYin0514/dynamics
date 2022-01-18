@@ -55,7 +55,6 @@ class PhysicsInformedNN:
         layers,
         lb,
         ub,
-        nu,
     ):
 
         # boundary conditions
@@ -78,7 +77,6 @@ class PhysicsInformedNN:
         self.u_derivative_t = torch.tensor(u_derivative_t).float().to(device)
         
         self.layers = layers
-        self.nu = nu
 
         Rho = 1000
         E = 1.5e+8
