@@ -23,8 +23,8 @@ class InitialConditionDataset:
         # data = scipy.io.loadmat("Aupported_Beam_Equation/data/burgers_shock.mat")
         n_t = 100
         n_x = 256
-        t = np.linspace(0, 1, n_t).flatten()[:, None]
-        x = np.linspace(-1, 1, n_x).flatten()[:, None]
+        t = np.linspace(lb[1], ub[1], n_t).flatten()[:, None]
+        x = np.linspace(lb[0], ub[0], n_x).flatten()[:, None]
         Exact = np.zeros([n_t, n_x])  # Exact （t，x）
 
         X, T = np.meshgrid(x, t)  # X(n_t,n_x) T(n_t,n_x)
@@ -33,7 +33,7 @@ class InitialConditionDataset:
         # Doman bounds----------------------------------------------------------------
 
         xx1 = np.hstack((X[0:1, :].T, T[0:1, :].T))  # 左
-        uu1 = np.zeros([n_x, 1])
+        uu1 = -1 * np.sin(xx1 * np.pi)[:, 0][:, None]
         xx2 = np.hstack((X[:, 0:1], T[:, 0:1]))  # 下
         uu2 = np.zeros([n_t, 1])
         xx3 = np.hstack((X[:, -1:], T[:, -1:]))  # 上

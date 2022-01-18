@@ -14,10 +14,10 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "aupported_beam_equation",
+            "name": "Burgers_Equation_custom2",
             "type": "python",
             "request": "launch",
-            "program": "Aupported_Beam_Equation/aupported_beam.py",
+            "program": "Burgers_Equation_custom2/main.py",
             "console": "integratedTerminal"
         }
     ]
