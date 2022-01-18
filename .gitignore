@@ -13,3 +13,8 @@ checkpoints/
 .vscode/
 .ipynb_checkpoints/
 .DS_Store
+
+# 结果
+.vscode/
+.ipynb_checkpoints/
+.DS_Store
