@@ -45,7 +45,7 @@ if __name__ == "__main__":
     layers = [2, 20, 20, 20, 1]
 
     lb = np.array([0.0, 0.0])
-    ub = np.array([1.0, 0.99])
+    ub = np.array([1.0, 2.0])
 
     (
         X_star,
