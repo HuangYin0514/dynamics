@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
+
         {
             "name": "Python: 当前文件",
             "type": "python",
@@ -16,7 +17,7 @@
             "name": "aupported_beam_equation",
             "type": "python",
             "request": "launch",
-            "program": "Aupported_Beam_Equation/aupported_beam_equation.py",
+            "program": "Aupported_Beam_Equation/aupported_beam.py",
             "console": "integratedTerminal"
         }
     ]
