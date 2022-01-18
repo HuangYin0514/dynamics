@@ -22,9 +22,9 @@ class InitialConditionDataset:
         # data ----------------------------------------------------------------
         # data = scipy.io.loadmat("Aupported_Beam_Equation/data/burgers_shock.mat")
 
-        t = np.linspace(0, 1, 100).flatten()[:, None]
+        t = np.linspace(0, 1, 256).flatten()[:, None]
         x = np.linspace(0, 1, 256).flatten()[:, None]
-        Exact = np.zeros([100, 256])  # Exact （t，x）
+        Exact = np.zeros([256, 256])  # Exact （t，x）
 
         X, T = np.meshgrid(x, t)  # X(100,256) T(100,256)
         X_star = np.hstack((X.flatten()[:, None], T.flatten()[:, None]))  # (25600, 2)
@@ -34,9 +34,9 @@ class InitialConditionDataset:
         xx1 = np.hstack((X[0:1, :].T, T[0:1, :].T))  # 左
         uu1 = np.zeros([256, 1])
         xx2 = np.hstack((X[:, 0:1], T[:, 0:1]))  # 下
-        uu2 = np.zeros([100, 1])
+        uu2 = np.zeros([256, 1])
         xx3 = np.hstack((X[:, -1:], T[:, -1:]))  # 上
-        uu3 = np.zeros([100, 1])
+        uu3 = np.zeros([256, 1])
 
         # all bounds constaints
         X_u_train = np.vstack([xx1, xx2, xx3])
