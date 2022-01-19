@@ -74,7 +74,7 @@ class PhysicsInformedNN:
                 tolerance_change=1.0 * np.finfo(float).eps,
                 line_search_fn="strong_wolfe",  # can be "strong_wolfe"
             )
-            self.adam_nIter = 2
+            self.adam_nIter = 3
 
     def net_u(self, x, t):
         u = self.dnn(torch.cat([x, t], dim=1))
