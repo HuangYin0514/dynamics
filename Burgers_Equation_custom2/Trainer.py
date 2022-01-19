@@ -10,7 +10,7 @@ if torch.cuda.is_available():
 else:
     device = torch.device("cpu")
 
-
+   
 # the physics-guided neural network
 class PhysicsInformedNN:
     def __init__(
@@ -66,6 +66,7 @@ class PhysicsInformedNN:
 
         self.param = 0.01 / np.pi
         self.iter = 0
+        self.loss_fn = torch.nn.MSELoss()
 
     def net_u(self, x, t):
         u = self.dnn(torch.cat([x, t], dim=1))
@@ -98,10 +99,10 @@ class PhysicsInformedNN:
 
         u_pred = self.net_u(self.x_u, self.t_u)
         f_pred = self.net_f(self.x_f, self.t_f)
-        loss_u = torch.mean((self.u - u_pred) ** 2)
+        loss_u = self.loss_fn(self.u , u_pred)
         loss_f = torch.mean(f_pred ** 2)
 
-        loss = loss_u + loss_f
+        loss = (loss_u + loss_f)*10000
 
         loss.backward()
         self.iter += 1
@@ -129,3 +130,4 @@ class PhysicsInformedNN:
         u = u.detach().cpu().numpy()
         f = f.detach().cpu().numpy()
         return u, f
+
