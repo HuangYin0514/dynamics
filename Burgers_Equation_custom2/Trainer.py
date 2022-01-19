@@ -10,7 +10,7 @@ if torch.cuda.is_available():
 else:
     device = torch.device("cpu")
 
-   
+
 # the physics-guided neural network
 class PhysicsInformedNN:
     def __init__(
@@ -39,6 +39,16 @@ class PhysicsInformedNN:
         # deep neural networks
         self.dnn = DNN(layers).to(device)
 
+        # iterations
+        self.adam_nIter = 500
+        self.iter = 0
+
+        # pde parameters
+        self.param = 0.01 / np.pi
+
+        # loss function
+        self.loss_fn = torch.nn.MSELoss()
+
         # optimizers: using the same settings
         self.optimizer = torch.optim.LBFGS(
             self.dnn.parameters(),
@@ -50,6 +60,7 @@ class PhysicsInformedNN:
             tolerance_change=1.0 * np.finfo(float).eps,
             line_search_fn="strong_wolfe",  # can be "strong_wolfe"
         )
+        self.optimizer_Adam = torch.optim.Adam(self.dnn.parameters())
 
         if not torch.cuda.is_available():
             print("using cpu for optim...")
@@ -63,10 +74,7 @@ class PhysicsInformedNN:
                 tolerance_change=1.0 * np.finfo(float).eps,
                 line_search_fn="strong_wolfe",  # can be "strong_wolfe"
             )
-
-        self.param = 0.01 / np.pi
-        self.iter = 0
-        self.loss_fn = torch.nn.MSELoss()
+            self.adam_nIter = 2
 
     def net_u(self, x, t):
         u = self.dnn(torch.cat([x, t], dim=1))
@@ -99,16 +107,15 @@ class PhysicsInformedNN:
 
         u_pred = self.net_u(self.x_u, self.t_u)
         f_pred = self.net_f(self.x_f, self.t_f)
-        loss_u = self.loss_fn(self.u , u_pred)
+        loss_u = self.loss_fn(self.u, u_pred)
         loss_f = torch.mean(f_pred ** 2)
-
-        loss = (loss_u + loss_f)*10000
+        loss = loss_u + loss_f
 
         loss.backward()
         self.iter += 1
         if self.iter % 100 == 0:
             print(
-                "Iter %d, Loss: %.5e, Loss_u: %.5e, Loss_f: %.5e"
+                "LBFGS ----> Iter %d, Loss: %.5e, Loss_u: %.5e, Loss_f: %.5e"
                 % (self.iter, loss.item(), loss_u.item(), loss_f.item())
             )
 
@@ -116,6 +123,27 @@ class PhysicsInformedNN:
 
     def train(self):
         self.dnn.train()
+
+        for epoch in range(self.adam_nIter):
+
+            u_pred = self.net_u(self.x_u, self.t_u)
+            f_pred = self.net_f(self.x_f, self.t_f)
+            loss_u = self.loss_fn(self.u, u_pred)
+            loss_f = torch.mean(f_pred ** 2)
+            loss = loss_u + loss_f
+
+            # Backward and optimize
+            self.optimizer_Adam.zero_grad()
+            loss.backward()
+            self.optimizer_Adam.step()
+
+            if epoch % 100 == 0:
+                print(
+                    "Adam ----> It: {}, Loss: {}".format(
+                        epoch,
+                        loss.item(),
+                    )
+                )
 
         # Backward and optimize
         self.optimizer.step(self.loss_func)
@@ -130,4 +158,3 @@ class PhysicsInformedNN:
         u = u.detach().cpu().numpy()
         f = f.detach().cpu().numpy()
         return u, f
-
