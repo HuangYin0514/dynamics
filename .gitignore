@@ -10,8 +10,8 @@ checkpoints/
 *.pt
 
 # 配置文件
-vscode/
-ipynb_checkpoints/
+.vscode/
+.ipynb_checkpoints/
 .DS_Store
 
 # 结果
