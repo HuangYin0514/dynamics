@@ -1,5 +1,7 @@
-import torch
 from collections import OrderedDict
+
+import torch
+
 
 # the deep neural network
 class DNN(torch.nn.Module):
@@ -29,4 +31,10 @@ class DNN(torch.nn.Module):
 
     def forward(self, x):
         out = self.layers(x)
+
         return out
+
+
+if __name__ == '__main__':
+    net = DNN([2, 20, 20, 1])
+    print(net)
