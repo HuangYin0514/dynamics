@@ -1,5 +1,7 @@
-import torch
 from collections import OrderedDict
+
+import torch
+
 
 # the deep neural network
 class DNN(torch.nn.Module):

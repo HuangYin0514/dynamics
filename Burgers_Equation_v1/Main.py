@@ -1,3 +1,4 @@
+import os
 import random
 import sys
 
@@ -90,3 +91,8 @@ if __name__ == '__main__':
 
     U_pred = griddata(X_star, u_pred.flatten(), (X, T), method="cubic")
     Error = np.abs(Exact - U_pred)
+
+    result_path = "result/Burgers_Equation/"
+    if not os.path.exists(result_path):
+        os.makedirs(result_path)
+    scipy.io.savemat(result_path + "pred.mat", {"u_pred": u_pred})
