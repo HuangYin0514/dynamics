@@ -1,20 +1,7 @@
-
-import random
-
 import numpy as np
-import scipy.io
 import torch
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from scipy.interpolate import griddata
 
 from model import DNN
-
-try:
-    from pyDOE import lhs
-except ImportError:
-    import sys
-    sys.path.append('/kaggle/input/pylib-pydoe/MySitePackages')
-    from pyDOE import lhs
 
 # CUDA support
 if torch.cuda.is_available():

@@ -1,13 +1,20 @@
 import random
+import sys
 
 import numpy as np
 import scipy.io
 import torch
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from pyDOE import lhs
 from scipy.interpolate import griddata
+
 from Trainer import PhysicsInformedNN
-from model import DNN
+
+try:
+    from pyDOE import lhs
+except ImportError:
+
+    sys.path.append('/kaggle/input/pylib-pydoe/MySitePackages')
+    from pyDOE import lhs
+
 
 def init_random_state():
     random_seed = 1234
@@ -28,9 +35,6 @@ if torch.cuda.is_available():
     device = torch.device("cuda")
 else:
     device = torch.device("cpu")
-
-
-
 
 if __name__ == '__main__':
     nu = 0.01 / np.pi
@@ -76,7 +80,6 @@ if __name__ == '__main__':
     X_u_train = X_u_train[idx, :]
     u_train = u_train[idx, :]
 
-
     model = PhysicsInformedNN(X_u_train, u_train, X_f_train, layers, lb, ub, nu)
     model.train()
 
@@ -87,4 +90,3 @@ if __name__ == '__main__':
 
     U_pred = griddata(X_star, u_pred.flatten(), (X, T), method="cubic")
     Error = np.abs(Exact - U_pred)
-
