@@ -14,6 +14,7 @@ try:
 except:
     import sys
     sys.path.append('/kaggle/input/pylib-pydoe/MySitePackages')
+    from pyDOE import lhs
 
 # CUDA support
 if torch.cuda.is_available():
