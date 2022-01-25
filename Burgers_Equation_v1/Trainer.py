@@ -117,11 +117,11 @@ class PhysicsInformedNN:
         loss.backward()
         self.Current_Iter += 1
 
-        if self.Current_Iter % 100 == 0:
-            self.loss.append(loss.item())
-            self.loss_u.append(loss_u.item())
-            self.loss_f.append(loss_f.item())
+        self.loss.append(loss.item())
+        self.loss_u.append(loss_u.item())
+        self.loss_f.append(loss_f.item())
 
+        if self.Current_Iter % 100 == 0:
             print(
                 "Current_iter %d, Loss: %.5e, Loss_u: %.5e, Loss_f: %.5e"
                 % (self.Current_Iter, loss.item(), loss_u.item(), loss_f.item())

@@ -95,4 +95,6 @@ if __name__ == '__main__':
     result_path = "result/Burgers_Equation/"
     if not os.path.exists(result_path):
         os.makedirs(result_path)
-    scipy.io.savemat(result_path + "pred.mat", {"u_pred": u_pred})
+    scipy.io.savemat(result_path + "pred.mat",
+                     {"u_pred": u_pred, "X_u_train": X_u_train, "loss": model.loss, "loss_u": model.loss_u,
+                      "loss_f": model.loss_f})
