@@ -13,10 +13,15 @@ from torch.autograd import Variable
 from torch.nn.utils import weight_norm
 from torch.optim.lr_scheduler import StepLR
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 torch.manual_seed(66)
 np.random.seed(66)
 torch.set_default_dtype(torch.float32)
+
+# CUDA support
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+else:
+    device = torch.device("cpu")
 
 # define the high-order finite difference kernels
 lapl_op = [[[[0, 0, -1 / 12, 0, 0],
@@ -107,14 +112,14 @@ class ConvLSTMCell(nn.Module):
     def forward(self, x, h, c):
         ci = torch.sigmoid(self.Wxi(x) + self.Whi(h))
         cf = torch.sigmoid(self.Wxf(x) + self.Whf(h))
-        cc = cf * c + ci * torch.tanh(self.Wxc(x) + self.Whc(h))
+        cc = cf * c + 1 * torch.tanh(self.Wxc(x) + self.Whc(h))
         co = torch.sigmoid(self.Wxo(x) + self.Who(h))
         ch = co * torch.tanh(cc)
 
         return ch, cc
 
     def init_hidden_tensor(self, prev_state):
-        return (Variable(prev_state[0]).cuda(), Variable(prev_state[1]).cuda())
+        return (Variable(prev_state[0]).to(device), Variable(prev_state[1]).to(device))
 
 
 class encoder_block(nn.Module):
@@ -305,26 +310,26 @@ class loss_generator(nn.Module):
             DerFilter=lapl_op,
             resol=(dx ** 2),
             kernel_size=5,
-            name='laplace_operator').cuda()
+            name='laplace_operator').to(device)
 
         self.dx = Conv2dDerivative(
             DerFilter=partial_x,
             resol=(dx * 1),
             kernel_size=5,
-            name='dx_operator').cuda()
+            name='dx_operator').to(device)
 
         self.dy = Conv2dDerivative(
             DerFilter=partial_y,
             resol=(dx * 1),
             kernel_size=5,
-            name='dy_operator').cuda()
+            name='dy_operator').to(device)
 
         # temporal derivative operator
         self.dt = Conv1dDerivative(
             DerFilter=[[[-1, 0, 1]]],
             resol=(dt * 2),
             kernel_size=3,
-            name='partial_t').cuda()
+            name='partial_t').to(device)
 
     def get_phy_Loss(self, output):
         # spatial derivatives
@@ -386,7 +391,7 @@ def compute_loss(output, loss_func):
     # get physics loss
     mse_loss = nn.MSELoss()
     f_u, f_v = loss_func.get_phy_Loss(output)
-    loss = mse_loss(f_u, torch.zeros_like(f_u).cuda()) + mse_loss(f_v, torch.zeros_like(f_v).cuda())
+    loss = mse_loss(f_u, torch.zeros_like(f_u).to(device)) + mse_loss(f_v, torch.zeros_like(f_v).to(device))
 
     return loss
 
@@ -403,8 +408,6 @@ def train(model, input, initial_state, n_iters, time_batch_size, learning_rate,
     # load previous model
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     scheduler = StepLR(optimizer, step_size=100, gamma=0.97)
-    model, optimizer, scheduler = load_checkpoint(model, optimizer, scheduler,
-                                                  pre_model_save_path)
 
     for param_group in optimizer.param_groups:
         print(param_group['lr'])
@@ -432,7 +435,7 @@ def train(model, input, initial_state, n_iters, time_batch_size, learning_rate,
             output = torch.cat(tuple(output), dim=0)
 
             # concatenate the initial state to the output for central diff
-            output = torch.cat((u0.cuda(), output), dim=0)
+            output = torch.cat((u0.to(device), output), dim=0)
 
             # get loss
             loss = compute_loss(output, loss_func)
@@ -571,13 +574,13 @@ def frobenius_norm(tensor):
 if __name__ == '__main__':
 
     ######### download the ground truth data ############
-    data_dir = './data/burgers_1501x2x128x128.mat'
+    data_dir = './data/burgers_1501x2x128x128111.mat'
     data = scio.loadmat(data_dir)
     uv = data['uv']  # [t,c,h,w]
 
     # initial conidtion
     uv0 = uv[0:1, ...]
-    input = torch.tensor(uv0, dtype=torch.float32).cuda()
+    input = torch.tensor(uv0, dtype=torch.float32).to(device)
 
     # set initial states for convlstm
     num_convlstm = 1
@@ -598,8 +601,6 @@ if __name__ == '__main__':
     num_time_batch = int(time_steps / time_batch_size)
     n_iters_adam = 2000
     lr_adam = 1e-4  # 1e-3
-    pre_model_save_path = './model/checkpoint500.pt'
-    model_save_path = './model/checkpoint1000.pt'
     fig_save_path = './figures/'
 
     model = PhyCRNet(
@@ -612,11 +613,11 @@ if __name__ == '__main__':
         num_layers=[3, 1],
         upscale_factor=8,
         step=steps,
-        effective_step=effective_step).cuda()
+        effective_step=effective_step).to(device)
 
     start = time.time()
     train_loss = train(model, input, initial_state, n_iters_adam, time_batch_size,
-                       lr_adam, dt, dx, model_save_path, pre_model_save_path, num_time_batch)
+                       lr_adam, dt, dx, "", "", num_time_batch)
     end = time.time()
 
     np.save('./model/train_loss', train_loss)
@@ -638,62 +639,7 @@ if __name__ == '__main__':
         num_layers=[3, 1],
         upscale_factor=8,
         step=steps_load,
-        effective_step=effective_step).cuda()
+        effective_step=effective_step).to(device)
 
-    model, _, _ = load_checkpoint(model, optimizer=None, scheduler=None, save_dir=model_save_path)
-    output, _ = model(initial_state, input)
 
-    # shape: [t, c, h, w]
-    output = torch.cat(tuple(output), dim=0)
-    output = torch.cat((input.cuda(), output), dim=0)
-
-    # Padding x and y axis due to periodic boundary condition
-    output = torch.cat((output[:, :, :, -1:], output, output[:, :, :, 0:2]), dim=3)
-    output = torch.cat((output[:, :, -1:, :], output, output[:, :, 0:2, :]), dim=2)
-
-    # [t, c, h, w]
-    truth = uv[0:1001, :, :, :]
-
-    # [101, 2, 131, 131]
-    truth = np.concatenate((truth[:, :, :, -1:], truth, truth[:, :, :, 0:2]), axis=3)
-    truth = np.concatenate((truth[:, :, -1:, :], truth, truth[:, :, 0:2, :]), axis=2)
-
-    # post-process
-    ten_true = []
-    ten_pred = []
-    for i in range(0, 50):
-        u_star, u_pred, v_star, v_pred = post_process(output, truth, [0, 1, 0, 1],
-                                                      [-0.7, 0.7, -1.0, 1.0], num=20 * i, fig_save_path=fig_save_path)
-
-        ten_true.append([u_star, v_star])
-        ten_pred.append([u_pred, v_pred])
-
-    # compute the error
-    error = frobenius_norm(np.array(ten_pred) - np.array(ten_true)) / frobenius_norm(
-        np.array(ten_true))
-
-    print('The predicted error is: ', error)
-
-    u_pred = output[:-1, 0, :, :].detach().cpu().numpy()
-    u_pred = np.swapaxes(u_pred, 1, 2)  # [h,w] = [y,x]
-    u_true = truth[:, 0, :, :]
-
-    t_true = np.linspace(0, 2, 1001)
-    t_pred = np.linspace(0, 2, time_steps)
-
-    plt.plot(t_pred, u_pred[:, 32, 32], label='x=32, y=32, CRL')
-    plt.plot(t_true, u_true[:, 32, 32], '--', label='x=32, y=32, Ref.')
-    plt.xlabel('t')
-    plt.ylabel('u')
-    plt.xlim(0, 2)
-    plt.legend()
-    plt.savefig(fig_save_path + "x=32,y=32.png")
-    plt.close("all")
-    # plt.show()
-
-    # plot train loss
-    plt.figure()
-    plt.plot(train_loss, label='train loss')
-    plt.yscale('log')
-    plt.legend()
-    plt.savefig(fig_save_path + 'train loss.png', dpi=300)
+    # output, _ = model(initial_state, input)

@@ -571,7 +571,7 @@ def frobenius_norm(tensor):
 if __name__ == '__main__':
 
     ######### download the ground truth data ############
-    data_dir = './data/burgers_1501x2x128x128.mat'
+    data_dir = './data/burgers_1501x2x128x128111.mat'
     data = scio.loadmat(data_dir)
     uv = data['uv']  # [t,c,h,w]
 
