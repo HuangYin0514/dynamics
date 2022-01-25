@@ -11,7 +11,7 @@ from model import DNN
 
 try:
     from pyDOE import lhs
-except:
+except ImportError:
     import sys
     sys.path.append('/kaggle/input/pylib-pydoe/MySitePackages')
     from pyDOE import lhs
