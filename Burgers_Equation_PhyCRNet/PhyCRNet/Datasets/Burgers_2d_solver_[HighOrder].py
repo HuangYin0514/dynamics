@@ -224,9 +224,9 @@ if __name__ == '__main__':
     UV = np.concatenate((U_record[None,...], V_record[None,...]), axis=0) # (c,t,h,w)
     UV = np.transpose(UV, [1, 0, 2, 3]) # (t,c,h,w)
 
-    fig_save_dir = './figures/2dBurgers/'
-    for i in range(0, 30):
-        postProcess(UV, M, 0, M, 0, M, 50*i, fig_save_dir)
+    # fig_save_dir = './figures/2dBurgers/'
+    # for i in range(0, 30):
+    #     postProcess(UV, M, 0, M, 0, M, 50*i, fig_save_dir)
 
     # save data
     data_save_dir = './data/2dBurgers/'
