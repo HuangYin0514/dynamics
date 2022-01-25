@@ -8,20 +8,6 @@ import matplotlib.pyplot as plt
 from random_fields import GaussianRF
 import torch
 
-
-try:
-    from torch import irfft
-    from torch import rfft
-except ImportError:
-    from torch.fft import irfft2
-    from torch.fft import rfft2
-    def rfft(x, d):
-        t = rfft2(x, dim = (-d))
-        return torch.stack((t.real, t.imag), -1)
-    def irfft(x, d, signal_sizes):
-        return irfft2(torch.complex(x[:,:,0], x[:,:,1]), s = signal_sizes, dim = (-d))
-
-
 torch.manual_seed(66)
 np.random.seed(66)
 
