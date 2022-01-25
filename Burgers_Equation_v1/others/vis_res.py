@@ -4,7 +4,7 @@ import scipy.io
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.gridspec as gridspec
 
-data = scipy.io.loadmat("data/burgers_shock.mat")
+data = scipy.io.loadmat("../data/burgers_shock.mat")
 Exact = np.real(data["usol"]).T
 u_star = Exact.flatten()[:, None]
 
@@ -15,7 +15,7 @@ ub = np.array([1.0, 1.0])  # (X,T)
 t = np.linspace(lb[1], ub[1], n_t).flatten()[:, None]
 x = np.linspace(lb[0], ub[0], n_x).flatten()[:, None]
 
-data = scipy.io.loadmat("result/Burgers_Equation/pred.mat")
+data = scipy.io.loadmat("../result/Burgers_Equation/pred.mat")
 u_pred = np.real(data["u_pred"])
 u_pred = u_pred.flatten()[:, None]
 u_pred = u_pred.reshape(n_t, n_x)
