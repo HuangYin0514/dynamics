@@ -21,6 +21,12 @@ from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
 
 
+# CUDA support
+if torch.cuda.is_available():
+ device = torch.device("cuda")
+else:
+ device = torch.device("cpu")
+
 def np2cuda(myList):
     MyList = []
     for item in myList:
@@ -34,10 +40,10 @@ def to4DTensor(myList):
         if len(item.shape) == 3:
             item = torch.tensor(item.reshape([item.shape[0], 1, item.shape[1],
                                               item.shape[2]]))
-            MyList.append(item.float().to('cuda'))
+            MyList.append(item.float().to(device))
         else:
             item = torch.tensor(item)
-            MyList.append(item.float().to('cuda'))
+            MyList.append(item.float().to(device))
     return MyList
 
 
@@ -218,7 +224,7 @@ class hcubeMesh(object):
         ax = plt.subplot(1, 2, 1)
         plotBC(ax, self.x, self.y)
         plotMesh(ax, self.x, self.y)
-        # ax.plot(0, 0,'-o',color=clow)   # mine
+        ax.plot(self.x[-1, -1], self.y[-1,-1],'-o',color="black")   # mine
         setAxisLabel(ax, 'p')
         ax.set_aspect('equal')
         ax.set_title('Physics Domain Mesh')
