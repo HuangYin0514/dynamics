@@ -2,17 +2,6 @@ import torch
 from torch import nn
 
 
-class MlpBlock(nn.Module):
-    def __init__(self, input_dim, output_dim):
-        super().__init__()
-
-        self.fc = nn.Linear(input_dim, output_dim)
-        self.Tanh = nn.Tanh()
-
-    def forward(self, x):
-        return self.Tanh(self.fc(x))
-
-
 class DAM(nn.Module):
     """ Discriminative Amplitude Modulator Layer (1-D) """
 
@@ -36,6 +25,21 @@ class DAM(nn.Module):
 
     def mask(self):
         return self.relu(self.tanh((self.alpha ** 2) * (self.mu + self.beta)))
+
+class MlpBlock(nn.Module):
+    def __init__(self, input_dim, output_dim):
+        super().__init__()
+
+        self.mlpBlock_layers = nn.Sequential(
+            nn.Linear(input_dim, output_dim),
+            nn.Tanh(),
+            DAM(in_dim=output_dim)
+        )
+
+    def forward(self, x):
+        out = self.mlpBlock_layers(x)
+        return out
+
 
 
 class PINN(nn.Module):
