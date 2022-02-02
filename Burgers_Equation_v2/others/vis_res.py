@@ -1,8 +1,8 @@
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.io
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-import matplotlib.gridspec as gridspec
 
 data = scipy.io.loadmat("../data/burgers_shock.mat")
 Exact = np.real(data["usol"]).T
@@ -21,7 +21,6 @@ u_pred = u_pred.flatten()[:, None]
 u_pred = u_pred.reshape(n_t, n_x)
 
 X_u_train = np.real(data["X_u_train"])
-
 
 ######################################################################
 fig = plt.figure(figsize=(9, 5))
@@ -119,10 +118,8 @@ for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
              ax.get_xticklabels() + ax.get_yticklabels()):
     item.set_fontsize(15)
 
-
 plt.savefig("result/Burgers_Equation/t_time_pred.jpg")
 plt.show()
-
 
 ######################################################################
 loss = np.real(data["loss"])[0]

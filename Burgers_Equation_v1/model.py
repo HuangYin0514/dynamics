@@ -36,5 +36,5 @@ class DNN(torch.nn.Module):
 
 
 if __name__ == '__main__':
-    net = DNN([2, 20, 20, 1])
+    net = DNN([2, 20, 20, 20, 20, 20, 20, 20, 20, 1])
     print(net)

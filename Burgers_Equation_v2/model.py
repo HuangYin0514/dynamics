@@ -1,40 +1,59 @@
-from collections import OrderedDict
-
 import torch
+from torch import nn
 
 
-# the deep neural network
-class DNN(torch.nn.Module):
-    def __init__(self, layers):
-        super(DNN, self).__init__()
+class MlpBlock(nn.Module):
+    def __init__(self, input_dim, output_dim):
+        super().__init__()
 
-        # parameters
-        self.depth = len(layers) - 1
-
-        # set up layer order dict
-        self.activation = torch.nn.Tanh
-
-        layer_list = list()
-        for i in range(self.depth - 1):
-            layer_list.append(
-                ("layer_%d" % i, torch.nn.Linear(layers[i], layers[i + 1]))
-            )
-            layer_list.append(("activation_%d" % i, self.activation()))
-
-        layer_list.append(
-            ("layer_%d" % (self.depth - 1), torch.nn.Linear(layers[-2], layers[-1]))
-        )
-        layerDict = OrderedDict(layer_list)
-
-        # deploy layers
-        self.layers = torch.nn.Sequential(layerDict)
+        self.fc = nn.Linear(input_dim, output_dim)
+        self.Tanh = nn.Tanh()
 
     def forward(self, x):
-        out = self.layers(x)
+        return self.Tanh(self.fc(x))
 
+
+class PINN(nn.Module):
+    def __init__(self, num_blocks):
+        super().__init__()
+        self.num_blocks = num_blocks
+
+
+        self.encoder = nn.Sequential(
+            nn.Linear(2, 20),
+            nn.Tanh()
+        )
+
+        self.mlp = self._make_layer(MlpBlock, num_blocks)
+
+        self.decoder = nn.Linear(20, 1)
+
+    @staticmethod
+    def _make_layer(block, num_blocks):
+        layers = []
+
+        for _ in range(num_blocks):
+            layers.append(block(input_dim=20, output_dim=20))
+
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = self.encoder(x)
+        x = self.mlp(x)
+        out = self.decoder(x)
         return out
 
 
 if __name__ == '__main__':
-    net = DNN([2, 20, 20, 1])
+    # # test MlpBlock
+    # net = MlpBlock(2, 20)
+    # t_input = torch.randn(32, 2)
+    # output = net(t_input)
+    # print(net)
+    # print(output.shape)
+
+    net = PINN(8)
+    t_input = torch.randn(32, 2)
+    output = net(t_input)
     print(net)
+    print(output.shape)

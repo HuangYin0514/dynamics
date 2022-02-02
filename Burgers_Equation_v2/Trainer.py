@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from model import DNN
+from model import PINN
 
 # CUDA support
 if torch.cuda.is_available():
@@ -12,7 +12,7 @@ else:
 
 # the physics-guided neural network
 class PhysicsInformedNN:
-    def __init__(self, X_u, u, X_f, layers, lb, ub, nu):
+    def __init__(self, X_u, u, X_f, lb, ub, nu, num_blocks=8):
 
         # boundary conditions
         self.lb = torch.tensor(lb).float().to(device)
@@ -25,11 +25,11 @@ class PhysicsInformedNN:
         self.t_f = torch.tensor(X_f[:, 1:2], requires_grad=True).float().to(device)
         self.u = torch.tensor(u).float().to(device)
 
-        self.layers = layers
+        self.layers = num_blocks
         self.nu = nu
 
         # deep neural networks
-        self.dnn = DNN(layers).to(device)
+        self.dnn = PINN(num_blocks).to(device)
 
         # iterations
         self.Adam_nIter = 500

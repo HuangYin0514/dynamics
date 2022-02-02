@@ -38,12 +38,15 @@ else:
     device = torch.device("cpu")
 
 if __name__ == '__main__':
+
+    # net
+    num_blocks = 8
+
     nu = 0.01 / np.pi
     noise = 0.0
 
     N_u = 100
     N_f = 10000
-    layers = [2, 20, 20, 20, 20, 20, 20, 20, 20, 1]
 
     data = scipy.io.loadmat("data/burgers_shock.mat")
     Exact = np.real(data["usol"]).T
@@ -81,7 +84,7 @@ if __name__ == '__main__':
     X_u_train = X_u_train[idx, :]
     u_train = u_train[idx, :]
 
-    model = PhysicsInformedNN(X_u_train, u_train, X_f_train, layers, lb, ub, nu)
+    model = PhysicsInformedNN(X_u_train, u_train, X_f_train, lb, ub, nu)
     model.train()
 
     u_pred, f_pred = model.predict(X_star)
