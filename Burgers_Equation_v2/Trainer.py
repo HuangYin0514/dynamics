@@ -143,7 +143,7 @@ class PhysicsInformedNN:
                 self.loss.append(loss.item())
                 self.loss_u.append(loss_u.item())
                 self.loss_f.append(loss_f.item())
-                if self.epochs % 100 == 0:
+                if self.epochs % 200 == 0:
                     print("LBFGS\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(self.epochs, loss.item(),
                                                                                            loss_u.item(),
                                                                                            loss_f.item()))
