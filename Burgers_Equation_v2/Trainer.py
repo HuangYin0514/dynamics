@@ -142,7 +142,7 @@ class PhysicsInformedNN:
                 self.loss_u.append(loss_u.item())
                 self.loss_f.append(loss_f.item())
                 if self.epochs % 100 == 0:
-                    print("Adam\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(epoch, loss.item(), loss_u.item(),loss_f.item()))
+                    print("LBFGS\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(self.epochs, loss.item(), loss_u.item(),loss_f.item()))
                 self.epochs = self.epochs + 1
                 return loss
 
