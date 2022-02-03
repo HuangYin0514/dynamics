@@ -113,7 +113,7 @@ class PhysicsInformedNN:
                     loss = loss_u + loss_f
                     loss.backward()
                     if epoch % 100 == 0:
-                        print("Adam\tepoch:{}\tloss:{}".format(epoch, loss.item()))
+                        print("Adam\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(epoch, loss.item(), loss_u.item(),loss_f.item()))
                     return loss
 
                 self.optimizer_Adam.step(closure)
@@ -142,7 +142,7 @@ class PhysicsInformedNN:
                 self.loss_u.append(loss_u.item())
                 self.loss_f.append(loss_f.item())
                 if self.epochs % 100 == 0:
-                    print("LBFGS\tepochs:{}\tloss:{}".format(self.epochs, loss.item()))
+                    print("Adam\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(epoch, loss.item(), loss_u.item(),loss_f.item()))
                 self.epochs = self.epochs + 1
                 return loss
 
