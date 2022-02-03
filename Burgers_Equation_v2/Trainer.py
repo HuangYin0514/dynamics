@@ -136,7 +136,7 @@ class PhysicsInformedNN:
                 self.optimizer_LBFGS.zero_grad()
                 u_pred = self.net_u(x_u, t_u)
                 f_pred = self.net_f(x_f, t_f)
-                loss_u = self.MSELoss(u, u_pred)
+                loss_u = torch.mean((u - u_pred) ** 2)
                 loss_f = torch.mean(f_pred ** 2)
                 loss = loss_u + loss_f
                 loss.backward()
