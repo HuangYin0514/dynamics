@@ -1,8 +1,9 @@
 import sys
 
 import numpy as np
+import scipy.io
 from torch.utils.data import Dataset
-import  scipy.io
+
 try:
     from pyDOE import lhs
 except ImportError:

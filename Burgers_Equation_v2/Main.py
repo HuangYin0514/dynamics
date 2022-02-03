@@ -1,13 +1,15 @@
+import os
 import random
 import sys
 
 import numpy as np
+import scipy.io
 import torch
 from torch.utils.data import DataLoader
-import scipy.io
+
 from Trainer import PhysicsInformedNN
 from dataset import BurgersEquationDataSet
-import os
+
 try:
     from pyDOE import lhs
 except ImportError:
@@ -37,13 +39,9 @@ else:
     device = torch.device("cpu")
 
 if __name__ == '__main__':
-    # net
-    num_blocks = 8
-
     train_set = BurgersEquationDataSet()
     training_loader = DataLoader(dataset=train_set,
                                  batch_size=len(train_set))
-
     model = PhysicsInformedNN(training_loader)
     model.train()
 

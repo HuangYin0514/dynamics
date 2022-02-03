@@ -12,15 +12,15 @@ else:
 
 # the physics-guided neural network
 class PhysicsInformedNN:
-    def __init__(self, training_loader, num_blocks=8):
+    def __init__(self, training_loader):
 
         self.training_loader = training_loader
 
-        self.layers = num_blocks
+
         self.nu = 0.01 / np.pi
 
         # deep neural networks
-        self.model = PINN(num_blocks).to(device)
+        self.model = PINN(num_blocks = 8).to(device)
 
         # iterations
         self.epochs = 500
@@ -46,6 +46,10 @@ class PhysicsInformedNN:
             eps=1e-8,
         )
 
+        self.loss = []
+        self.loss_u = []
+        self.loss_f = []
+
         if not torch.cuda.is_available():
             print("using cpu for optim...")
             self.optimizer_LBFGS = torch.optim.LBFGS(
@@ -60,9 +64,7 @@ class PhysicsInformedNN:
             )
             self.epochs = 1
 
-        self.loss = []
-        self.loss_u = []
-        self.loss_f = []
+
 
     def net_u(self, x, t):
         u = self.model(torch.cat([x, t], dim=1))
@@ -113,7 +115,9 @@ class PhysicsInformedNN:
                     loss = loss_u + loss_f
                     loss.backward()
                     if epoch % 100 == 0:
-                        print("Adam\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(epoch, loss.item(), loss_u.item(),loss_f.item()))
+                        print("Adam\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(epoch, loss.item(),
+                                                                                              loss_u.item(),
+                                                                                              loss_f.item()))
                     return loss
 
                 self.optimizer_Adam.step(closure)
@@ -129,7 +133,8 @@ class PhysicsInformedNN:
             t_f = x_f_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
             u = u_train.clone().detach().float().to(device)
 
-            self.epochs =0
+            self.epochs = 0
+
             def closure():
                 self.optimizer_LBFGS.zero_grad()
                 u_pred = self.net_u(x_u, t_u)
@@ -142,7 +147,9 @@ class PhysicsInformedNN:
                 self.loss_u.append(loss_u.item())
                 self.loss_f.append(loss_f.item())
                 if self.epochs % 100 == 0:
-                    print("LBFGS\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(self.epochs, loss.item(), loss_u.item(),loss_f.item()))
+                    print("LBFGS\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(self.epochs, loss.item(),
+                                                                                           loss_u.item(),
+                                                                                           loss_f.item()))
                 self.epochs = self.epochs + 1
                 return loss
 
