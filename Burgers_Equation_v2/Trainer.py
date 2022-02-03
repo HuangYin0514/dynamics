@@ -16,11 +16,10 @@ class PhysicsInformedNN:
 
         self.training_loader = training_loader
 
-
         self.nu = 0.01 / np.pi
 
         # deep neural networks
-        self.model = PINN(num_blocks = 8).to(device)
+        self.model = PINN(num_blocks=8).to(device)
 
         # iterations
         self.epochs = 500
@@ -63,8 +62,6 @@ class PhysicsInformedNN:
                 line_search_fn="strong_wolfe",  # can be "strong_wolfe"
             )
             self.epochs = 1
-
-
 
     def net_u(self, x, t):
         u = self.model(torch.cat([x, t], dim=1))

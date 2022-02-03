@@ -5,8 +5,9 @@ import sys
 import numpy as np
 import scipy.io
 import torch
-from torch.utils.data import DataLoader
 import torch.backends.cudnn
+from torch.utils.data import DataLoader
+
 from Trainer import PhysicsInformedNN
 from dataset import BurgersEquationDataSet
 
