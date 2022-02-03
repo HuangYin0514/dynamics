@@ -118,7 +118,7 @@ if __name__ == '__main__':
     # print(output)
 
     # test PINN
-    net = PINN(8)
+    net = PINN(7)
     t_input = torch.randn(32, 2)
     output = net(t_input)
     print(net)
