@@ -26,6 +26,7 @@ class DAM(nn.Module):
     def mask(self):
         return self.relu(self.tanh((self.alpha ** 2) * (self.mu + self.beta)))
 
+
 class MlpBlock(nn.Module):
     def __init__(self, input_dim, output_dim):
         super().__init__()
@@ -33,13 +34,11 @@ class MlpBlock(nn.Module):
         self.mlpBlock_layers = nn.Sequential(
             nn.Linear(input_dim, output_dim),
             nn.Tanh(),
-            DAM(in_dim=output_dim)
         )
 
     def forward(self, x):
         out = self.mlpBlock_layers(x)
         return out
-
 
 
 class PINN(nn.Module):
@@ -70,7 +69,7 @@ class PINN(nn.Module):
     def forward(self, x):
         x = self.encoder(x)
         x = self.mlp(x)
-        x= self.dam(x)
+        x = self.dam(x)
         out = self.decoder(x)
         return out
 
