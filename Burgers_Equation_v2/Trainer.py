@@ -12,35 +12,25 @@ else:
 
 # the physics-guided neural network
 class PhysicsInformedNN:
-    def __init__(self, X_u, u, X_f, lb, ub, nu, num_blocks=8):
+    def __init__(self, training_loader, num_blocks=8):
 
-        # boundary conditions
-        self.lb = torch.tensor(lb).float().to(device)
-        self.ub = torch.tensor(ub).float().to(device)
-
-        # data
-        self.x_u = torch.tensor(X_u[:, 0:1], requires_grad=True).float().to(device)
-        self.t_u = torch.tensor(X_u[:, 1:2], requires_grad=True).float().to(device)
-        self.x_f = torch.tensor(X_f[:, 0:1], requires_grad=True).float().to(device)
-        self.t_f = torch.tensor(X_f[:, 1:2], requires_grad=True).float().to(device)
-        self.u = torch.tensor(u).float().to(device)
+        self.training_loader = training_loader
 
         self.layers = num_blocks
-        self.nu = nu
+        self.nu = 0.01 / np.pi
 
         # deep neural networks
-        self.dnn = PINN(num_blocks).to(device)
+        self.model = PINN(num_blocks).to(device)
 
         # iterations
-        self.Adam_nIter = 500
-        self.Current_Iter = 0
+        self.epochs = 500
 
         # loss function
         self.MSELoss = torch.nn.MSELoss()
 
         # optimizers: using the same settings
-        self.optimizer = torch.optim.LBFGS(
-            self.dnn.parameters(),
+        self.optimizer_LBFGS = torch.optim.LBFGS(
+            self.model.parameters(),
             lr=1.0,
             max_iter=50000,
             max_eval=50000,
@@ -50,7 +40,7 @@ class PhysicsInformedNN:
             line_search_fn="strong_wolfe",  # can be "strong_wolfe"
         )
         self.optimizer_Adam = torch.optim.Adam(
-            self.dnn.parameters(),
+            self.model.parameters(),
             lr=1e-3,
             betas=(0.9, 0.999),
             eps=1e-8,
@@ -58,8 +48,8 @@ class PhysicsInformedNN:
 
         if not torch.cuda.is_available():
             print("using cpu for optim...")
-            self.optimizer = torch.optim.LBFGS(
-                self.dnn.parameters(),
+            self.optimizer_LBFGS = torch.optim.LBFGS(
+                self.model.parameters(),
                 lr=1.0,
                 max_iter=5,
                 max_eval=5,
@@ -68,14 +58,14 @@ class PhysicsInformedNN:
                 tolerance_change=1.0 * np.finfo(float).eps,
                 line_search_fn="strong_wolfe",  # can be "strong_wolfe"
             )
-            self.Adam_nIter = 3
+            self.epochs = 1
 
         self.loss = []
         self.loss_u = []
         self.loss_f = []
 
     def net_u(self, x, t):
-        u = self.dnn(torch.cat([x, t], dim=1))
+        u = self.model(torch.cat([x, t], dim=1))
         return u
 
     def net_f(self, x, t):
@@ -99,63 +89,71 @@ class PhysicsInformedNN:
         f = u_t + u * u_x - self.nu * u_xx
         return f
 
-    def compute_loss(self):
-        u_pred = self.net_u(self.x_u, self.t_u)
-        f_pred = self.net_f(self.x_f, self.t_f)
-        loss_u = self.MSELoss(self.u, u_pred)
-        loss_f = torch.mean(f_pred ** 2)
-
-        loss = loss_u + loss_f
-
-        return loss, loss_u, loss_f
-
-    def loss_func(self):
-
-        loss, loss_u, loss_f = self.compute_loss()
-
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.Current_Iter += 1
-
-        self.loss.append(loss.item())
-        self.loss_u.append(loss_u.item())
-        self.loss_f.append(loss_f.item())
-
-        if self.Current_Iter % 100 == 0:
-            print(
-                "Current_iter %d, Loss: %.5e, Loss_u: %.5e, Loss_f: %.5e"
-                % (self.Current_Iter, loss.item(), loss_u.item(), loss_f.item())
-            )
-        return loss
-
     def train(self):
-        self.dnn.train()
+        self.model.train()
 
-        # adam优化
-        for epoch in range(self.Adam_nIter):
+        # Adam
+        for epoch in range(self.epochs):
+            for iteration, data in enumerate(self.training_loader):
+                x_f_train, x_u_train, u_train = data
+                x_f_train, x_u_train, u_train = x_f_train[0], x_u_train[0], u_train[0]
+                # data
+                x_u = x_u_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
+                t_u = x_u_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
+                x_f = x_f_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
+                t_f = x_f_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
+                u = u_train.clone().detach().float().to(device)
 
-            loss, loss_u, loss_f = self.compute_loss()
+                def closure():
+                    self.optimizer_Adam.zero_grad()
+                    u_pred = self.net_u(x_u, t_u)
+                    f_pred = self.net_f(x_f, t_f)
+                    loss_u = self.MSELoss(u, u_pred)
+                    loss_f = torch.mean(f_pred ** 2)
+                    loss = loss_u + loss_f
+                    loss.backward()
+                    if epoch % 100 == 0:
+                        print("Adam\tepoch:{}\tloss:{}".format(epoch, loss.item()))
+                    return loss
 
-            self.optimizer_Adam.zero_grad()
-            loss.backward()
-            self.optimizer_Adam.step()
+                self.optimizer_Adam.step(closure)
 
-            if epoch % 100 == 0:
-                print(
-                    "Adam ----> It: {}, Loss: {}".format(
-                        epoch,
-                        loss.item(),
-                    )
-                )
+        # LBFGS
+        for iteration, data in enumerate(self.training_loader):
+            x_f_train, x_u_train, u_train = data
+            x_f_train, x_u_train, u_train = x_f_train[0], x_u_train[0], u_train[0]
+            # data
+            x_u = x_u_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
+            t_u = x_u_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
+            x_f = x_f_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
+            t_f = x_f_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
+            u = u_train.clone().detach().float().to(device)
 
-        # LBFGS 优化  Backward and optimize
-        self.optimizer.step(self.loss_func)
+            self.epochs =0
+            def closure():
+                self.optimizer_LBFGS.zero_grad()
+                u_pred = self.net_u(x_u, t_u)
+                f_pred = self.net_f(x_f, t_f)
+                loss_u = self.MSELoss(u, u_pred)
+                loss_f = torch.mean(f_pred ** 2)
+                loss = loss_u + loss_f
+                loss.backward()
+                self.loss.append(loss.item())
+                self.loss_u.append(loss_u.item())
+                self.loss_f.append(loss_f.item())
+                if self.epochs % 100 == 0:
+                    print("LBFGS\tepochs:{}\tloss:{}".format(self.epochs, loss.item()))
+                self.epochs = self.epochs + 1
+                return loss
+
+            self.optimizer_LBFGS.step(closure)
+            break
 
     def predict(self, X):
         x = torch.tensor(X[:, 0:1], requires_grad=True).float().to(device)
         t = torch.tensor(X[:, 1:2], requires_grad=True).float().to(device)
 
-        self.dnn.eval()
+        self.model.eval()
         u = self.net_u(x, t)
         f = self.net_f(x, t)
         u = u.detach().cpu().numpy()
