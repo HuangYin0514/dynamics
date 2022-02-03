@@ -78,9 +78,9 @@ class PINN(nn.Module):
 
         self.decoder = nn.Linear(20, 1)
 
-        self.encoder.apply(weights_init_kaiming)
-        self.mlp.apply(weights_init_kaiming)
-        self.decoder.apply(weights_init_kaiming)
+        # self.encoder.apply(weights_init_kaiming)
+        # self.mlp.apply(weights_init_kaiming)
+        # self.decoder.apply(weights_init_kaiming)
         # self.decoder.apply(weights_init_classifier)
 
     @staticmethod
