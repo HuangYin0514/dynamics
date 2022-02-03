@@ -91,33 +91,33 @@ class PhysicsInformedNN:
     def train(self):
         self.model.train()
 
-        # Adam
-        for epoch in range(self.epochs):
-            for iteration, data in enumerate(self.training_loader):
-                x_f_train, x_u_train, u_train = data
-                x_f_train, x_u_train, u_train = x_f_train[0], x_u_train[0], u_train[0]
-                # data
-                x_u = x_u_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
-                t_u = x_u_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
-                x_f = x_f_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
-                t_f = x_f_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
-                u = u_train.clone().detach().float().to(device)
-
-                def closure():
-                    self.optimizer_Adam.zero_grad()
-                    u_pred = self.net_u(x_u, t_u)
-                    f_pred = self.net_f(x_f, t_f)
-                    loss_u = self.MSELoss(u, u_pred)
-                    loss_f = torch.mean(f_pred ** 2)
-                    loss = loss_u + loss_f
-                    loss.backward()
-                    if epoch % 100 == 0:
-                        print("Adam\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(epoch, loss.item(),
-                                                                                              loss_u.item(),
-                                                                                              loss_f.item()))
-                    return loss
-
-                self.optimizer_Adam.step(closure)
+        # # Adam
+        # for epoch in range(self.epochs):
+        #     for iteration, data in enumerate(self.training_loader):
+        #         x_f_train, x_u_train, u_train = data
+        #         x_f_train, x_u_train, u_train = x_f_train[0], x_u_train[0], u_train[0]
+        #         # data
+        #         x_u = x_u_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
+        #         t_u = x_u_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
+        #         x_f = x_f_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
+        #         t_f = x_f_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
+        #         u = u_train.clone().detach().float().to(device)
+        #
+        #         def closure():
+        #             self.optimizer_Adam.zero_grad()
+        #             u_pred = self.net_u(x_u, t_u)
+        #             f_pred = self.net_f(x_f, t_f)
+        #             loss_u = self.MSELoss(u, u_pred)
+        #             loss_f = torch.mean(f_pred ** 2)
+        #             loss = loss_u + loss_f
+        #             loss.backward()
+        #             if epoch % 100 == 0:
+        #                 print("Adam\tepoch:{}\tloss:{:.5}\tloss_u:{:.5}\tloss_f:{:.5}".format(epoch, loss.item(),
+        #                                                                                       loss_u.item(),
+        #                                                                                       loss_f.item()))
+        #             return loss
+        #
+        #         self.optimizer_Adam.step(closure)
 
         # LBFGS
         for iteration, data in enumerate(self.training_loader):
