@@ -80,7 +80,8 @@ class PINN(nn.Module):
 
         self.encoder.apply(weights_init_kaiming)
         self.mlp.apply(weights_init_kaiming)
-        self.decoder.apply(weights_init_classifier)
+        self.decoder.apply(weights_init_kaiming)
+        # self.decoder.apply(weights_init_classifier)
 
     @staticmethod
     def _make_layer(block, num_blocks):
