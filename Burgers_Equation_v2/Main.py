@@ -30,8 +30,8 @@ def init_random_state():
     torch.backends.cudnn.benchmark = True
 
 
-init_random_state()
-
+# init_random_state()
+np.random.seed(1234)
 # CUDA support
 if torch.cuda.is_available():
     device = torch.device("cuda")
