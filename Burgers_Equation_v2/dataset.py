@@ -20,15 +20,15 @@ class BurgersEquationDataSet(Dataset):
         n_f = 10000
 
         # 上下界
-        self.lb = np.array([-1.0, 0.0])
-        self.ub = np.array([1.0, 0.99])  # (X,T)
+        lb = np.array([-1.0, 0.0])
+        ub = np.array([1.0, 0.99])  # (X,T)
 
         # 时间和空间点数
         n_t = 100
         n_x = 256
 
-        t = np.linspace(self.lb[1], self.ub[1], n_t).flatten()[:, None]
-        x = np.linspace(self.lb[0], self.ub[0], n_x).flatten()[:, None]
+        t = np.linspace(lb[1], ub[1], n_t).flatten()[:, None]
+        x = np.linspace(lb[0], ub[0], n_x).flatten()[:, None]
 
         x_mesh, t_mesh = np.meshgrid(x, t)  # X(n_t,n_x) T(n_t,n_x)
 
@@ -44,7 +44,7 @@ class BurgersEquationDataSet(Dataset):
         u_train = np.vstack([uu1, uu2, uu3])
 
         # pde constraints
-        x_f_train = self.lb + (self.ub - self.lb) * lhs(2, n_f)
+        x_f_train = lb + (ub - lb) * lhs(2, n_f)
         self.x_f_train = np.vstack((x_f_train, x_u_train))
 
         # ib constraints
