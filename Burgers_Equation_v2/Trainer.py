@@ -128,11 +128,11 @@ class PhysicsInformedNN:
             u_train = dataset.u_train
 
             # data
-            x_u = x_u_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
-            t_u = x_u_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
-            x_f = x_f_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
-            t_f = x_f_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
-            u = u_train.clone().detach().float().to(device)
+            x_u = torch.tensor(x_u_train[:, 0:1], requires_grad=True).float().to(device)
+            t_u = torch.tensor(x_u_train[:, 1:2], requires_grad=True).float().to(device)
+            x_f = torch.tensor(x_f_train[:, 0:1], requires_grad=True).float().to(device)
+            t_f = torch.tensor(x_f_train[:, 1:2], requires_grad=True).float().to(device)
+            u = torch.tensor(u_train).float().to(device)
 
             def closure():
                 self.optimizer_LBFGS.zero_grad()
