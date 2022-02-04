@@ -19,25 +19,30 @@ class BurgersEquationDataSet(Dataset):
         n_u = 100
         n_f = 10000
 
+        data = scipy.io.loadmat("data/burgers_shock.mat")
+
+        t = data["t"].flatten()[:, None]
+        x = data["x"].flatten()[:, None]
+        exact = np.real(data["usol"]).T
+
+        x_mesh, t_mesh = np.meshgrid(x, t) # X(n_t,n_x) T(n_t,n_x)
+
+        # Prediction
+        self.x_star = np.hstack((x_mesh.flatten()[:, None], t_mesh.flatten()[:, None]))  # (n_x*n_t, 2)
+        self.u_star = exact.flatten()[:, None]
+
         # 上下界
-        lb = np.array([-1.0, 0.0])
-        ub = np.array([1.0, 0.99])  # (X,T)
-
-        # 时间和空间点数
-        n_t = 100
-        n_x = 256
-
-        t = np.linspace(lb[1], ub[1], n_t).flatten()[:, None]
-        x = np.linspace(lb[0], ub[0], n_x).flatten()[:, None]
-
-        x_mesh, t_mesh = np.meshgrid(x, t)  # X(n_t,n_x) T(n_t,n_x)
+        # lb = np.array([-1.0, 0.0])
+        # ub = np.array([1.0, 0.99])  # (X,T)
+        lb = self.x_star.min(0)
+        ub = self.x_star.max(0)
 
         xx1 = np.hstack((x_mesh[0:1, :].T, t_mesh[0:1, :].T))  # 左
-        uu1 = -1 * np.sin(xx1 * np.pi)[:, 0][:, None]
+        uu1 = exact[0:1, :].T
         xx2 = np.hstack((x_mesh[:, 0:1], t_mesh[:, 0:1]))  # 下
-        uu2 = np.zeros([n_t, 1])
+        uu2 = exact[:, 0:1]
         xx3 = np.hstack((x_mesh[:, -1:], t_mesh[:, -1:]))  # 上
-        uu3 = np.zeros([n_t, 1])
+        uu3 = exact[:, -1:]
 
         # all bounds constraints
         x_u_train = np.vstack([xx1, xx2, xx3])
@@ -52,11 +57,9 @@ class BurgersEquationDataSet(Dataset):
         self.x_u_train = x_u_train[idx, :]
         self.u_train = u_train[idx, :]
 
-        # Prediction
-        data = scipy.io.loadmat("data/burgers_shock.mat")
-        exact = np.real(data["usol"]).T
-        self.x_star = np.hstack((x_mesh.flatten()[:, None], t_mesh.flatten()[:, None]))  # (n_x*n_t, 2)
-        self.u_star = exact.flatten()[:, None]
+
+
+
 
     def __len__(self):
         return 1
