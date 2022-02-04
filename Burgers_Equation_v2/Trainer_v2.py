@@ -120,19 +120,17 @@ class PhysicsInformedNN:
         #         self.optimizer_Adam.step(closure)
 
         # LBFGS
-        for _ in range(1):  # epochs =1
-            self.epochs = 0  # init epochs for closure()
-            dataset = self.training_loader.dataset
-            x_f_train = dataset.x_f_train
-            x_u_train = dataset.x_u_train
-            u_train = dataset.u_train
-
+        for iteration, data in enumerate(self.training_loader):
+            x_f_train, x_u_train, u_train = data
+            x_f_train, x_u_train, u_train = x_f_train[0], x_u_train[0], u_train[0]
             # data
             x_u = x_u_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
             t_u = x_u_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
             x_f = x_f_train[:, 0:1].clone().detach().requires_grad_(True).float().to(device)
             t_f = x_f_train[:, 1:2].clone().detach().requires_grad_(True).float().to(device)
             u = u_train.clone().detach().float().to(device)
+
+            self.epochs = 0
 
             def closure():
                 self.optimizer_LBFGS.zero_grad()
@@ -153,6 +151,7 @@ class PhysicsInformedNN:
                 return loss
 
             self.optimizer_LBFGS.step(closure)
+            break
 
     def predict(self, X):
         x = torch.tensor(X[:, 0:1], requires_grad=True).float().to(device)
