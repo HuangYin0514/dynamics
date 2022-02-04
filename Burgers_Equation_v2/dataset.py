@@ -25,7 +25,7 @@ class BurgersEquationDataSet(Dataset):
         x = data["x"].flatten()[:, None]
         exact = np.real(data["usol"]).T
 
-        x_mesh, t_mesh = np.meshgrid(x, t) # X(n_t,n_x) T(n_t,n_x)
+        x_mesh, t_mesh = np.meshgrid(x, t)  # X(n_t,n_x) T(n_t,n_x)
 
         # Prediction
         self.x_star = np.hstack((x_mesh.flatten()[:, None], t_mesh.flatten()[:, None]))  # (n_x*n_t, 2)
@@ -34,8 +34,8 @@ class BurgersEquationDataSet(Dataset):
         # 上下界
         # lb = np.array([-1.0, 0.0])
         # ub = np.array([1.0, 0.99])  # (X,T)
-        lb = self.x_star.min(0)
-        ub = self.x_star.max(0)
+        lb = self.x_star.min(axis=0)  # [-1.0, 0.0]
+        ub = self.x_star.max(axis=0)  # [1.0, 0.99]
 
         xx1 = np.hstack((x_mesh[0:1, :].T, t_mesh[0:1, :].T))  # 左
         uu1 = exact[0:1, :].T
@@ -56,10 +56,6 @@ class BurgersEquationDataSet(Dataset):
         idx = np.random.choice(x_u_train.shape[0], n_u, replace=False)
         self.x_u_train = x_u_train[idx, :]
         self.u_train = u_train[idx, :]
-
-
-
-
 
     def __len__(self):
         return 1
