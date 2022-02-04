@@ -21,7 +21,7 @@ class BurgersEquationDataSet(Dataset):
 
         # 上下界
         self.lb = np.array([-1.0, 0.0])
-        self.ub = np.array([1.0, 1.0])  # (X,T)
+        self.ub = np.array([1.0, 0.99])  # (X,T)
 
         # 时间和空间点数
         n_t = 100

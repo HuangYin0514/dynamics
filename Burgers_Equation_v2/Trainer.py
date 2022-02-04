@@ -19,7 +19,7 @@ class PhysicsInformedNN:
         self.nu = 0.01 / np.pi
 
         # deep neural networks
-        self.model = PINN(num_blocks=7).to(device)
+        self.model = PINN(num_blocks=8).to(device)
 
         # iterations
         self.epochs = 500
