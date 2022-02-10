@@ -2,7 +2,6 @@ from functools import partial
 
 import jax.numpy as np
 import scipy.io
-import scipy.io
 from jax import random, vmap, jit
 from torch.utils import data
 
@@ -149,7 +148,7 @@ def getBurgersEquationDataSet():
     y_res_train = y_res_train.reshape(N_train * P_res_train, -1)
     s_res_train = s_res_train.reshape(N_train * P_res_train, -1)
 
-    batch_size = 1010
+    batch_size = 1000
 
     ics_dataset = DataGenerator(u_ics_train, y_ics_train, s_ics_train, batch_size)
     bcs_dataset = DataGenerator(u_bcs_train, y_bcs_train, s_bcs_train, batch_size)
