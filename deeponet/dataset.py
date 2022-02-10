@@ -99,7 +99,7 @@ class DataGenerator(data.Dataset):
 
 def getBurgersEquationDataSet():
     # Load data
-    path = 'Burger.mat'  # Please use the matlab script to generate data
+    path = 'data/Burger.mat'  # Please use the matlab script to generate data
 
     data = scipy.io.loadmat(path)
     usol = np.array(data['output'])
@@ -156,3 +156,7 @@ def getBurgersEquationDataSet():
     res_dataset = DataGenerator(u_res_train, y_res_train, s_res_train, batch_size)
 
     return ics_dataset, bcs_dataset, res_dataset
+
+
+if __name__ == '__main__':
+    ics_dataset, bcs_dataset, res_dataset = getBurgersEquationDataSet()

@@ -99,7 +99,7 @@ class DataGenerator(data.Dataset):
 
 if __name__ == '__main__':
     # Load data
-    path = '../Burger.mat'  # Please use the matlab script to generate data
+    path = '../data/Burger.mat'  # Please use the matlab script to generate data
 
     data = scipy.io.loadmat(path)
     usol = np.array(data['output'])
