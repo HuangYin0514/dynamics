@@ -1,7 +1,8 @@
 import random
-import torch.backends.cudnn
+
 import numpy as np
 import torch
+import torch.backends.cudnn
 
 from deeponet.ode.dataset import IntegralData, DataGenerator
 from trainer import Trainer
