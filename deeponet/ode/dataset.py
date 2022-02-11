@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from scipy import interpolate
 from scipy.integrate import solve_ivp
 from sklearn import gaussian_process as gp
@@ -63,20 +64,33 @@ class DataGenerator(data.Dataset):
         self.N = self.s.shape[0]  # all dataset number
         self.batch_size = self.s.shape[0]
 
+        # CUDA support
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        else:
+            self.device = torch.device("cpu")
+
     def __getitem__(self, index):
         'Generate one batch of data'
         inputs, outputs = self.__data_generation()
         return inputs, outputs
 
+    def __to_tensor(self, x):
+        if not isinstance(x, torch.Tensor):
+            x = torch.tensor(x, dtype=torch.float32, device=self.device)
+        return x
+
     def __data_generation(self):
         'Generates data containing batch_size samples'
         idx = np.random.choice(self.N, (self.batch_size,), replace=False)
-        s = self.u[idx, :]
+        u = self.u[idx, :]
         y = self.y[idx, :]
-        u = self.s[idx, :]
+        s = self.s[idx, :]
+
         # Construct batch
-        inputs = (u, y)
-        outputs = s
+        inputs = (self.__to_tensor(u), self.__to_tensor(y))
+        outputs = self.__to_tensor(s)
+
         return inputs, outputs
 
 
