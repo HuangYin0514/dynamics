@@ -87,5 +87,5 @@ if __name__ == '__main__':
 
     train_data = iter(train_dataset)
     train_batch = next(train_data)
-
+    train_batch2 = next(train_data)
     print("done.")
