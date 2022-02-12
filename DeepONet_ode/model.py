@@ -94,13 +94,13 @@ class DeepONet(nn.Module):
         super().__init__()
         self.branch_net = BranchNet()
         self.trunk_net = TrunkNet()
-
+        self.net_bias = nn.Parameter(torch.zeros([1]))
         # self.branch_net.apply(weights_init_kaiming)
 
     def forward(self, u, y):
         B = self.branch_net(u)
         T = self.trunk_net(y)
-        outputs = torch.sum(B * T, dim=1)
+        outputs = torch.sum(B * T, dim=1)+self.net_bias
         return outputs
 
 
