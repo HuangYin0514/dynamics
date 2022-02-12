@@ -27,8 +27,8 @@ def plot(trainer):
     plt.plot(y, antide_true, color='b', label=r'Output: $x^2/2 - \sin(2\pi x)/(2\pi)$', zorder=1)
     plt.plot(y, antide_pred, color='r', label=r'Prediction', zorder=2)
     plt.legend()
-    plt.savefig('result/deeponet.pdf')
-    plt.show()
+    plt.savefig('result/deeponet.png')
+    # plt.show()
 
 
 if __name__ == '__main__':
