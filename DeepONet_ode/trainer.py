@@ -71,7 +71,7 @@ class Trainer():
 
                 print("Adam\tepoch:{}\tloss:{:.5}".format(it, loss.item()))
 
-    def predict(self, X):
+    def predict(self, U_star, Y_star):
         self.model.eval()
-
-        return 0
+        pred = self.model(U_star, Y_star)
+        return pred
