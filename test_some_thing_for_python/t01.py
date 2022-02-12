@@ -15,6 +15,7 @@ def generate_one_op_training_data(key, u, y, s, N_op=1000):
     s_op = s[idx[:, 0], idx[:, 1]]
     return u_op, y_op, s_op
 
+
 if __name__ == "__main__":
     x = np.linspace(0, 1, 256).flatten()[:, None]
 

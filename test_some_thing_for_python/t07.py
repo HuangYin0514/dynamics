@@ -5,10 +5,11 @@
 #
 # M. Zingale (2013-03-26)
 
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 import sys
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
 
 mpl.rcParams['mathtext.fontset'] = 'cm'
 mpl.rcParams['mathtext.rm'] = 'serif'
@@ -16,6 +17,7 @@ mpl.rcParams['mathtext.rm'] = 'serif'
 mpl.rcParams['font.size'] = 12
 mpl.rcParams['legend.fontsize'] = 'large'
 mpl.rcParams['figure.titlesize'] = 'medium'
+
 
 class Grid1d(object):
 
@@ -27,25 +29,23 @@ class Grid1d(object):
         self.xmin = xmin
         self.xmax = xmax
 
-        self.bc=bc
+        self.bc = bc
 
         # python is zero-based.  Make easy intergers to know where the
         # real data lives
         self.ilo = ng
-        self.ihi = ng+nx-1
+        self.ihi = ng + nx - 1
 
         # physical coords -- cell-centered, left and right edges
-        self.dx = (xmax - xmin)/(nx)
-        self.x = xmin + (np.arange(nx+2*ng)-ng+0.5)*self.dx
+        self.dx = (xmax - xmin) / (nx)
+        self.x = xmin + (np.arange(nx + 2 * ng) - ng + 0.5) * self.dx
 
         # storage for the solution
-        self.u = np.zeros((nx+2*ng), dtype=np.float64)
-
+        self.u = np.zeros((nx + 2 * ng), dtype=np.float64)
 
     def scratch_array(self):
         """ return a scratch array dimensioned for our grid """
-        return np.zeros((self.nx+2*self.ng), dtype=np.float64)
-
+        return np.zeros((self.nx + 2 * self.ng), dtype=np.float64)
 
     def fill_BCs(self):
         """ fill all ghostcells as periodic """
@@ -53,10 +53,10 @@ class Grid1d(object):
         if self.bc == "periodic":
 
             # left boundary
-            self.u[0:self.ilo] = self.u[self.ihi-self.ng+1:self.ihi+1]
+            self.u[0:self.ilo] = self.u[self.ihi - self.ng + 1:self.ihi + 1]
 
             # right boundary
-            self.u[self.ihi+1:] = self.u[self.ilo:self.ilo+self.ng]
+            self.u[self.ihi + 1:] = self.u[self.ilo:self.ilo + self.ng]
 
         elif self.bc == "outflow":
 
@@ -64,18 +64,17 @@ class Grid1d(object):
             self.u[0:self.ilo] = self.u[self.ilo]
 
             # right boundary
-            self.u[self.ihi+1:] = self.u[self.ihi]
+            self.u[self.ihi + 1:] = self.u[self.ihi]
 
         else:
             sys.exit("invalid BC")
 
-
     def norm(self, e):
         """ return the norm of quantity e which lives on the grid """
-        if len(e) != 2*self.ng + self.nx:
+        if len(e) != 2 * self.ng + self.nx:
             return None
 
-        return np.sqrt(self.dx*np.sum(e[self.ilo:self.ihi+1]**2))
+        return np.sqrt(self.dx * np.sum(e[self.ilo:self.ihi + 1] ** 2))
 
 
 class Simulation(object):
@@ -84,31 +83,27 @@ class Simulation(object):
         self.grid = grid
         self.t = 0.0
 
-
     def init_cond(self, type="tophat"):
 
         if type == "tophat":
             self.grid.u[np.logical_and(self.grid.x >= 0.333,
-                                          self.grid.x <= 0.666)] = 1.0
+                                       self.grid.x <= 0.666)] = 1.0
 
         elif type == "sine":
             self.grid.u[:] = 1.0
 
             index = np.logical_and(self.grid.x >= 0.333,
-                                      self.grid.x <= 0.666)
+                                   self.grid.x <= 0.666)
             self.grid.u[index] += \
-                0.5*np.sin(2.0*np.pi*(self.grid.x[index]-0.333)/0.333)
+                0.5 * np.sin(2.0 * np.pi * (self.grid.x[index] - 0.333) / 0.333)
 
         elif type == "rarefaction":
             self.grid.u[:] = 1.0
             self.grid.u[self.grid.x > 0.5] = 2.0
 
-
-
     def timestep(self, C):
-        return C*self.grid.dx/max(abs(self.grid.u[self.grid.ilo:
-                                                  self.grid.ihi+1]))
-
+        return C * self.grid.dx / max(abs(self.grid.u[self.grid.ilo:
+                                                      self.grid.ihi + 1]))
 
     def states(self, dt):
         """ compute the left and right interface states """
@@ -117,8 +112,8 @@ class Simulation(object):
         # compute the piecewise linear slopes -- 2nd order MC limiter
         # we pick a range of cells that includes 1 ghost cell on either
         # side
-        ib = g.ilo-1
-        ie = g.ihi+1
+        ib = g.ilo - 1
+        ie = g.ihi + 1
 
         u = g.u
 
@@ -130,14 +125,14 @@ class Simulation(object):
         dl = g.scratch_array()
         dr = g.scratch_array()
 
-        dc[ib:ie+1] = 0.5*(u[ib+1:ie+2] - u[ib-1:ie  ])
-        dl[ib:ie+1] = u[ib+1:ie+2] - u[ib  :ie+1]
-        dr[ib:ie+1] = u[ib  :ie+1] - u[ib-1:ie  ]
+        dc[ib:ie + 1] = 0.5 * (u[ib + 1:ie + 2] - u[ib - 1:ie])
+        dl[ib:ie + 1] = u[ib + 1:ie + 2] - u[ib:ie + 1]
+        dr[ib:ie + 1] = u[ib:ie + 1] - u[ib - 1:ie]
 
         # these where's do a minmod()
-        d1 = 2.0*np.where(np.fabs(dl) < np.fabs(dr), dl, dr)
+        d1 = 2.0 * np.where(np.fabs(dl) < np.fabs(dr), dl, dr)
         d2 = np.where(np.fabs(dc) < np.fabs(d1), dc, d1)
-        ldeltau = np.where(dl*dr > 0.0, d2, 0.0)
+        ldeltau = np.where(dl * dr > 0.0, d2, 0.0)
 
         # now the interface states.  Note that there are 1 more interfaces
         # than zones
@@ -150,21 +145,20 @@ class Simulation(object):
         #     ^       i       ^ ^        i+1
         #     ur(i)     ul(i+1) ur(i+1)
         #
-        ur[ib:ie+2] = u[ib:ie+2] - \
-                      0.5*(1.0 + u[ib:ie+2]*dt/self.grid.dx)*ldeltau[ib:ie+2]
+        ur[ib:ie + 2] = u[ib:ie + 2] - \
+                        0.5 * (1.0 + u[ib:ie + 2] * dt / self.grid.dx) * ldeltau[ib:ie + 2]
 
-        ul[ib+1:ie+2] = u[ib:ie+1] + \
-                        0.5*(1.0 - u[ib:ie+1]*dt/self.grid.dx)*ldeltau[ib:ie+1]
+        ul[ib + 1:ie + 2] = u[ib:ie + 1] + \
+                            0.5 * (1.0 - u[ib:ie + 1] * dt / self.grid.dx) * ldeltau[ib:ie + 1]
 
         return ul, ur
-
 
     def riemann(self, ul, ur):
         """
         Riemann problem for Burgers' equation.
         """
 
-        S = 0.5*(ul + ur)
+        S = 0.5 * (ul + ur)
         ushock = np.where(S > 0.0, ul, ur)
         ushock = np.where(S == 0.0, 0.0, ushock)
 
@@ -174,8 +168,7 @@ class Simulation(object):
 
         us = np.where(ul > ur, ushock, urare)
 
-        return 0.5*us*us
-
+        return 0.5 * us * us
 
     def update(self, dt, flux):
         """ conservative update """
@@ -184,11 +177,10 @@ class Simulation(object):
 
         unew = g.scratch_array()
 
-        unew[g.ilo:g.ihi+1] = g.u[g.ilo:g.ihi+1] + \
-            dt/g.dx * (flux[g.ilo:g.ihi+1] - flux[g.ilo+1:g.ihi+2])
+        unew[g.ilo:g.ihi + 1] = g.u[g.ilo:g.ihi + 1] + \
+                                dt / g.dx * (flux[g.ilo:g.ihi + 1] - flux[g.ilo + 1:g.ihi + 2])
 
         return unew
-
 
     def evolve(self, C, tmax):
 
@@ -223,7 +215,7 @@ class Simulation(object):
 
 
 if __name__ == "__main__":
-    #-----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     # sine
 
     xmin = 0.0
@@ -233,7 +225,7 @@ if __name__ == "__main__":
     g = Grid1d(nx, ng, bc="periodic")
 
     # maximum evolution time based on period for unit velocity
-    tmax = (xmax - xmin)/1.0
+    tmax = (xmax - xmin) / 1.0
 
     C = 0.8
 
@@ -242,27 +234,25 @@ if __name__ == "__main__":
     s = Simulation(g)
 
     for i in range(0, 10):
-        tend = (i+1)*0.02*tmax
+        tend = (i + 1) * 0.02 * tmax
         s.init_cond("sine")
 
         uinit = s.grid.u.copy()
 
         s.evolve(C, tend)
 
-        c = 1.0 - (0.1 + i*0.1)
+        c = 1.0 - (0.1 + i * 0.1)
         g = s.grid
-        plt.plot(g.x[g.ilo:g.ihi+1], g.u[g.ilo:g.ihi+1], color=str(c))
-
+        plt.plot(g.x[g.ilo:g.ihi + 1], g.u[g.ilo:g.ihi + 1], color=str(c))
 
     g = s.grid
-    plt.plot(g.x[g.ilo:g.ihi+1], uinit[g.ilo:g.ihi+1], ls=":", color="0.9", zorder=-1)
+    plt.plot(g.x[g.ilo:g.ihi + 1], uinit[g.ilo:g.ihi + 1], ls=":", color="0.9", zorder=-1)
 
     plt.xlabel("$x$")
     plt.ylabel("$u$")
     plt.savefig("fv-burger-sine.pdf")
 
-
-    #-----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     # rarefaction
 
     xmin = 0.0
@@ -272,7 +262,7 @@ if __name__ == "__main__":
     g = Grid1d(nx, ng, bc="outflow")
 
     # maximum evolution time based on period for unit velocity
-    tmax = (xmax - xmin)/1.0
+    tmax = (xmax - xmin) / 1.0
 
     C = 0.8
 
@@ -281,7 +271,7 @@ if __name__ == "__main__":
     s = Simulation(g)
 
     for i in range(0, 10):
-        tend = (i+1)*0.02*tmax
+        tend = (i + 1) * 0.02 * tmax
 
         s.init_cond("rarefaction")
 
@@ -289,11 +279,10 @@ if __name__ == "__main__":
 
         s.evolve(C, tend)
 
-        c = 1.0 - (0.1 + i*0.1)
-        plt.plot(g.x[g.ilo:g.ihi+1], g.u[g.ilo:g.ihi+1], color=str(c))
+        c = 1.0 - (0.1 + i * 0.1)
+        plt.plot(g.x[g.ilo:g.ihi + 1], g.u[g.ilo:g.ihi + 1], color=str(c))
 
-
-    plt.plot(g.x[g.ilo:g.ihi+1], uinit[g.ilo:g.ihi+1], ls=":", color="0.9", zorder=-1)
+    plt.plot(g.x[g.ilo:g.ihi + 1], uinit[g.ilo:g.ihi + 1], ls=":", color="0.9", zorder=-1)
 
     plt.xlabel("$x$")
     plt.ylabel("$u$")

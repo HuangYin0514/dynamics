@@ -45,10 +45,10 @@ plt.show()
 # plt.ylabel("x")
 # plt.show()
 
-#温度等高线随时空坐标的变化，温度越高，颜色越偏红
-extent = [0,1,0,3]#时间和空间的取值范围
-levels = np.arange(U.min(),U.max(),0.1)#温度等高线的变化范围0-10，变化间隔为0.1
-plt.contourf(U,levels,origin='lower',extent=extent,cmap=plt.cm.jet)
+# 温度等高线随时空坐标的变化，温度越高，颜色越偏红
+extent = [0, 1, 0, 3]  # 时间和空间的取值范围
+levels = np.arange(U.min(), U.max(), 0.1)  # 温度等高线的变化范围0-10，变化间隔为0.1
+plt.contourf(U, levels, origin='lower', extent=extent, cmap=plt.cm.jet)
 plt.ylabel('x', fontsize=20)
 plt.xlabel('t', fontsize=20)
 plt.show()

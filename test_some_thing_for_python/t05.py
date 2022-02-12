@@ -61,8 +61,6 @@ def generate_one_test_data(idx, usol, m=101, P=101):
     return u, y, s
 
 
-
-
 if __name__ == "__main__":
     a = 0.0009685528930276632
     print("a:{:.5}".format(a))
