@@ -14,7 +14,7 @@ else:
 class Trainer():
     def __init__(self):
         # Network initialization and evaluation functions
-        self.model = DeepONet()
+        self.model = DeepONet().to(device)
 
         # loss function
         self.criterion = nn.MSELoss()
