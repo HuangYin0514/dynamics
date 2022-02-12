@@ -20,7 +20,7 @@ def plot(trainer):
     u_star = torch.tensor(u_star, dtype=torch.float,device=device)
     y_star = torch.tensor(y_star, dtype=torch.float,device=device)
     # antide_pred = trainer.predict([np.tile(out, (len(y), 1)), y[:, None]], returnnp=True).squeeze()
-    antide_pred = trainer.predict(u_star, y_star).detach().numpy()
+    antide_pred = trainer.predict(u_star, y_star).cpu().detach().numpy()
 
     plt.figure(figsize=(20, 8))
     plt.plot(x, out, color='black', label=r'Input: $x-\cos(2\pi x)$', zorder=0)
