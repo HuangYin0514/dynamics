@@ -10,6 +10,7 @@ def get_device():
         device = torch.device("cpu")
     return device
 
+
 def weights_init_kaiming(m):
     classname = m.__class__.__name__
     if classname.find("Linear") != -1:
@@ -31,6 +32,7 @@ def weights_init_classifier(m):
         nn.init.normal_(m.weight, std=0.001)
         if m.bias:
             nn.init.constant_(m.bias, 0.0)
+
 
 def weights_init_xavier_normal(m):
     classname = m.__class__.__name__

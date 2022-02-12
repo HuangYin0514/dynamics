@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from utils import weights_init_kaiming, weights_init_xavier_normal
+from utils import weights_init_xavier_normal
 
 
 class MlpBlock(nn.Module):
@@ -81,7 +81,7 @@ class DeepONet(nn.Module):
     def forward(self, u, y):
         B = self.branch_net(u)
         T = self.trunk_net(y)
-        outputs = torch.sum(B * T, dim=1)+self.net_bias
+        outputs = torch.sum(B * T, dim=1) + self.net_bias
         return outputs
 
 
