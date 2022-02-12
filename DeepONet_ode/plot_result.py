@@ -3,7 +3,7 @@ import torch
 from matplotlib import pyplot as plt
 
 from trainer import Trainer
-from utils import get_device
+from utils import get_device, to_numpy, to_tensor
 
 device = get_device()
 
@@ -17,10 +17,10 @@ def plot(trainer):
 
     u_star = np.tile(out, (len(y), 1))
     y_star = y[:, None]
-    u_star = torch.tensor(u_star, dtype=torch.float, device=device)
-    y_star = torch.tensor(y_star, dtype=torch.float, device=device)
-    # antide_pred = trainer.predict([np.tile(out, (len(y), 1)), y[:, None]], returnnp=True).squeeze()
-    antide_pred = trainer.predict(u_star, y_star).cpu().detach().numpy()
+    u_star, y_star = to_tensor(u_star), to_tensor(y_star)
+
+    antide_pred = trainer.predict(u_star, y_star)
+    antide_pred = to_numpy(antide_pred)
 
     plt.figure(figsize=(20, 8))
     plt.plot(x, out, color='black', label=r'Input: $x-\cos(2\pi x)$', zorder=0)

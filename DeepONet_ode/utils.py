@@ -40,3 +40,15 @@ def weights_init_xavier_normal(m):
         nn.init.xavier_normal_(m.weight)
         if m.bias is not None:
             nn.init.constant_(m.bias, 0.0)
+
+
+def to_tensor(x):
+    if not isinstance(x, torch.Tensor):
+        x = torch.tensor(x, dtype=torch.float32, device=get_device())
+    return x
+
+
+def to_numpy(x):
+    if isinstance(x, torch.Tensor):
+        x = x.cpu().detach().numpy()
+    return x

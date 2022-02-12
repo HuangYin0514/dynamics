@@ -1,11 +1,10 @@
 import numpy as np
-import torch
 from scipy import interpolate
 from scipy.integrate import solve_ivp
 from sklearn import gaussian_process as gp
 from torch.utils import data
 
-from utils import get_device
+from utils import get_device, to_tensor
 
 
 class IntegralData():
@@ -73,11 +72,6 @@ class DataGenerator(data.Dataset):
         inputs, outputs = self.__data_generation()
         return inputs, outputs
 
-    def __to_tensor(self, x):
-        if not isinstance(x, torch.Tensor):
-            x = torch.tensor(x, dtype=torch.float32, device=self.device)
-        return x
-
     def __data_generation(self):
         'Generates data containing batch_size samples'
         idx = np.random.choice(self.N, (self.batch_size,), replace=False)
@@ -86,8 +80,8 @@ class DataGenerator(data.Dataset):
         s = self.s[idx, :]
 
         # Construct batch
-        inputs = (self.__to_tensor(u), self.__to_tensor(y))
-        outputs = self.__to_tensor(s)
+        inputs = (to_tensor(u), to_tensor(y))
+        outputs = to_tensor(s)
 
         return inputs, outputs
 
