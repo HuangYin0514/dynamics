@@ -65,7 +65,7 @@ class Trainer():
 
             loss = self.train_step(train_batch)
 
-            if it % 1 == 0:
+            if it % 1000 == 0:
                 # Store losses
                 self.loss_log.append(loss.item())
 
