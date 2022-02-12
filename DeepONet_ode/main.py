@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.backends.cudnn
 
-from DeepONet_ode.dataset import IntegralData, DataGenerator
+from dataset import IntegralData, DataGenerator
 from trainer import Trainer
 
 # CUDA support
@@ -12,6 +12,7 @@ if torch.cuda.is_available():
     device = torch.device("cuda")
 else:
     device = torch.device("cpu")
+
 
 def init_random_state():
     random_seed = 3407
@@ -31,7 +32,7 @@ if __name__ == '__main__':
     nIter = 5000
 
     if not torch.cuda.is_available():
-        nIter= 10
+        nIter = 10
 
     data = IntegralData()
     X_train, y_train = data.X_train, data.y_train
