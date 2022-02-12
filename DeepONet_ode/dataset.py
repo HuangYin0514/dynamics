@@ -13,7 +13,7 @@ class IntegralData():
 
     def __init__(self):
         super().__init__()
-        self.s0 = [0]  # ode init data
+        self.s0 = [0]  # DeepONet_ode init data
         self.sensors = 100  # u0 length
         self.p = 1  # grad number
         self.length_scale = 0.2  # RBF parameters

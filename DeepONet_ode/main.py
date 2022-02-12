@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.backends.cudnn
 
-from deeponet.ode.dataset import IntegralData, DataGenerator
+from DeepONet_ode.dataset import IntegralData, DataGenerator
 from trainer import Trainer
 
 
@@ -28,5 +28,7 @@ if __name__ == '__main__':
 
     trainer = Trainer()
     trainer.train(train_dataset, nIter=1)
+
+    torch.save(trainer.model,"result/model_final.pkl")
 
     print("done")
