@@ -5,6 +5,8 @@ from scipy.integrate import solve_ivp
 from sklearn import gaussian_process as gp
 from torch.utils import data
 
+from utils import get_device
+
 
 class IntegralData():
     '''
@@ -64,11 +66,7 @@ class DataGenerator(data.Dataset):
         self.N = self.s.shape[0]  # all dataset number
         self.batch_size = self.s.shape[0]
 
-        # CUDA support
-        if torch.cuda.is_available():
-            self.device = torch.device("cuda")
-        else:
-            self.device = torch.device("cpu")
+        self.device = get_device()
 
     def __getitem__(self, index):
         'Generate one batch of data'

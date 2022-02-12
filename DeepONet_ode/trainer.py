@@ -2,12 +2,9 @@ import torch
 from torch import nn
 
 from model import DeepONet
+from utils import get_device
 
-# CUDA support
-if torch.cuda.is_available():
-    device = torch.device("cuda")
-else:
-    device = torch.device("cpu")
+device = get_device()
 
 
 # the physics-guided neural network
@@ -51,6 +48,7 @@ class Trainer():
     def train_step(self, train_batch):
         self.optimizer_Adam.zero_grad()
         loss = self.loss(train_batch)
+        loss.backward()
         self.optimizer_Adam.step()
         return loss
 

@@ -3,6 +3,9 @@ import torch
 from matplotlib import pyplot as plt
 
 from trainer import Trainer
+from utils import get_device
+
+device = get_device()
 
 
 def plot(trainer):
@@ -29,7 +32,7 @@ def plot(trainer):
 
 
 if __name__ == '__main__':
-    model = torch.load('result/model_final.pkl')
+    model = torch.load('result/model_final.pkl').to(device)
     trainer = Trainer()
     trainer.model = model
     plot(trainer)

@@ -6,12 +6,9 @@ import torch.backends.cudnn
 
 from dataset import IntegralData, DataGenerator
 from trainer import Trainer
+from utils import get_device
 
-# CUDA support
-if torch.cuda.is_available():
-    device = torch.device("cuda")
-else:
-    device = torch.device("cpu")
+device = get_device()
 
 
 def init_random_state():
