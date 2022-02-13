@@ -26,10 +26,6 @@ def generate_one_test_data(idx, usol, P):
 
 def compute_error(trainer, idx, usol):
     P = 101
-    # data_test = list(map(generate_one_test_data,idx,np.tile(usol,(usol.shape[0],1,1,1)),np.tile(np.array([P]),idx.shape)   ) )
-    # u_test = np.array(list(map(lambda x: x[0], data_test))).reshape(P**2, -1)
-    # y_test = np.array(list(map(lambda x: x[1], data_test))).reshape(P**2, -1)
-    # s_test = np.array(list(map(lambda x: x[2], data_test))).reshape(P**2, -1)
 
     u_test, y_test, s_test = generate_one_test_data(idx, usol, P)
     u_test = u_test.reshape(P ** 2, -1)
@@ -50,7 +46,7 @@ if __name__ == '__main__':
     k = 8
     N_test = 2
     idx = np.arange(k, k + N_test)
-    print(idx)
+    print('Test list index is : {}'.format(idx))
 
     # model
     model = torch.load('result/model_final.pkl').to(device)
@@ -60,9 +56,9 @@ if __name__ == '__main__':
     trainer.model = model
 
     # # compute_error
-    # errors = compute_error(trainer,idx,usol)z
     errors = list(map(compute_error, np.tile([trainer], (idx.shape[0],)), idx, np.tile(usol, (usol.shape[0], 1, 1, 1))))
     errors = np.array(errors)
     mean_error = errors.mean()
     print('Mean relative L2 error of s: {:.2e}'.format(mean_error))
+
     print("done.")
