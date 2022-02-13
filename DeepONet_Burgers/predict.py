@@ -1,30 +1,56 @@
 import numpy as np
+import scipy.io
 import torch.backends.cudnn
 
-from dataset import IntegralData
 from trainer import Trainer
 from utils import get_device, to_tensor, to_numpy
 
 device = get_device()
 
 
-# Compute relative l2 error over N test samples.
-def compute_error(trainer, u, y, s):
-    u_test, y_test, s_test = to_tensor(u), to_tensor(y), to_tensor(s)
+# Geneate test data corresponding to one input sample
+def generate_one_test_data(idx, usol, P):
+    u = usol[idx]
+    u0 = u[0, :]
 
-    # Predict the solution and the residual
-    s_pred = trainer.predict(u_test, y_test)[:, None]
+    t = np.linspace(0, 1, P)
+    x = np.linspace(0, 1, P)
+    T, X = np.meshgrid(t, x)
 
-    # Compute relative l2 error
-    error_s = np.linalg.norm(to_numpy(s_test) - to_numpy(s_pred)) / np.linalg.norm(to_numpy(s_test))
+    s = u.T.flatten()
+    u = np.tile(u0, (P ** 2, 1))
+    y = np.hstack([T.flatten()[:, None], X.flatten()[:, None]])
 
-    return error_s
+    return u, y, s
+
+
+def compute_error(trainer, idx, usol):
+    P = 101
+    # data_test = list(map(generate_one_test_data,idx,np.tile(usol,(usol.shape[0],1,1,1)),np.tile(np.array([P]),idx.shape)   ) )
+    # u_test = np.array(list(map(lambda x: x[0], data_test))).reshape(P**2, -1)
+    # y_test = np.array(list(map(lambda x: x[1], data_test))).reshape(P**2, -1)
+    # s_test = np.array(list(map(lambda x: x[2], data_test))).reshape(P**2, -1)
+
+    u_test, y_test, s_test = generate_one_test_data(idx, usol, P)
+    u_test = u_test.reshape(P ** 2, -1)
+    y_test = y_test.reshape(P ** 2, -1)
+    s_test = s_test.reshape(P ** 2, -1)
+
+    s_pred = trainer.predict_s(to_tensor(u_test), to_tensor(y_test))[:, None]
+
+    error = np.linalg.norm(s_test - to_numpy(s_pred)) / np.linalg.norm(s_test)
+    return error
 
 
 if __name__ == '__main__':
     # data
-    data = IntegralData()
-    X_test, y_test = data.X_test, data.y_test
+    path = 'data/Burger.mat'  # Please use the matlab script to generate data
+    data = scipy.io.loadmat(path)
+    usol = np.array(data['output'])
+    k = 8
+    N_test = 2
+    idx = np.arange(k, k + N_test)
+    print(idx)
 
     # model
     model = torch.load('result/model_final.pkl').to(device)
@@ -33,8 +59,10 @@ if __name__ == '__main__':
     trainer = Trainer()
     trainer.model = model
 
-    # compute_error
-    error_s = compute_error(trainer, u=X_test[0], y=X_test[1], s=y_test)
-
-    print('mean of relative L2 error of s: {:.2e}'.format(error_s.mean()))
-    print('std of relative L2 error of s: {:.2e}'.format(error_s.std()))
+    # # compute_error
+    # errors = compute_error(trainer,idx,usol)z
+    errors = list(map(compute_error, np.tile([trainer], (idx.shape[0],)), idx, np.tile(usol, (usol.shape[0], 1, 1, 1))))
+    errors = np.array(errors)
+    mean_error = errors.mean()
+    print('Mean relative L2 error of s: {:.2e}'.format(mean_error))
+    print("done.")

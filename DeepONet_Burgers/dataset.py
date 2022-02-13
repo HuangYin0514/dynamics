@@ -19,8 +19,7 @@ class BurgerData():
 
         N = usol.shape[0]  # number of total input samples
 
-        self.N_train = 10  # number of input samples used for training
-        N_test = N - self.N_train  # number of input samples used for test
+        self.N_train = 9  # number of input samples used for training
 
         self.P_ics_train = 101  # number of locations for evulating the initial condition
         self.P_bcs_train = 100  # number of locations for evulating the boundary condition
@@ -47,7 +46,7 @@ class BurgerData():
         self.s_res_train = np.array(list(map(lambda x: x[2], res_train))).reshape(self.N_train * self.P_res_train, -1)
 
     # Geneate ics training data corresponding to one input sample
-    def generate_one_ics_training_data(self, u0, m=101, P=101):
+    def generate_one_ics_training_data(self, u0, P=101):
         t_0 = np.zeros((P, 1))
         x_0 = np.linspace(0, 1, P)[:, None]
 
@@ -58,7 +57,7 @@ class BurgerData():
         return u, y, s
 
     # Geneate bcs training data corresponding to one input sample
-    def generate_one_bcs_training_data(self, u0, m=101, P=100):
+    def generate_one_bcs_training_data(self, u0, P=100):
         t_bc = np.random.uniform(size=(P, 1))
         x_bc1 = np.zeros((P, 1))
         x_bc2 = np.ones((P, 1))
@@ -73,7 +72,7 @@ class BurgerData():
         return u, y, s
 
     # Geneate res training data corresponding to one input sample
-    def generate_one_res_training_data(self, u0, m=101, P=2500):
+    def generate_one_res_training_data(self, u0, P=2500):
         t_res = np.random.uniform(size=(P, 1))
         x_res = np.random.uniform(size=(P, 1))
 
@@ -83,8 +82,9 @@ class BurgerData():
 
         return u, y, s
 
+    # Data generator
 
-# Data generator
+
 class DataGenerator(data.Dataset):
     def __init__(self, u, y, s, batch_size):
         'Initialization'

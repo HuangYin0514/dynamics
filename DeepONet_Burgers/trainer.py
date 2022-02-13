@@ -95,12 +95,11 @@ class Trainer():
         loss = self.criterion(res_pred.flatten(), torch.zeros_like(res_pred))
         return loss
 
-
     # Define total loss
     def loss(self, ics_batch, bcs_batch, res_batch):
         loss_ics = self.loss_ics(ics_batch)
         loss_bcs = self.loss_bcs(bcs_batch)
-        loss_res = self.loss_res( res_batch)
+        loss_res = self.loss_res(res_batch)
         loss = 20 * loss_ics + loss_bcs + loss_res
         return loss
 
@@ -133,7 +132,12 @@ class Trainer():
 
                 print("Adam\tepoch:{}\tloss:{:.5}".format(it, loss.item()))
 
-    def predict(self, U_star, Y_star):
+    def predict_s(self, U_star, Y_star):
         self.model.eval()
-        pred = self.model(U_star, Y_star)
+        pred = self.operator_net(U_star, Y_star[:, 0], Y_star[:, 1])
+        return pred
+
+    def predict_res(self, U_star, Y_star):
+        self.model.eval()
+        pred = self.residual_net(U_star, Y_star[:, 0], Y_star[:, 1])
         return pred
