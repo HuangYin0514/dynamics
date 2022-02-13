@@ -38,4 +38,3 @@ if __name__ == '__main__':
 
     print('mean of relative L2 error of s: {:.2e}'.format(error_s.mean()))
     print('std of relative L2 error of s: {:.2e}'.format(error_s.std()))
-

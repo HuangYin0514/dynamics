@@ -71,4 +71,3 @@ class Trainer():
         self.model.eval()
         pred = self.model(U_star, Y_star)
         return pred
-

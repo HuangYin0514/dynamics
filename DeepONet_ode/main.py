@@ -6,9 +6,6 @@ import torch.backends.cudnn
 
 from dataset import IntegralData, DataGenerator
 from trainer import Trainer
-from utils import get_device
-
-device = get_device()
 
 
 def init_random_state():
@@ -30,6 +27,7 @@ if __name__ == '__main__':
 
     if not torch.cuda.is_available():
         nIter = 10
+        print("use cpu!!!")
 
     data = IntegralData()
     X_train, y_train = data.X_train, data.y_train
