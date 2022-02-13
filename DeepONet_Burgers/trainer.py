@@ -25,7 +25,33 @@ class Trainer():
         # Logger
         self.loss_log = []
 
-    def loss_grad(self, batch):
+    # Define DeepONet architecture
+    def operator_net(self, u, t, x):
+        y = torch.cat([t[:, None], x[:, None]], dim=1)
+        outputs = self.model(u, y)
+        return outputs
+
+    # Define ds/dx
+    def s_x_net(self, u, t, x):
+        s = self.operator_net(u, t, x)
+        s_x = torch.autograd.grad(
+            s, x, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True
+        )[0]
+        return s_x
+
+    def loss_ics(self, batch):
+        # Fetch data
+        inputs, outputs = batch
+        u, y = inputs
+
+        # Compute forward pass
+        pred = self.operator_net(u, y[:, 0], y[:, 1])
+
+        # Compute loss
+        loss = self.criterion(pred.flatten(), outputs.flatten())
+        return loss
+
+    def loss_bcs(self, batch):
         # Fetch data
         inputs, outputs = batch
         u, y = inputs
@@ -38,28 +64,36 @@ class Trainer():
         return loss
 
     # Define total loss
-    def loss(self, train_batch):
-        loss_grad = self.loss_grad(train_batch)
-        loss = loss_grad
+    def loss(self, ics_batch, bcs_batch, res_batch):
+        loss_ics = self.loss_ics(ics_batch)
+        # loss_bcs = self.loss_bcs(bcs_batch)
+        # loss_res = self.loss_res( res_batch)
+        # loss = 20 * loss_ics + loss_bcs + loss_res
+        loss = loss_ics
         return loss
 
-    def train_step(self, train_batch):
+    def train_step(self, ics_batch, bcs_batch, res_batch):
         self.optimizer_Adam.zero_grad()
-        loss = self.loss(train_batch)
+        loss = self.loss(ics_batch, bcs_batch, res_batch)
         loss.backward()
         self.optimizer_Adam.step()
         return loss
 
-    def train(self, train_dataset, nIter=10000):
+    def train(self, ics_dataset, bcs_dataset, res_dataset, nIter=10000):
         self.model.train()
 
-        train_data = iter(train_dataset)
+        ics_data = iter(ics_dataset)
+        bcs_data = iter(bcs_dataset)
+        res_data = iter(res_dataset)
+
         # Main training loop
         for it in range(nIter):
             # Fetch data
-            train_batch = next(train_data)
+            ics_batch = next(ics_data)
+            bcs_batch = next(bcs_data)
+            res_batch = next(res_data)
 
-            loss = self.train_step(train_batch)
+            loss = self.train_step(ics_batch, bcs_batch, res_batch)
 
             if it % 1000 == 0:
                 # Store losses

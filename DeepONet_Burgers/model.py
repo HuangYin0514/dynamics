@@ -22,7 +22,7 @@ class BranchNet(nn.Module):
     def __init__(self, ):
         super().__init__()
 
-        self.first_layers = MlpBlock(input_dim=100, output_dim=40)
+        self.first_layers = MlpBlock(input_dim=101, output_dim=40)
         self.branch_layers = self._make_layer(MlpBlock, 3)
 
     @staticmethod
@@ -44,7 +44,7 @@ class TrunkNet(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.first_layers = MlpBlock(input_dim=1, output_dim=40)
+        self.first_layers = MlpBlock(input_dim=2, output_dim=40)
         self.trunk_layers = self._make_layer(MlpBlock, 3)
 
     @staticmethod
@@ -85,10 +85,22 @@ class DeepONet(nn.Module):
         return outputs
 
 
+# Define DeepONet architecture
+# def operator_net(self, u, t, x):
+#     branch_params, trunk_params = params
+#     y = np.stack([t, x])
+#     B = self.branch_apply(branch_params, u)
+#     T = self.trunk_apply(trunk_params, y)
+#     outputs = np.sum(B * T)
+#     return outputs
+
 if __name__ == '__main__':
     model = DeepONet()
     print(model)
-    u = torch.randn(20, 100)
-    y = torch.randn(20, 1)
+    u = torch.randn(20, 101)
+    # y = torch.randn(20, 2)
+    t = torch.randn(20, 1)
+    x = torch.randn(20, 1)
+    y = torch.cat([t, x], dim=1)
     outputs = model(u, y)
     print(outputs)
