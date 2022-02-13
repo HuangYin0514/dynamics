@@ -74,7 +74,7 @@ class Trainer():
         s_x_bc2_pred = self.s_x_net(u, y[:, 2], y[:, 3])
 
         # Compute loss
-        s_bc_pred = s_bc1_pred.flatten() - s_bc2_pred.flatten()
+        s_bc_pred = s_bc1_pred - s_bc2_pred
         loss_s_bc = self.criterion(s_bc_pred.flatten(), torch.zeros_like(s_bc_pred))
 
         s_x_bc_pred = s_x_bc1_pred - s_x_bc2_pred
