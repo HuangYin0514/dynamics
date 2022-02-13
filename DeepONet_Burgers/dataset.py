@@ -19,7 +19,7 @@ class BurgerData():
 
         N = usol.shape[0]  # number of total input samples
 
-        self.N_train = 9  # number of input samples used for training
+        self.N_train = 10  # number of input samples used for training
         N_test = N - self.N_train  # number of input samples used for test
 
         self.P_ics_train = 101  # number of locations for evulating the initial condition

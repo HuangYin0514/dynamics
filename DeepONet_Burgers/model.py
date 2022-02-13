@@ -103,4 +103,5 @@ if __name__ == '__main__':
     x = torch.randn(20, 1)
     y = torch.cat([t, x], dim=1)
     outputs = model(u, y)
+
     print(outputs)

@@ -44,7 +44,7 @@ def weights_init_xavier_normal(m):
 
 def to_tensor(x):
     if not isinstance(x, torch.Tensor):
-        x = torch.tensor(x, dtype=torch.float32, device=get_device())
+        x = torch.tensor(x, dtype=torch.float32, requires_grad=True, device=get_device())
     return x
 
 
