@@ -16,7 +16,7 @@ def plot(trainer):
     usol = np.array(data['output'])
 
     # Plot for one generated data
-    k = 8  # index
+    k = 0  # index
     u = usol[k, :, :]
     u0 = usol[k, 0, :]
 

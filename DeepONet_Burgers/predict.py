@@ -43,8 +43,8 @@ if __name__ == '__main__':
     path = 'data/Burger.mat'  # Please use the matlab script to generate data
     data = scipy.io.loadmat(path)
     usol = np.array(data['output'])
-    k = 8
-    N_test = 2
+    k = 0
+    N_test = 1
     idx = np.arange(k, k + N_test)
     print('Test list index is : {}'.format(idx))
 
