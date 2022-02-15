@@ -23,7 +23,7 @@ init_random_state()
 
 if __name__ == '__main__':
 
-    nIter = 5000
+    nIter = 500
 
     if not torch.cuda.is_available():
         nIter = 10
@@ -34,11 +34,11 @@ if __name__ == '__main__':
     x_ibcs_train, s_ibcs_train = burgerData.x_ibcs_train, burgerData.s_ibcs_train
     x_res_train, s_res_train = burgerData.x_res_train, burgerData.s_res_train
 
-    ics_dataset = DataGenerator(x_ibcs_train, s_ibcs_train)
+    ibcs_dataset = DataGenerator(x_ibcs_train, s_ibcs_train)
     res_dataset = DataGenerator(x_res_train, s_res_train)
 
-    # trainer = Trainer()
-    # trainer.train(ics_dataset, bcs_dataset, res_dataset, nIter=nIter)
+    trainer = Trainer()
+    trainer.train(ibcs_dataset, res_dataset, nIter=nIter)
     #
     # torch.save(trainer.model, "result/model_final.pkl")
 

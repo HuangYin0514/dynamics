@@ -1,7 +1,8 @@
+import numpy as np
 import torch
 from torch import nn
 
-from model import DeepONet
+from model import PINN
 from utils import get_device
 
 device = get_device()
@@ -11,7 +12,7 @@ device = get_device()
 class Trainer():
     def __init__(self):
         # Network initialization and evaluation functions
-        self.model = DeepONet().to(device)
+        self.model = PINN().to(device)
 
         # loss function
         self.criterion = nn.MSELoss()
@@ -26,105 +27,82 @@ class Trainer():
         self.loss_log = []
 
     # Define DeepONet architecture
-    def operator_net(self, u, t, x):
-        y = torch.cat([t[:, None], x[:, None]], dim=1)
-        outputs = self.model(u, y)
-
-        return outputs
-
-    # Define ds/dx
-    def s_x_net(self, u, t, x):
-        s = self.operator_net(u, t, x)
-        s_x = torch.autograd.grad(s, x, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True)[0]
-        return s_x
+    def pinn_net(self, x, t):
+        inputs = torch.cat([x,t], dim=1)
+        s = self.model(inputs)
+        return s
 
     # Define PDE residual
-    def residual_net(self, u, t, x):
-        s = self.operator_net(u, t, x)
-        s_t = torch.autograd.grad(s, t, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True)[0]
-        s_x = torch.autograd.grad(s, x, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True)[0]
-        s_xx = torch.autograd.grad(s_x, x, grad_outputs=torch.ones_like(s_x), retain_graph=True, create_graph=True)[0]
+    def residual_net(self, x, t):
+        s = self.pinn_net(x, t)
 
-        res = s_t + s * s_x - 0.01 * s_xx
+        s_t = torch.autograd.grad(
+            s, t, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True
+        )[0]
+        s_x = torch.autograd.grad(
+            s, x, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True
+        )[0]
+        s_xx = torch.autograd.grad(
+            s_x,
+            x,
+            grad_outputs=torch.ones_like(s_x),
+            retain_graph=True,
+            create_graph=True,
+        )[0]
+
+        res = s_t + s * s_x - 0.01 / np.pi * s_xx
         return res
 
-    def loss_ics(self, batch):
+    def loss_ibcs(self, batch):
         # Fetch data
         inputs, outputs = batch
-        u, y = inputs
 
         # Compute forward pass
-        pred = self.operator_net(u, y[:, 0], y[:, 1])
+        pred = self.pinn_net(inputs[:, 0:1], inputs[:, 1:2])
 
         # Compute loss
-        ic_pred = pred - outputs.flatten()
-        loss = self.criterion(ic_pred.flatten(), torch.zeros_like(ic_pred))
+        loss = torch.mean((pred - outputs) ** 2)
         return loss
 
-    def loss_bcs(self, batch):
-        # Fetch data
-        inputs, outputs = batch
-        u, y = inputs
-
-        # Compute forward pass
-        s_bc1_pred = self.operator_net(u, y[:, 0], y[:, 1])
-        s_bc2_pred = self.operator_net(u, y[:, 2], y[:, 3])
-
-        s_x_bc1_pred = self.s_x_net(u, y[:, 0], y[:, 1])
-        s_x_bc2_pred = self.s_x_net(u, y[:, 2], y[:, 3])
-
-        # Compute loss
-        s_bc_pred = s_bc1_pred - s_bc2_pred
-        loss_s_bc = self.criterion(s_bc_pred.flatten(), torch.zeros_like(s_bc_pred))
-
-        s_x_bc_pred = s_x_bc1_pred - s_x_bc2_pred
-        loss_s_x_bc = self.criterion(s_x_bc_pred.flatten(), torch.zeros_like(s_x_bc_pred))
-
-        return loss_s_bc + loss_s_x_bc
 
     def loss_res(self, batch):
         # Fetch data
         inputs, outputs = batch
-        u, y = inputs
 
         # Compute forward pass
-        pred = self.residual_net(u, y[:, 0], y[:, 1])
+        pred = self.residual_net(inputs[:, 0:1], inputs[:, 1:2])
 
         # Compute loss
-        res_pred = pred - outputs.flatten()
-        loss = self.criterion(res_pred.flatten(), torch.zeros_like(res_pred))
+        loss = torch.mean((pred - outputs) ** 2)
         return loss
 
     # Define total loss
-    def loss(self, ics_batch, bcs_batch, res_batch):
-        loss_ics = self.loss_ics(ics_batch)
-        loss_bcs = self.loss_bcs(bcs_batch)
+    def loss(self, ibcs_batch, res_batch):
+        loss_ics = self.loss_ibcs(ibcs_batch)
         loss_res = self.loss_res(res_batch)
-        loss = 20 * loss_ics + loss_bcs + loss_res
+        loss = loss_ics  + loss_res
         return loss
 
-    def train_step(self, ics_batch, bcs_batch, res_batch):
+    def train_step(self, ibcs_batch, res_batch):
         self.optimizer_Adam.zero_grad()
-        loss = self.loss(ics_batch, bcs_batch, res_batch)
+        loss = self.loss(ibcs_batch, res_batch)
         loss.backward()
         self.optimizer_Adam.step()
         return loss
 
-    def train(self, ics_dataset, bcs_dataset, res_dataset, nIter=10000):
+    def train(self, ibcs_dataset, res_dataset, nIter=10000):
         self.model.train()
 
-        ics_data = iter(ics_dataset)
-        bcs_data = iter(bcs_dataset)
+        ibcs_data = iter(ibcs_dataset)
         res_data = iter(res_dataset)
 
         # Main training loop
         for it in range(nIter):
             # Fetch data
-            ics_batch = next(ics_data)
-            bcs_batch = next(bcs_data)
+            ibcs_batch = next(ibcs_data)
             res_batch = next(res_data)
 
-            loss = self.train_step(ics_batch, bcs_batch, res_batch)
+            loss = self.train_step(ibcs_batch, res_batch)
 
             if it % 1000 == 0:
                 # Store losses
@@ -132,12 +110,12 @@ class Trainer():
 
                 print("Adam\tepoch:{}\tloss:{:.5}".format(it, loss.item()))
 
-    def predict_s(self, U_star, Y_star):
+    def predict_s(self, x_star):
         self.model.eval()
-        pred = self.operator_net(U_star, Y_star[:, 0], Y_star[:, 1])
+        pred = self.pinn_net(x_star[:, 0:1], x_star[:, 1:2])
         return pred
 
-    def predict_res(self, U_star, Y_star):
-        self.model.eval()
-        pred = self.residual_net(U_star, Y_star[:, 0], Y_star[:, 1])
-        return pred
+    # def predict_res(self, U_star, Y_star):
+    #     self.model.eval()
+    #     pred = self.residual_net(U_star, Y_star[:, 0], Y_star[:, 1])
+    #     return pred

@@ -83,7 +83,7 @@ class DataGenerator(data.Dataset):
         s = self.s[idx, :]
 
         # Construct batch
-        inputs = (to_tensor(x))
+        inputs = to_tensor(x)
         outputs = to_tensor(s)
 
         return inputs, outputs
