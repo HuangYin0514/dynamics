@@ -73,7 +73,7 @@ class PINN(nn.Module):
     def forward(self, x):
         x = self.encoder(x)
         x = self.mlp(x)
-        x = self.dam(x)
+        # x = self.dam(x)
         out = self.decoder(x)
         return out
 
