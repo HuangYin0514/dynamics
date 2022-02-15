@@ -4,7 +4,7 @@ DeepONets优势：一旦训练完成后，可以更改网络的初始条件U0。
 
 DeepONets本质上是在PINNs的基础上，增加一个初始条件U0的输入层。在最坏的情况下，DeepONets应该退化成PINNs。
 
-测试目的：其余条件与PINNs模型保持一致的情况下，利用DeepONets重新对Burgers方程进行求解。
+测试目的：在其余条件与PINNs模型保持一致的情况下，利用DeepONets重新对Burgers方程进行求解。
 
 # 项目贡献
 
