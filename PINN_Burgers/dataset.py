@@ -8,8 +8,10 @@ try:
     from pyDOE import lhs
 except ImportError:
     import sys
+
     sys.path.append('/kaggle/input/pylib-pydoe/MySitePackages')
     from pyDOE import lhs
+
 
 class BurgerData():
     '''
@@ -54,14 +56,12 @@ class BurgerData():
         # pde constraints
         x_f_train = lb + (ub - lb) * lhs(2, n_f)
         self.x_res_train = np.vstack((x_f_train, x_u_train))
-        self.s_res_train = np.zeros((self.x_res_train.shape[0],1))
-
+        self.s_res_train = np.zeros((self.x_res_train.shape[0], 1))
 
         # ib constraints
         idx = np.random.choice(x_u_train.shape[0], n_u, replace=False)
         self.x_ibcs_train = x_u_train[idx, :]
         self.s_ibcs_train = u_train[idx, :]
-
 
 
 class DataGenerator(data.Dataset):
@@ -102,6 +102,5 @@ if __name__ == '__main__':
 
     ics_dataset = DataGenerator(x_ibcs_train, s_ibcs_train)
     res_dataset = DataGenerator(x_res_train, s_res_train)
-
 
     outputs = next(iter(ics_dataset))

@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.io
 import torch
-from matplotlib import pyplot as plt, gridspec
+from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from trainer import Trainer
@@ -82,7 +82,8 @@ def plot(trainer):
     # ------------------------------------------------------------
 
     ax = fig.add_subplot(613)
-    h = ax.imshow(exact.T - s_pred.T, interpolation='nearest', cmap='rainbow', extent=[t.min(), t.max(), x.min(), x.max()],
+    h = ax.imshow(exact.T - s_pred.T, interpolation='nearest', cmap='rainbow',
+                  extent=[t.min(), t.max(), x.min(), x.max()],
                   origin='lower', aspect='auto')
     # 右侧条
     divider = make_axes_locatable(ax)

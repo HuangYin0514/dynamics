@@ -52,7 +52,7 @@ class Trainer():
 
     # Define DeepONet architecture
     def pinn_net(self, x, t):
-        inputs = torch.cat([x,t], dim=1)
+        inputs = torch.cat([x, t], dim=1)
         s = self.model(inputs)
         return s
 
@@ -88,7 +88,6 @@ class Trainer():
         loss = torch.mean((pred - outputs) ** 2)
         return loss
 
-
     def loss_res(self, batch):
         # Fetch data
         inputs, outputs = batch
@@ -104,7 +103,7 @@ class Trainer():
     def loss(self, ibcs_batch, res_batch):
         loss_ics = self.loss_ibcs(ibcs_batch)
         loss_res = self.loss_res(res_batch)
-        loss = loss_ics  + loss_res
+        loss = loss_ics + loss_res
         return loss
 
     def train_step(self, ibcs_batch, res_batch):
@@ -113,8 +112,6 @@ class Trainer():
         loss.backward()
         self.optimizer_Adam.step()
         return loss
-
-
 
     def train(self, ibcs_dataset, res_dataset, nIter=10000):
         self.model.train()
@@ -139,6 +136,7 @@ class Trainer():
         self.counter = 0
         ibcs_batch = next(ibcs_data)
         res_batch = next(res_data)
+
         def closure():
             self.optimizer_LBFGS.zero_grad()
             loss = self.loss(ibcs_batch, res_batch)

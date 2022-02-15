@@ -23,11 +23,10 @@ def generate_one_test_data():
     x_star = np.hstack((x_mesh.flatten()[:, None], t_mesh.flatten()[:, None]))  # (n_x*n_t, 2)
     s_star = exact.flatten()[:, None]
 
-    return x_star,s_star
+    return x_star, s_star
 
 
 def compute_error(trainer):
-
     x_test, s_test = generate_one_test_data()
 
     s_pred = trainer.predict_s(to_tensor(x_test))
@@ -37,7 +36,6 @@ def compute_error(trainer):
 
 
 if __name__ == '__main__':
-
     # model
     model = torch.load('result/model_final.pkl').to(device)
 

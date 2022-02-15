@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 
-from utils import weights_init_xavier_normal
-
 
 class DAM(nn.Module):
     """ Discriminative Amplitude Modulator Layer (1-D) """
@@ -58,8 +56,6 @@ class PINN(nn.Module):
         self.dam = DAM(in_dim=20)
 
         self.decoder = nn.Linear(20, 1)
-
-
 
     @staticmethod
     def _make_layer(block, num_blocks):
