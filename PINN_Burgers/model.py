@@ -44,7 +44,7 @@ class MlpBlock(nn.Module):
 
 
 class PINN(nn.Module):
-    def __init__(self, num_blocks=8):
+    def __init__(self, num_blocks=7):
         super().__init__()
         self.num_blocks = num_blocks
 
