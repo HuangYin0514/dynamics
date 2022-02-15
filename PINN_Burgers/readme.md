@@ -17,6 +17,7 @@ Burgers方程：
 | 7层blocks + dam | 1.9e-03  |
 
 结果可以参考文件[deeponets.ipynb](result/deeponets.ipynb)
+
 5. 总结
    1. 增加blocks层数不一定对结果有促进作用
    2. dam对模型有促进作用
