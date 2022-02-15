@@ -9,44 +9,33 @@ device = get_device()
 
 
 # Geneate test data corresponding to one input sample
-def generate_one_test_data(idx, usol, P):
-    u = usol[idx]
-    u0 = u[0, :]
+def generate_one_test_data():
+    data = scipy.io.loadmat("data/burgers_shock.mat")
 
-    t = np.linspace(0, 1, P)
-    x = np.linspace(0, 1, P)
-    T, X = np.meshgrid(t, x)
+    t = data["t"].flatten()[:, None]
+    x = data["x"].flatten()[:, None]
+    exact = np.real(data["usol"]).T
 
-    s = u.T.flatten()
-    u = np.tile(u0, (P ** 2, 1))
-    y = np.hstack([T.flatten()[:, None], X.flatten()[:, None]])
+    x_mesh, t_mesh = np.meshgrid(x, t)  # X(n_t,n_x) T(n_t,n_x)
 
-    return u, y, s
+    # Prediction
+    x_star = np.hstack((x_mesh.flatten()[:, None], t_mesh.flatten()[:, None]))  # (n_x*n_t, 2)
+    s_star = exact.flatten()[:, None]
+
+    return x_star,s_star
 
 
-def compute_error(trainer, idx, usol):
-    P = 101
+def compute_error(trainer):
 
-    u_test, y_test, s_test = generate_one_test_data(idx, usol, P)
-    u_test = u_test.reshape(P ** 2, -1)
-    y_test = y_test.reshape(P ** 2, -1)
-    s_test = s_test.reshape(P ** 2, -1)
+    x_test, s_test = generate_one_test_data()
 
-    s_pred = trainer.predict_s(to_tensor(u_test), to_tensor(y_test))[:, None]
+    s_pred = trainer.predict_s(to_tensor(x_test))[:, None]
 
     error = np.linalg.norm(s_test - to_numpy(s_pred)) / np.linalg.norm(s_test)
     return error
 
 
 if __name__ == '__main__':
-    # data
-    path = 'data/Burger.mat'  # Please use the matlab script to generate data
-    data = scipy.io.loadmat(path)
-    usol = np.array(data['output'])
-    k = 0
-    N_test = 1
-    idx = np.arange(k, k + N_test)
-    print('Test list index is : {}'.format(idx))
 
     # model
     model = torch.load('result/model_final.pkl').to(device)
@@ -56,7 +45,7 @@ if __name__ == '__main__':
     trainer.model = model
 
     # # compute_error
-    errors = list(map(compute_error, np.tile([trainer], (idx.shape[0],)), idx, np.tile(usol, (usol.shape[0], 1, 1, 1))))
+    errors = compute_error(trainer)
     errors = np.array(errors)
     mean_error = errors.mean()
     print('Mean relative L2 error of s: {:.2e}'.format(mean_error))

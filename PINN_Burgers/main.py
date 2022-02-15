@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     trainer = Trainer()
     trainer.train(ibcs_dataset, res_dataset, nIter=nIter)
-    #
-    # torch.save(trainer.model, "result/model_final.pkl")
+
+    torch.save(trainer.model, "result/model_final.pkl")
 
     print("done")
