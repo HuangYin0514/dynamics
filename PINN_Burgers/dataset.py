@@ -1,10 +1,15 @@
 import numpy as np
 import scipy.io
-from pyDOE import lhs
 from torch.utils import data
 
 from utils import get_device, to_tensor
 
+try:
+    from pyDOE import lhs
+except ImportError:
+    import sys
+    sys.path.append('/kaggle/input/pylib-pydoe/MySitePackages')
+    from pyDOE import lhs
 
 class BurgerData():
     '''
