@@ -17,7 +17,7 @@ Burgers方程：
 | 7层blocks + dam | 1.9e-03  |
 
 5. 总结
-   1. 多层blocks不一定对结果有促进作用
+   1. 增加blocks层数不一定对结果有促进作用
    2. dam对模型有促进作用
    3. 采用dense模型和u-nets网络可能对结果还有进一步对促进作用。未来精度可以达到e-05左右，详情可以参考[github项目](https://github.com/okada39/pinn_burgers.git)
    
