@@ -40,8 +40,29 @@ def plot(trainer):
     ######################################################################
     fig = plt.figure(figsize=(9, 25))
 
+    ax = fig.add_subplot(511)
+    h = ax.imshow(exact.T, interpolation='nearest', cmap='rainbow', extent=[t.min(), t.max(), x.min(), x.max()],
+                  origin='lower', aspect='auto')
+    # 右侧条
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.10)
+    cbar = fig.colorbar(h, cax=cax)
+    cbar.ax.tick_params(labelsize=15)
 
-    ax = fig.add_subplot(411)
+    line = np.linspace(x.min(), x.max(), 2)[:, None]
+    ax.plot(t[25] * np.ones((2, 1)), line, 'w-', linewidth=1)
+    ax.plot(t[50] * np.ones((2, 1)), line, 'w-', linewidth=1)
+    ax.plot(t[75] * np.ones((2, 1)), line, 'w-', linewidth=1)
+
+    ax.set_xlabel('$t$', size=20)
+    ax.set_ylabel('$x$', size=20)
+    ax.set_title('$u(t,x)$', fontsize=20)  # font size doubled
+    ax.tick_params(labelsize=15)
+    ax.set_xlim([-1.1, 1.1])
+    ax.set_ylim([-1.1, 1.1])
+
+
+    ax = fig.add_subplot(512)
     h = ax.imshow(s_pred.T, interpolation='nearest', cmap='rainbow', extent=[t.min(), t.max(), x.min(), x.max()],
                   origin='lower', aspect='auto')
     # 右侧条
@@ -63,7 +84,7 @@ def plot(trainer):
     ax.set_ylim([-1.1, 1.1])
 
     ######################################################################
-    ax = fig.add_subplot(412)
+    ax = fig.add_subplot(513)
     ax.plot(x, exact[25, :], 'b-', linewidth=2, label='Exact')
     ax.plot(x, s_pred[25, :], 'r--', linewidth=2, label='Prediction')
     ax.set_xlabel('$x$', size=20)
@@ -73,7 +94,7 @@ def plot(trainer):
     ax.set_xlim([-1.1, 1.1])
     ax.set_ylim([-1.1, 1.1])
 
-    ax = fig.add_subplot(413)
+    ax = fig.add_subplot(514)
     ax.plot(x, exact[50, :], 'b-', linewidth=2, label='Exact')
     ax.plot(x, s_pred[50, :], 'r--', linewidth=2, label='Prediction')
     ax.set_xlabel('$x$', size=20)
@@ -83,7 +104,7 @@ def plot(trainer):
     ax.set_xlim([-1.1, 1.1])
     ax.set_ylim([-1.1, 1.1])
 
-    ax = fig.add_subplot(414)
+    ax = fig.add_subplot(515)
     ax.plot(x, exact[75, :], 'b-', linewidth=2, label='Exact')
     ax.plot(x, s_pred[75, :], 'r--', linewidth=2, label='Prediction')
     ax.set_xlabel('$x$', size=20)
@@ -95,7 +116,7 @@ def plot(trainer):
 
     ######################################################################
     plt.tight_layout()
-    # plt.show()
+    plt.show()
     plt.savefig("result/deeponet.png")
 
 

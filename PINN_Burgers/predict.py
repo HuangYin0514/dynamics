@@ -14,6 +14,7 @@ def generate_one_test_data():
 
     t = data["t"].flatten()[:, None]
     x = data["x"].flatten()[:, None]
+
     exact = np.real(data["usol"]).T
 
     x_mesh, t_mesh = np.meshgrid(x, t)  # X(n_t,n_x) T(n_t,n_x)
@@ -29,7 +30,7 @@ def compute_error(trainer):
 
     x_test, s_test = generate_one_test_data()
 
-    s_pred = trainer.predict_s(to_tensor(x_test))[:, None]
+    s_pred = trainer.predict_s(to_tensor(x_test))
 
     error = np.linalg.norm(s_test - to_numpy(s_pred)) / np.linalg.norm(s_test)
     return error
