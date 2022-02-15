@@ -1,6 +1,6 @@
 # 项目目的
 
-DeepONets优势：一旦训练完成后，可以更改输入的初始条件U0。即多了泛化能力。
+DeepONets优势：一旦训练完成后，可以更改网络的初始条件U0。即比PINNs多了泛化能力。
 
 DeepONets本质上是在PINNs的基础上，增加一个初始条件U0的输入层。在最坏的情况下，DeepONets应该退化成PINNs。
 
