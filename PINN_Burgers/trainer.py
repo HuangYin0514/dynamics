@@ -26,6 +26,30 @@ class Trainer():
         # Logger
         self.loss_log = []
 
+        # optimizers: using the same settings
+        self.optimizer_LBFGS = torch.optim.LBFGS(
+            self.model.parameters(),
+            lr=1.0,
+            max_iter=50000,
+            max_eval=50000,
+            history_size=50,
+            tolerance_grad=1e-5,
+            tolerance_change=1.0 * np.finfo(float).eps,
+            line_search_fn="strong_wolfe",  # can be "strong_wolfe"
+        )
+        if not torch.cuda.is_available():
+            print("using cpu for optim...")
+            self.optimizer_LBFGS = torch.optim.LBFGS(
+                self.model.parameters(),
+                lr=1.0,
+                max_iter=5,
+                max_eval=5,
+                history_size=50,
+                tolerance_grad=1e-5,
+                tolerance_change=1.0 * np.finfo(float).eps,
+                line_search_fn="strong_wolfe",  # can be "strong_wolfe"
+            )
+
     # Define DeepONet architecture
     def pinn_net(self, x, t):
         inputs = torch.cat([x,t], dim=1)
@@ -90,6 +114,8 @@ class Trainer():
         self.optimizer_Adam.step()
         return loss
 
+
+
     def train(self, ibcs_dataset, res_dataset, nIter=10000):
         self.model.train()
 
@@ -109,6 +135,20 @@ class Trainer():
                 self.loss_log.append(loss.item())
 
                 print("Adam\tepoch:{}\tloss:{:.5}".format(it, loss.item()))
+
+        self.counter = 0
+        ibcs_batch = next(ibcs_data)
+        res_batch = next(res_data)
+        def closure():
+            self.optimizer_LBFGS.zero_grad()
+            loss = self.loss(ibcs_batch, res_batch)
+            loss.backward()
+            if self.counter % 200 == 0:
+                print("LBFGS\t epoch:{}\t loss:{:.5}".format(self.counter, loss.item()))
+            self.counter = self.counter + 1
+            return loss
+
+        self.optimizer_LBFGS.step(closure)
 
     def predict_s(self, x_star):
         self.model.eval()
