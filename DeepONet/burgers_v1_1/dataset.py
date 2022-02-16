@@ -63,12 +63,15 @@ class BurgerData():
         self.x_ibcs_train = x_u_train[idx, :]
         self.s_ibcs_train = u_train[idx, :]
 
+        # u0 constraints
+        self.u0_train = uu1
 
 class DataGenerator(data.Dataset):
-    def __init__(self, x, s):
+    def __init__(self, u, y, s):
         'Initialization'
 
-        self.x = x
+        self.u = u
+        self.y = y
         self.s = s
 
         self.N = self.s.shape[0]  # all dataset number
@@ -84,11 +87,12 @@ class DataGenerator(data.Dataset):
     def __data_generation(self):
         'Generates data containing batch_size samples'
         idx = np.random.choice(self.N, (self.batch_size,), replace=False)  # False: 同一个元素只能被选取一次。
-        x = self.x[idx, :]
+        u = self.u[idx, :]
+        y = self.y[idx, :]
         s = self.s[idx, :]
 
         # Construct batch
-        inputs = to_tensor(x)
+        inputs = (to_tensor(u), to_tensor(y))
         outputs = to_tensor(s)
 
         return inputs, outputs
@@ -97,10 +101,11 @@ class DataGenerator(data.Dataset):
 if __name__ == '__main__':
     burgerData = BurgerData()
 
-    x_ibcs_train, s_ibcs_train = burgerData.x_ibcs_train, burgerData.s_ibcs_train
-    x_res_train, s_res_train = burgerData.x_res_train, burgerData.s_res_train
+    x_ibcs_train, u_ibcs_train, s_ibcs_train = burgerData.x_ibcs_train, burgerData.u0_train,burgerData.s_ibcs_train
+    x_res_train,u_res_train, s_res_train = burgerData.x_res_train, burgerData.u0_train, burgerData.s_res_train
 
-    ics_dataset = DataGenerator(x_ibcs_train, s_ibcs_train)
-    res_dataset = DataGenerator(x_res_train, s_res_train)
+
+    ics_dataset = DataGenerator(x_ibcs_train,u_ibcs_train, s_ibcs_train)
+    res_dataset = DataGenerator(x_res_train,u_res_train, s_res_train)
 
     outputs = next(iter(ics_dataset))
