@@ -18,23 +18,21 @@ Burgers方程：
 3. 数据集。数据集主要采用 [pinns](https://github.com/maziarraissi/PINNs.git) 中的数据集
 4. 精度
 
-[//]: # ()
 
-[//]: # (|       模式       | 精度       |)
 
-[//]: # (|:--------------:|----------|)
+|       模式       | 精度       |
 
-[//]: # (|    8层blocks    | xxxe-03  |)
+|:--------------:|----------|
 
-[//]: # (|    7层blocks    | 2.28e-03 |)
+|    deeponets    | 2.3e-02  |
 
-[//]: # (| 7层blocks + dam | 1.9e-03  |)
 
-[//]: # ()
 
-[//]: # (结果可以参考文件[deeponets.ipynb]&#40;result/deeponets.ipynb&#41;)
 
-[//]: # ()
+
+结果可以参考文件[deeponets.ipynb](result/deeponets.ipynb)
+
+
 
 [//]: # (5. 总结)
 

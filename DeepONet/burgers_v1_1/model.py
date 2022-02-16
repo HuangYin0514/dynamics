@@ -55,7 +55,7 @@ class PINN(nn.Module):
 
         self.dam = DAM(in_dim=20)
 
-        self.decoder = nn.Linear(20, 1)
+        self.decoder = nn.Linear(20, 40)
 
     @staticmethod
     def _make_layer(block, num_blocks):
@@ -79,7 +79,7 @@ class BranchNet(nn.Module):
         super().__init__()
 
         self.first_layers = MlpBlock(input_dim=256, output_dim=40)
-        self.branch_layers = self._make_layer(MlpBlock, 3)
+        self.branch_layers = self._make_layer(MlpBlock, 1)
 
     @staticmethod
     def _make_layer(block, num_blocks):
