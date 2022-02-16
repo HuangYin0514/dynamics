@@ -61,6 +61,7 @@ class BurgerData():
 
         # ib constraints
         idx = np.random.choice(x_u_train.shape[0], n_u, replace=False)
+        print(idx)
         self.x_ibcs_train = x_u_train[idx, :]
         self.s_ibcs_train = u_train[idx, :]
         self.u_ibcs_train = np.tile(uu1.flatten(), (n_u, 1))
