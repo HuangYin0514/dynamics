@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from model import PINN, DeepONet
+from model import DeepONet
 from utils import get_device
 
 device = get_device()
@@ -51,14 +51,14 @@ class Trainer():
             )
 
     # Define DeepONet architecture
-    def operator_net(self, u,x, t):
+    def operator_net(self, u, x, t):
         y = torch.cat([x, t], dim=1)
         s = self.model(u, y)
         return s
 
     # Define PDE residual
-    def residual_net(self,u, x, t):
-        s = self.operator_net(u,x, t)[:,None]
+    def residual_net(self, u, x, t):
+        s = self.operator_net(u, x, t)[:, None]
 
         s_t = torch.autograd.grad(
             s, t, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True
@@ -83,10 +83,10 @@ class Trainer():
         u, y = inputs
 
         # Compute forward pass
-        pred = self.operator_net(u,y[:, 0:1], y[:, 1:2])
+        pred = self.operator_net(u, y[:, 0:1], y[:, 1:2])
 
         # Compute loss
-        loss = torch.mean((pred[:,None] - outputs) ** 2)
+        loss = torch.mean((pred[:, None] - outputs) ** 2)
         return loss
 
     def loss_res(self, batch):
@@ -95,7 +95,7 @@ class Trainer():
         u, y = inputs
 
         # Compute forward pass
-        pred = self.residual_net(u,y[:, 0:1], y[:, 1:2])
+        pred = self.residual_net(u, y[:, 0:1], y[:, 1:2])
 
         # Compute loss
         loss = torch.mean((pred - outputs) ** 2)
@@ -150,7 +150,7 @@ class Trainer():
 
         self.optimizer_LBFGS.step(closure)
 
-    def predict_s(self,u_star, x_star):
+    def predict_s(self, u_star, x_star):
         self.model.eval()
         pred = self.operator_net(u_star, x_star[:, 0:1], x_star[:, 1:2])
         return pred

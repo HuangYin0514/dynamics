@@ -96,7 +96,6 @@ class BranchNet(nn.Module):
         return out
 
 
-
 class DeepONet(nn.Module):
     """
         Deep operator network.
@@ -125,5 +124,5 @@ if __name__ == '__main__':
     print(model)
     u = torch.randn(20, 256)
     y = torch.randn(20, 2)
-    outputs = model(u,y)
+    outputs = model(u, y)
     print(outputs)

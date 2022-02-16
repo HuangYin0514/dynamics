@@ -28,12 +28,12 @@ def generate_one_test_data():
 
 
 def plot(trainer):
-    u_star,x_test, exact = generate_one_test_data()
+    u_star, x_test, exact = generate_one_test_data()
 
     t = np.linspace(-1, 1, 100).flatten()[:, None]
     x = np.linspace(-1, 1, 256).flatten()[:, None]
 
-    s_pred = trainer.predict_s(to_tensor(u_star),to_tensor(x_test))[:, None]
+    s_pred = trainer.predict_s(to_tensor(u_star), to_tensor(x_test))[:, None]
     s_pred = to_numpy(s_pred)
     s_pred = s_pred.flatten()[:, None]
     s_pred = s_pred.reshape(100, 256)
