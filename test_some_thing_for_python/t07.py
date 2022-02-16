@@ -1,18 +1,18 @@
 import datetime
 import os
+import random
 import subprocess
 import time
-import random
 
 run_py_iterval = 4 * 60 * 60  # 4 hours
 commod_max_time = 50 * 60  # 20 minutes
+
+
 # run_py_iterval = 4
 # commod_max_time = 2
 
 
 def execute_command(cmdstring, timeout=2):
-
-
     end_time = datetime.datetime.now() + datetime.timedelta(seconds=timeout)
 
     sub = subprocess.Popen(cmdstring, stdin=subprocess.PIPE, bufsize=4096, shell=True)

@@ -77,7 +77,19 @@ class Trainer():
         res = s_t + s * s_x - 0.01 / np.pi * s_xx
         return res
 
-    def loss_ibcs(self, batch):
+    def loss_ics(self, batch):
+        # Fetch data
+        inputs, outputs = batch
+        u, y = inputs
+
+        # Compute forward pass
+        pred = self.operator_net(u, y[:, 0:1], y[:, 1:2])
+
+        # Compute loss
+        loss = torch.mean((pred[:, None] - outputs) ** 2)
+        return loss
+
+    def loss_bcs(self, batch):
         # Fetch data
         inputs, outputs = batch
         u, y = inputs
@@ -102,32 +114,35 @@ class Trainer():
         return loss
 
     # Define total loss
-    def loss(self, ibcs_batch, res_batch):
-        loss_ics = self.loss_ibcs(ibcs_batch)
+    def loss(self, ics_batch, bcs_batch, res_batch):
+        loss_ics = self.loss_ics(ics_batch)
+        loss_bcs = self.loss_bcs(bcs_batch)
         loss_res = self.loss_res(res_batch)
-        loss = loss_ics + loss_res
+        loss = loss_ics + loss_bcs + loss_res
         return loss
 
-    def train_step(self, ibcs_batch, res_batch):
+    def train_step(self, ics_batch, bcs_batch, res_batch):
         self.optimizer_Adam.zero_grad()
-        loss = self.loss(ibcs_batch, res_batch)
+        loss = self.loss(ics_batch, bcs_batch, res_batch)
         loss.backward()
         self.optimizer_Adam.step()
         return loss
 
-    def train(self, ibcs_dataset, res_dataset, nIter=10000):
+    def train(self, ics_dataset, bcs_dataset, res_dataset, nIter=10000):
         self.model.train()
 
-        ibcs_data = iter(ibcs_dataset)
+        ics_data = iter(ics_dataset)
+        bcs_data = iter(bcs_dataset)
         res_data = iter(res_dataset)
 
         # Main training loop
         for it in range(nIter):
             # Fetch data
-            ibcs_batch = next(ibcs_data)
+            ics_batch = next(ics_data)
+            bcs_batch = next(ics_data)
             res_batch = next(res_data)
 
-            loss = self.train_step(ibcs_batch, res_batch)
+            loss = self.train_step(ics_batch, bcs_batch, res_batch)
 
             if it % 1000 == 0:
                 # Store losses
@@ -136,12 +151,13 @@ class Trainer():
                 print("Adam\tepoch:{}\tloss:{:.5}".format(it, loss.item()))
 
         self.counter = 0
-        ibcs_batch = next(ibcs_data)
+        ics_batch = next(ics_data)
+        bcs_batch = next(ics_data)
         res_batch = next(res_data)
 
         def closure():
             self.optimizer_LBFGS.zero_grad()
-            loss = self.loss(ibcs_batch, res_batch)
+            loss = self.loss(ics_batch, bcs_batch, res_batch)
             loss.backward()
             if self.counter % 200 == 0:
                 print("LBFGS\t epoch:{}\t loss:{:.5}".format(self.counter, loss.item()))

@@ -1,22 +1,9 @@
-
-
-import sys
-
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
-import jax.random as random
-import torch
-
-from DeepONet_ode.utils import to_tensor
-
 
 if __name__ == '__main__':
-    def square(x,y):  # 计算平方数
-        return x ** 2+y
-
-    input1 = np.array([1,2,3])
-    y_tile = np.tile(1,input1.shape)
-    res = list(map(square, input1,y_tile))
-    print(res  )
-
+    a = np.array([397, 236, 142, 118, 345, 265, 283, 182, 312, 318, 214, 51, 335, 225, 136, 229, 212, 306
+                     , 355, 440, 341, 44, 232, 350, 432, 170, 330, 40, 405, 406, 72, 19, 392, 434, 97, 42
+                     , 302, 269, 279, 68, 50, 278, 95, 411, 310, 204, 253, 294, 343, 277, 369, 131, 293, 28
+                     , 41, 190, 291, 27, 268, 65, 296, 21, 99, 129, 164, 145, 113, 396, 46, 4, 123, 14
+                     , 363, 287, 79, 171, 25, 415, 402, 299, 439, 15, 52, 186, 24, 180, 270, 130, 304, 83
+                     , 53, 352, 262, 154, 13, 34, 401, 159, 414, 124])

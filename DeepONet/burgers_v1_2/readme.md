@@ -23,9 +23,8 @@ Burgers方程：
 |    deeponets    | 2.3e-02  |
 |    修改分支单元数目（b->40,t->40）    | 3.09e-03  |
 
-
 结果可以参考文件[deeponets.ipynb](result/deeponets.ipynb)
 
 5. 总结
 
-   1. 模型结构对精度有影响
+    1. 模型结构对精度有影响

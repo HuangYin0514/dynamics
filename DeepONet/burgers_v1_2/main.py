@@ -31,14 +31,16 @@ if __name__ == '__main__':
 
     burgerData = BurgerData()
 
-    x_ibcs_train, u_ibcs_train, s_ibcs_train = burgerData.x_ibcs_train, burgerData.u_ibcs_train, burgerData.s_ibcs_train
-    x_res_train, u_res_train, s_res_train = burgerData.x_res_train, burgerData.u_res_train, burgerData.s_res_train
+    u_ics_train, y_ics_train, s_ics_train = burgerData.u_ics_train, burgerData.y_ics_train, burgerData.s_ics_train
+    u_bcs_train, y_bcs_train, s_bcs_train = burgerData.u_bcs_train, burgerData.y_bcs_train, burgerData.s_bcs_train
+    u_res_train, y_res_train, s_res_train = burgerData.u_res_train, burgerData.y_res_train, burgerData.s_res_train
 
-    ibcs_dataset = DataGenerator(u_ibcs_train, x_ibcs_train, s_ibcs_train)
-    res_dataset = DataGenerator(u_res_train, x_res_train, s_res_train)
+    ics_dataset = DataGenerator(u_ics_train, y_ics_train, s_ics_train)
+    bcs_dataset = DataGenerator(u_bcs_train, y_bcs_train, s_bcs_train)
+    res_dataset = DataGenerator(u_res_train, y_res_train, s_res_train)
 
     trainer = Trainer()
-    trainer.train(ibcs_dataset, res_dataset, nIter=nIter)
+    trainer.train(ics_dataset, bcs_dataset, res_dataset, nIter=nIter)
 
     torch.save(trainer.model, "result/model_final.pkl")
 

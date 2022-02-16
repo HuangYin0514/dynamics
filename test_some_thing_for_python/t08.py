@@ -1,12 +1,4 @@
-
-
-import sys
-
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import jax.numpy as np
 import jax.random as random
-
 
 if __name__ == '__main__':
     N_train = 9

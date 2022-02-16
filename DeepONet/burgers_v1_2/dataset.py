@@ -21,7 +21,8 @@ class BurgerData():
     def __init__(self):
         super().__init__()
 
-        n_u = 100
+        n_ic = 100
+        n_bc = 100
         n_f = 10000
 
         data = scipy.io.loadmat("data/burgers_shock.mat")
@@ -29,42 +30,56 @@ class BurgerData():
         t = data["t"].flatten()[:, None]
         x = data["x"].flatten()[:, None]
         exact = np.real(data["usol"]).T
+        self.__init_data(exact, x, t)
 
+    def __init_data(self, exact, x, t):
         x_mesh, t_mesh = np.meshgrid(x, t)  # X(n_t,n_x) T(n_t,n_x)
 
-        # Prediction
-        self.x_star = np.hstack((x_mesh.flatten()[:, None], t_mesh.flatten()[:, None]))  # (n_x*n_t, 2)
-        self.u_star = exact.flatten()[:, None]
+        # ic constraints
+        y_ic = np.hstack((x_mesh[0:1, :].T, t_mesh[0:1, :].T))  # 左
+        s_ic = exact[0:1, :].T
+        u0 = s_ic
+        self.u_ics_train, self.y_ics_train, self.s_ics_train = self.generate_ics_training_data(u0, y_ic, s_ic)
 
-        # 上下界
-        # lb = np.array([-1.0, 0.0])
-        # ub = np.array([1.0, 0.99])  # (X,T)
-        lb = self.x_star.min(axis=0)  # [-1.0, 0.0]
-        ub = self.x_star.max(axis=0)  # [1.0, 0.99]
+        # bc constraints
+        y_bc1 = np.hstack((x_mesh[:, 0:1], t_mesh[:, 0:1]))  # 下
+        s_bc1 = exact[:, 0:1]
+        y_bc2 = np.hstack((x_mesh[:, -1:], t_mesh[:, -1:]))  # 上
+        s_bc2 = exact[:, -1:]
+        y_bc = np.vstack([y_bc1, y_bc2])
+        s_bc = np.vstack([s_bc1, s_bc2])
+        self.u_bcs_train, self.y_bcs_train, self.s_bcs_train = self.generate_bcs_training_data(u0, y_bc, s_bc)
 
-        xx1 = np.hstack((x_mesh[0:1, :].T, t_mesh[0:1, :].T))  # 左
-        uu1 = exact[0:1, :].T
-        xx2 = np.hstack((x_mesh[:, 0:1], t_mesh[:, 0:1]))  # 下
-        uu2 = exact[:, 0:1]
-        xx3 = np.hstack((x_mesh[:, -1:], t_mesh[:, -1:]))  # 上
-        uu3 = exact[:, -1:]
+        # res constraints
+        y_mesh = np.hstack((x_mesh.flatten()[:, None], t_mesh.flatten()[:, None]))  # (n_x*n_t, 2)
+        lb = y_mesh.min(axis=0)  # [-1.0, 0.0]
+        ub = y_mesh.max(axis=0)  # [1.0, 0.99]
+        y_ibc = np.vstack([y_ic, y_bc1, y_bc2])
+        self.u_res_train, self.y_res_train, self.s_res_train = self.generate_res_training_data(u0, lb, ub, y_ibc)
 
-        # all bounds constraints
-        x_u_train = np.vstack([xx1, xx2, xx3])
-        u_train = np.vstack([uu1, uu2, uu3])
+    # ic constraints
+    def generate_ics_training_data(self, u0, y_ic, s_ic, n_ic=100):
+        idx = np.random.choice(s_ic.shape[0], n_ic, replace=False)
+        y = y_ic[idx, :]
+        s = s_ic[idx, :]
+        u = np.tile(u0.flatten(), (n_ic, 1))
+        return u, y, s
 
-        # pde constraints
-        x_f_train = lb + (ub - lb) * lhs(2, n_f)
-        self.x_res_train = np.vstack((x_f_train, x_u_train))
-        self.s_res_train = np.zeros((self.x_res_train.shape[0], 1))
-        self.u_res_train = np.tile(uu1.flatten(), (self.x_res_train.shape[0], 1))
+    # ic constraints
+    def generate_bcs_training_data(self, u0, y_bc, s_bc, n_bc=100):
+        idx = np.random.choice(s_bc.shape[0], n_bc, replace=False)
+        y = y_bc[idx, :]
+        s = s_bc[idx, :]
+        u = np.tile(u0.flatten(), (n_bc, 1))
+        return u, y, s
 
-        # ib constraints
-        idx = np.random.choice(x_u_train.shape[0], n_u, replace=False)
-        print(idx)
-        self.x_ibcs_train = x_u_train[idx, :]
-        self.s_ibcs_train = u_train[idx, :]
-        self.u_ibcs_train = np.tile(uu1.flatten(), (n_u, 1))
+    # res constraints
+    def generate_res_training_data(self, u0, lb, ub, y_ibc, n_res=10000):
+        y_sample = lb + (ub - lb) * lhs(2, n_res)
+        y = np.vstack([y_sample, y_ibc])
+        s = np.zeros((y.shape[0], 1))
+        u = np.tile(u0.flatten(), (y.shape[0], 1))
+        return u, y, s
 
 
 class DataGenerator(data.Dataset):
@@ -102,10 +117,14 @@ class DataGenerator(data.Dataset):
 if __name__ == '__main__':
     burgerData = BurgerData()
 
-    x_ibcs_train, u_ibcs_train, s_ibcs_train = burgerData.x_ibcs_train, burgerData.u_ibcs_train, burgerData.s_ibcs_train
-    x_res_train, u_res_train, s_res_train = burgerData.x_res_train, burgerData.u_res_train, burgerData.s_res_train
+    u_ics_train, y_ics_train, s_ics_train = burgerData.u_ics_train, burgerData.y_ics_train, burgerData.s_ics_train
+    u_bcs_train, y_bcs_train, s_bcs_train = burgerData.u_bcs_train, burgerData.y_bcs_train, burgerData.s_bcs_train
+    u_res_train, y_res_train, s_res_train = burgerData.u_res_train, burgerData.y_res_train, burgerData.s_res_train
 
-    ics_dataset = DataGenerator(x_ibcs_train, u_ibcs_train, s_ibcs_train)
-    res_dataset = DataGenerator(x_res_train, u_res_train, s_res_train)
+    ics_dataset = DataGenerator(u_ics_train, y_ics_train, s_ics_train)
+    bcs_dataset = DataGenerator(u_bcs_train, y_bcs_train, s_bcs_train)
+    res_dataset = DataGenerator(u_res_train, y_res_train, s_res_train)
 
-    outputs = next(iter(ics_dataset))
+    output1 = next(iter(ics_dataset))
+    output2 = next(iter(bcs_dataset))
+    output3 = next(iter(res_dataset))
