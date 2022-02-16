@@ -31,11 +31,11 @@ if __name__ == '__main__':
 
     burgerData = BurgerData()
 
-    x_ibcs_train, s_ibcs_train = burgerData.x_ibcs_train, burgerData.s_ibcs_train
-    x_res_train, s_res_train = burgerData.x_res_train, burgerData.s_res_train
+    x_ibcs_train, u_ibcs_train, s_ibcs_train = burgerData.x_ibcs_train, burgerData.u_ibcs_train, burgerData.s_ibcs_train
+    x_res_train, u_res_train, s_res_train = burgerData.x_res_train, burgerData.u_res_train, burgerData.s_res_train
 
-    ibcs_dataset = DataGenerator(x_ibcs_train, s_ibcs_train)
-    res_dataset = DataGenerator(x_res_train, s_res_train)
+    ibcs_dataset = DataGenerator(u_ibcs_train,x_ibcs_train,  s_ibcs_train)
+    res_dataset = DataGenerator(u_res_train, x_res_train, s_res_train)
 
     trainer = Trainer()
     trainer.train(ibcs_dataset, res_dataset, nIter=nIter)

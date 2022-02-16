@@ -57,14 +57,15 @@ class BurgerData():
         x_f_train = lb + (ub - lb) * lhs(2, n_f)
         self.x_res_train = np.vstack((x_f_train, x_u_train))
         self.s_res_train = np.zeros((self.x_res_train.shape[0], 1))
+        self.u_res_train = np.tile(uu1.flatten(),(self.x_res_train.shape[0], 1))
 
         # ib constraints
         idx = np.random.choice(x_u_train.shape[0], n_u, replace=False)
         self.x_ibcs_train = x_u_train[idx, :]
         self.s_ibcs_train = u_train[idx, :]
+        self.u_ibcs_train = np.tile(uu1.flatten(),(n_u, 1))
 
-        # u0 constraints
-        self.u0_train = uu1
+
 
 class DataGenerator(data.Dataset):
     def __init__(self, u, y, s):
@@ -101,8 +102,8 @@ class DataGenerator(data.Dataset):
 if __name__ == '__main__':
     burgerData = BurgerData()
 
-    x_ibcs_train, u_ibcs_train, s_ibcs_train = burgerData.x_ibcs_train, burgerData.u0_train,burgerData.s_ibcs_train
-    x_res_train,u_res_train, s_res_train = burgerData.x_res_train, burgerData.u0_train, burgerData.s_res_train
+    x_ibcs_train, u_ibcs_train, s_ibcs_train = burgerData.x_ibcs_train, burgerData.u_ibcs_train,burgerData.s_ibcs_train
+    x_res_train,u_res_train, s_res_train = burgerData.x_res_train, burgerData.u_res_train, burgerData.s_res_train
 
 
     ics_dataset = DataGenerator(x_ibcs_train,u_ibcs_train, s_ibcs_train)

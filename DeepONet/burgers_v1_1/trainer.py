@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from model import PINN
+from model import PINN, DeepONet
 from utils import get_device
 
 device = get_device()
@@ -12,7 +12,7 @@ device = get_device()
 class Trainer():
     def __init__(self):
         # Network initialization and evaluation functions
-        self.model = PINN().to(device)
+        self.model = DeepONet().to(device)
 
         # loss function
         self.criterion = nn.MSELoss()
@@ -51,14 +51,14 @@ class Trainer():
             )
 
     # Define DeepONet architecture
-    def pinn_net(self, x, t):
-        inputs = torch.cat([x, t], dim=1)
-        s = self.model(inputs)
+    def operator_net(self, u,x, t):
+        y = torch.cat([x, t], dim=1)
+        s = self.model(u, y)
         return s
 
     # Define PDE residual
-    def residual_net(self, x, t):
-        s = self.pinn_net(x, t)
+    def residual_net(self,u, x, t):
+        s = self.operator_net(u,x, t)[:,None]
 
         s_t = torch.autograd.grad(
             s, t, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True
@@ -80,20 +80,22 @@ class Trainer():
     def loss_ibcs(self, batch):
         # Fetch data
         inputs, outputs = batch
+        u, y = inputs
 
         # Compute forward pass
-        pred = self.pinn_net(inputs[:, 0:1], inputs[:, 1:2])
+        pred = self.operator_net(u,y[:, 0:1], y[:, 1:2])
 
         # Compute loss
-        loss = torch.mean((pred - outputs) ** 2)
+        loss = torch.mean((pred[:,None] - outputs) ** 2)
         return loss
 
     def loss_res(self, batch):
         # Fetch data
         inputs, outputs = batch
+        u, y = inputs
 
         # Compute forward pass
-        pred = self.residual_net(inputs[:, 0:1], inputs[:, 1:2])
+        pred = self.residual_net(u,y[:, 0:1], y[:, 1:2])
 
         # Compute loss
         loss = torch.mean((pred - outputs) ** 2)

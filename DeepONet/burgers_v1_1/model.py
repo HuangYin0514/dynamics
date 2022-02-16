@@ -74,9 +74,56 @@ class PINN(nn.Module):
         return out
 
 
+class BranchNet(nn.Module):
+    def __init__(self, ):
+        super().__init__()
+
+        self.first_layers = MlpBlock(input_dim=256, output_dim=40)
+        self.branch_layers = self._make_layer(MlpBlock, 3)
+
+    @staticmethod
+    def _make_layer(block, num_blocks):
+        layers = []
+
+        for _ in range(num_blocks):
+            layers.append(block(input_dim=40, output_dim=40))
+
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = self.first_layers(x)
+        out = self.branch_layers(x)
+        return out
+
+
+
+class DeepONet(nn.Module):
+    """
+        Deep operator network.
+        Input: ([batch size, branch_dim], [batch size, trunk_dim])
+        Output: [batch size, 1]
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.branch_net = BranchNet()
+        self.trunk_net = PINN()
+        self.net_bias = nn.Parameter(torch.zeros([1]))
+
+        # self.branch_net.apply(weights_init_xavier_normal)
+        # self.trunk_net.apply(weights_init_xavier_normal)
+
+    def forward(self, u, y):
+        B = self.branch_net(u)
+        T = self.trunk_net(y)
+        outputs = torch.sum(B * T, dim=1) + self.net_bias
+        return outputs
+
+
 if __name__ == '__main__':
-    model = PINN()
+    model = DeepONet()
     print(model)
-    x = torch.randn(20, 2)
-    outputs = model(x)
+    u = torch.randn(20, 256)
+    y = torch.randn(20, 2)
+    outputs = model(u,y)
     print(outputs)
