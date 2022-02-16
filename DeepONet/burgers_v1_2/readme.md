@@ -18,10 +18,11 @@ Burgers方程：
 3. 数据集。数据集主要采用 [pinns](https://github.com/maziarraissi/PINNs.git) 中的数据集
 4. 精度
 
-|       模式       | 精度       |
-|:--------------:|----------|
-|    deeponets    | 2.3e-02  |
-|    修改分支单元数目（b->40,t->40）    | 3.09e-03  |
+|              模式               | 精度       |
+|:-----------------------------:|----------|
+|           deeponets           | 2.3e-02  |
+|     修改分支单元数目（b->40,t->40）     | 3.09e-03 |
+| 修改ic和bc数目（n_ic->100,n_bc->100） | 1.11e-03   |
 
 结果可以参考文件[deeponets.ipynb](result/deeponets.ipynb)
 
