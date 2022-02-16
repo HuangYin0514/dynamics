@@ -21,10 +21,6 @@ class BurgerData():
     def __init__(self):
         super().__init__()
 
-        n_ic = 100
-        n_bc = 100
-        n_f = 10000
-
         data = scipy.io.loadmat("data/burgers_shock.mat")
 
         t = data["t"].flatten()[:, None]
