@@ -139,7 +139,7 @@ class Trainer():
         for it in range(nIter):
             # Fetch data
             ics_batch = next(ics_data)
-            bcs_batch = next(ics_data)
+            bcs_batch = next(bcs_data)
             res_batch = next(res_data)
 
             loss = self.train_step(ics_batch, bcs_batch, res_batch)
@@ -152,7 +152,7 @@ class Trainer():
 
         self.counter = 0
         ics_batch = next(ics_data)
-        bcs_batch = next(ics_data)
+        bcs_batch = next(bcs_data)
         res_batch = next(res_data)
 
         def closure():
