@@ -22,17 +22,18 @@ def generate_one_test_data():
 
     # Prediction
     x_star = np.hstack((x_mesh.flatten()[:, None], t_mesh.flatten()[:, None]))  # (n_x*n_t, 2)
+    u_star = np.tile(exact[0:1, :].T.flatten(), (x_star.shape[0], 1))
 
-    return x_star, exact
+    return u_star, x_star, exact
 
 
 def plot(trainer):
-    x_test, exact = generate_one_test_data()
+    u_star,x_test, exact = generate_one_test_data()
 
     t = np.linspace(-1, 1, 100).flatten()[:, None]
     x = np.linspace(-1, 1, 256).flatten()[:, None]
 
-    s_pred = trainer.predict_s(to_tensor(x_test))[:, None]
+    s_pred = trainer.predict_s(to_tensor(u_star),to_tensor(x_test))[:, None]
     s_pred = to_numpy(s_pred)
     s_pred = s_pred.flatten()[:, None]
     s_pred = s_pred.reshape(100, 256)

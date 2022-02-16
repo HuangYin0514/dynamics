@@ -150,9 +150,9 @@ class Trainer():
 
         self.optimizer_LBFGS.step(closure)
 
-    def predict_s(self, x_star):
+    def predict_s(self,u_star, x_star):
         self.model.eval()
-        pred = self.pinn_net(x_star[:, 0:1], x_star[:, 1:2])
+        pred = self.operator_net(u_star, x_star[:, 0:1], x_star[:, 1:2])
         return pred
 
     # def predict_res(self, U_star, Y_star):

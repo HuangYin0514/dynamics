@@ -22,14 +22,15 @@ def generate_one_test_data():
     # Prediction
     x_star = np.hstack((x_mesh.flatten()[:, None], t_mesh.flatten()[:, None]))  # (n_x*n_t, 2)
     s_star = exact.flatten()[:, None]
+    u_star = np.tile(exact[0:1, :].T.flatten(), (s_star.shape[0], 1))
 
-    return x_star, s_star
+    return u_star, x_star, s_star
 
 
 def compute_error(trainer):
-    x_test, s_test = generate_one_test_data()
+    u_star,x_test, s_test = generate_one_test_data()
 
-    s_pred = trainer.predict_s(to_tensor(x_test))
+    s_pred = trainer.predict_s(to_tensor(u_star) , to_tensor(x_test))[:,None]
 
     error = np.linalg.norm(s_test - to_numpy(s_pred)) / np.linalg.norm(s_test)
     return error
