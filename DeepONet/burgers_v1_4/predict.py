@@ -44,7 +44,7 @@ if __name__ == '__main__':
     data = scipy.io.loadmat(path)
     usol = np.array(data['output'])
     k = 0
-    N_test = 1
+    N_test = 10
     idx = np.arange(k, k + N_test)
     print('Test list index is : {}'.format(idx))
 
@@ -64,6 +64,8 @@ if __name__ == '__main__':
         errors.append(error)
 
     errors = np.array(errors)
+    print('error list of s is {}'.format(errors))
+
     mean_error = errors.mean()
     print('Mean relative L2 error of s: {:.2e}'.format(mean_error))
 
