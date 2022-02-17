@@ -50,13 +50,19 @@ if __name__ == '__main__':
 
     # model
     model = torch.load('result/model_final.pkl').to(device)
+    # model = torch.load('result/model_final.pkl', map_location=torch.device('cpu')).to(device)
 
     # trainer
     trainer = Trainer()
     trainer.model = model
 
     # # compute_error
-    errors = list(map(compute_error, np.tile([trainer], (idx.shape[0],)), idx, np.tile(usol, (usol.shape[0], 1, 1, 1))))
+    # errors = list(map(compute_error, np.tile([trainer], (idx.shape[0],)), idx, np.tile(usol, (usol.shape[0], 1, 1, 1))))
+    errors = []
+    for i in idx:
+        error = compute_error(trainer, i, usol)
+        errors.append(error)
+
     errors = np.array(errors)
     mean_error = errors.mean()
     print('Mean relative L2 error of s: {:.2e}'.format(mean_error))

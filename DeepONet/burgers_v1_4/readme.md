@@ -28,7 +28,6 @@ Burgers方程：
 |:-----------------------------:|----------|
 |           deeponets           |   |
 
-
 结果可以参考文件[deeponets.ipynb](result/deeponets.ipynb)
 
 5. 总结

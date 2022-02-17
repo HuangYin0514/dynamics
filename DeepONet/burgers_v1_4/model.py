@@ -33,7 +33,7 @@ class MlpBlock(nn.Module):
 
         self.mlpBlock_layers = nn.Sequential(
             nn.Linear(input_dim, output_dim),
-            nn.Tanh(),
+            nn.ReLU(),
         )
 
     def forward(self, x):
@@ -48,7 +48,7 @@ class PINN(nn.Module):
 
         self.encoder = nn.Sequential(
             nn.Linear(2, 20),
-            nn.Tanh()
+            nn.ReLU()
         )
 
         self.mlp = self._make_layer(MlpBlock, num_blocks)
@@ -116,7 +116,7 @@ class DeepONet(nn.Module):
         B = self.branch_net(u)
         T = self.trunk_net(y)
         outputs = torch.sum(B * T, dim=1) + self.net_bias
-        return outputs[:,None]
+        return outputs[:, None]
 
 
 if __name__ == '__main__':
