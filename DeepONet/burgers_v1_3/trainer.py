@@ -74,7 +74,7 @@ class Trainer():
             create_graph=True,
         )[0]
 
-        res = s_t + s * s_x - 0.01 * s_xx
+        res = s_t + s * s_x - 0.01 / np.pi * s_xx
         return res
 
     def loss_ics(self, batch):
