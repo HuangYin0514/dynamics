@@ -1,7 +1,30 @@
 import torch
 import torch.nn as nn
 
-from utils import weights_init_xavier_normal
+
+class DAM(nn.Module):
+    """ Discriminative Amplitude Modulator Layer (1-D) """
+
+    def __init__(self, in_dim):
+        super(DAM, self).__init__()
+        self.in_dim = in_dim
+
+        mu = torch.arange(self.in_dim).float() / self.in_dim * 5.0
+        self.mu = nn.Parameter(mu, requires_grad=False)
+        self.beta = nn.Parameter(torch.ones(1), requires_grad=True)
+        self.alpha = nn.Parameter(torch.ones(1), requires_grad=False)
+        self.register_parameter('mu', self.mu)
+        self.register_parameter('beta', self.beta)
+        self.register_parameter('alpha', self.alpha)
+        self.tanh = nn.Tanh()
+        self.sigmoid = nn.Sigmoid()
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        return x * self.mask()
+
+    def mask(self):
+        return self.relu(self.tanh((self.alpha ** 2) * (self.mu + self.beta)))
 
 
 class MlpBlock(nn.Module):
@@ -10,7 +33,7 @@ class MlpBlock(nn.Module):
 
         self.mlpBlock_layers = nn.Sequential(
             nn.Linear(input_dim, output_dim),
-            nn.ReLU(),
+            nn.Tanh(),
         )
 
     def forward(self, x):
@@ -18,64 +41,21 @@ class MlpBlock(nn.Module):
         return out
 
 
-class BranchNet(nn.Module):
-    def __init__(self, ):
-        super().__init__()
-
-        self.first_layers = MlpBlock(input_dim=101, output_dim=100)
-        self.branch_layers = self._make_layer(MlpBlock, 7)
-
-    @staticmethod
-    def _make_layer(block, num_blocks):
-        layers = []
-
-        for _ in range(num_blocks):
-            layers.append(block(input_dim=100, output_dim=100))
-
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        x = self.first_layers(x)
-        out = self.branch_layers(x)
-        return out
-
-
-class TrunkNet(nn.Module):
-    def __init__(self):
-        super().__init__()
-
-        self.first_layers = MlpBlock(input_dim=2, output_dim=100)
-        self.trunk_layers = self._make_layer(MlpBlock, 7)
-
-    @staticmethod
-    def _make_layer(block, num_blocks):
-        layers = []
-
-        for _ in range(num_blocks):
-            layers.append(block(input_dim=100, output_dim=100))
-
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        x = self.first_layers(x)
-        out = self.trunk_layers(x)
-        return out
-
-
 class PINN(nn.Module):
-    def __init__(self):
+    def __init__(self, num_blocks=7):
         super().__init__()
+        self.num_blocks = num_blocks
 
         self.encoder = nn.Sequential(
-            nn.Linear(2, 100),
+            nn.Linear(2, 20),
             nn.Tanh()
         )
 
-        self.mlp = self._make_layer(MlpBlock, num_blocks=7)
+        self.mlp = self._make_layer(MlpBlock, num_blocks)
 
-        # self.dam = DAM(in_dim=20)
+        self.dam = DAM(in_dim=20)
 
-        self.decoder = nn.Linear(100, 100)
+        self.decoder = nn.Linear(20, 40)
 
     @staticmethod
     def _make_layer(block, num_blocks):
@@ -89,9 +69,32 @@ class PINN(nn.Module):
     def forward(self, x):
         x = self.encoder(x)
         x = self.mlp(x)
-        # x = self.dam(x)
+        x = self.dam(x)
         out = self.decoder(x)
         return out
+
+
+class BranchNet(nn.Module):
+    def __init__(self, ):
+        super().__init__()
+
+        self.first_layers = MlpBlock(input_dim=101, output_dim=40)
+        self.branch_layers = self._make_layer(MlpBlock, 1)
+
+    @staticmethod
+    def _make_layer(block, num_blocks):
+        layers = []
+
+        for _ in range(num_blocks):
+            layers.append(block(input_dim=40, output_dim=40))
+
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = self.first_layers(x)
+        out = self.branch_layers(x)
+        return out
+
 
 class DeepONet(nn.Module):
     """
@@ -113,16 +116,13 @@ class DeepONet(nn.Module):
         B = self.branch_net(u)
         T = self.trunk_net(y)
         outputs = torch.sum(B * T, dim=1) + self.net_bias
-        return outputs[:, None]
+        return outputs[:,None]
+
 
 if __name__ == '__main__':
     model = DeepONet()
     print(model)
     u = torch.randn(20, 101)
-    # y = torch.randn(20, 2)
-    t = torch.randn(20, 1)
-    x = torch.randn(20, 1)
-    y = torch.cat([t, x], dim=1)
+    y = torch.randn(20, 2)
     outputs = model(u, y)
-
     print(outputs)
