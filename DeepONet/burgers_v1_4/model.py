@@ -62,6 +62,37 @@ class TrunkNet(nn.Module):
         return out
 
 
+class PINN(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        self.encoder = nn.Sequential(
+            nn.Linear(2, 100),
+            nn.Tanh()
+        )
+
+        self.mlp = self._make_layer(MlpBlock, num_blocks=7)
+
+        # self.dam = DAM(in_dim=20)
+
+        self.decoder = nn.Linear(100, 100)
+
+    @staticmethod
+    def _make_layer(block, num_blocks):
+        layers = []
+
+        for _ in range(num_blocks):
+            layers.append(block(input_dim=20, output_dim=20))
+
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = self.encoder(x)
+        x = self.mlp(x)
+        # x = self.dam(x)
+        out = self.decoder(x)
+        return out
+
 class DeepONet(nn.Module):
     """
         Deep operator network.
@@ -72,7 +103,7 @@ class DeepONet(nn.Module):
     def __init__(self):
         super().__init__()
         self.branch_net = BranchNet()
-        self.trunk_net = TrunkNet()
+        self.trunk_net = PINN()
         self.net_bias = nn.Parameter(torch.zeros([1]))
 
         # self.branch_net.apply(weights_init_xavier_normal)
@@ -83,16 +114,6 @@ class DeepONet(nn.Module):
         T = self.trunk_net(y)
         outputs = torch.sum(B * T, dim=1) + self.net_bias
         return outputs[:, None]
-
-
-# Define DeepONet architecture
-# def operator_net(self, u, t, x):
-#     branch_params, trunk_params = params
-#     y = np.stack([t, x])
-#     B = self.branch_apply(branch_params, u)
-#     T = self.trunk_apply(trunk_params, y)
-#     outputs = np.sum(B * T)
-#     return outputs
 
 if __name__ == '__main__':
     model = DeepONet()
