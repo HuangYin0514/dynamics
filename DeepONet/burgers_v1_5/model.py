@@ -46,7 +46,7 @@ class PINN(nn.Module):
         super().__init__()
 
         self.encoder = nn.Sequential(
-            nn.Linear(2, 20),
+            nn.Linear(2, 40),
             nn.Tanh()
         )
 
