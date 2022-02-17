@@ -14,8 +14,6 @@ class Trainer():
         # Network initialization and evaluation functions
         self.model = DeepONet().to(device)
 
-        # loss function
-        self.criterion = nn.MSELoss()
 
         # Use optimizers to set optimizer initialization and update functions
         self.optimizer_Adam = torch.optim.Adam(
@@ -101,18 +99,15 @@ class Trainer():
         u, y = inputs
 
         # Compute forward pass
-        s_bc1_pred = self.operator_net(u, y[:, 0], y[:, 1])
-        s_bc2_pred = self.operator_net(u, y[:, 2], y[:, 3])
+        s_bc1_pred = self.operator_net(u, y[:, 0:1], y[:, 1:2])
+        s_bc2_pred = self.operator_net(u, y[:, 2:3], y[:, 3:4])
 
-        s_x_bc1_pred = self.s_x_net(u, y[:, 0], y[:, 1])
-        s_x_bc2_pred = self.s_x_net(u, y[:, 2], y[:, 3])
+        s_x_bc1_pred = self.s_x_net(u,y[:, 0:1], y[:, 1:2])
+        s_x_bc2_pred = self.s_x_net(u, y[:, 2:3], y[:, 3:4])
 
         # Compute loss
-        s_bc_pred = s_bc1_pred - s_bc2_pred
-        loss_s_bc = self.criterion(s_bc_pred.flatten(), torch.zeros_like(s_bc_pred))
-
-        s_x_bc_pred = s_x_bc1_pred - s_x_bc2_pred
-        loss_s_x_bc = self.criterion(s_x_bc_pred.flatten(), torch.zeros_like(s_x_bc_pred))
+        loss_s_bc = torch.mean((s_bc1_pred - s_bc2_pred) ** 2)
+        loss_s_x_bc = torch.mean((s_x_bc1_pred - s_x_bc2_pred) ** 2)
 
         return loss_s_bc + loss_s_x_bc
 
