@@ -55,8 +55,8 @@ class Trainer():
         return s
 
     # Define ds/dx
-    def s_x_net(self, u, t, x):
-        s = self.operator_net(u, t, x)
+    def s_x_net(self, u, x, t):
+        s = self.operator_net(u, x, t)
         s_x = torch.autograd.grad(s, x, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True)[0]
         return s_x
 
