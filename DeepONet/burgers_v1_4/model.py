@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+from utils import weights_init_xavier_normal
+
 
 class DAM(nn.Module):
     """ Discriminative Amplitude Modulator Layer (1-D) """
@@ -40,38 +42,38 @@ class MlpBlock(nn.Module):
         out = self.mlpBlock_layers(x)
         return out
 
-
-class PINN(nn.Module):
-    def __init__(self, num_blocks=7):
-        super().__init__()
-        self.num_blocks = num_blocks
-
-        self.encoder = nn.Sequential(
-            nn.Linear(2, 20),
-            nn.ReLU()
-        )
-
-        self.mlp = self._make_layer(MlpBlock, num_blocks)
-
-        self.dam = DAM(in_dim=20)
-
-        self.decoder = nn.Linear(20, 40)
-
-    @staticmethod
-    def _make_layer(block, num_blocks):
-        layers = []
-
-        for _ in range(num_blocks):
-            layers.append(block(input_dim=20, output_dim=20))
-
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        x = self.encoder(x)
-        x = self.mlp(x)
-        x = self.dam(x)
-        out = self.decoder(x)
-        return out
+#
+# class PINN(nn.Module):
+#     def __init__(self, num_blocks=7):
+#         super().__init__()
+#         self.num_blocks = num_blocks
+#
+#         self.encoder = nn.Sequential(
+#             nn.Linear(2, 20),
+#             nn.ReLU()
+#         )
+#
+#         self.mlp = self._make_layer(MlpBlock, num_blocks)
+#
+#         self.dam = DAM(in_dim=20)
+#
+#         self.decoder = nn.Linear(20, 40)
+#
+#     @staticmethod
+#     def _make_layer(block, num_blocks):
+#         layers = []
+#
+#         for _ in range(num_blocks):
+#             layers.append(block(input_dim=20, output_dim=20))
+#
+#         return nn.Sequential(*layers)
+#
+#     def forward(self, x):
+#         x = self.encoder(x)
+#         x = self.mlp(x)
+#         x = self.dam(x)
+#         out = self.decoder(x)
+#         return out
 
 
 class BranchNet(nn.Module):
@@ -96,6 +98,26 @@ class BranchNet(nn.Module):
         return out
 
 
+class TrunkNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        self.first_layers = MlpBlock(input_dim=2, output_dim=40)
+        self.trunk_layers = self._make_layer(MlpBlock, 3)
+
+    @staticmethod
+    def _make_layer(block, num_blocks):
+        layers = []
+
+        for _ in range(num_blocks):
+            layers.append(block(input_dim=40, output_dim=40))
+
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = self.first_layers(x)
+        out = self.trunk_layers(x)
+        return out
 class DeepONet(nn.Module):
     """
         Deep operator network.
@@ -106,11 +128,11 @@ class DeepONet(nn.Module):
     def __init__(self):
         super().__init__()
         self.branch_net = BranchNet()
-        self.trunk_net = PINN()
+        self.trunk_net = TrunkNet()
         self.net_bias = nn.Parameter(torch.zeros([1]))
 
-        # self.branch_net.apply(weights_init_xavier_normal)
-        # self.trunk_net.apply(weights_init_xavier_normal)
+        self.branch_net.apply(weights_init_xavier_normal)
+        self.trunk_net.apply(weights_init_xavier_normal)
 
     def forward(self, u, y):
         B = self.branch_net(u)
