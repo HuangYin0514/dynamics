@@ -30,7 +30,7 @@ Burgers方程：
 |     修改分支单元数目（b->40,t->40）     | 3.09e-03 |
 | 增加ic和bc采样点数目（n_ic->100,n_bc->100） | 1.11e-03   |
 
-结果可以参考文件[deeponets.ipynb](result/deeponets.ipynb)
+结果可以参考文件[deeponets.ipynb](result/burgers_v1_3.ipynb)
 
 5. 总结
 

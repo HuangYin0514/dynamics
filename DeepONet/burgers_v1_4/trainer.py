@@ -56,6 +56,12 @@ class Trainer():
         s = self.model(u, y)
         return s
 
+    # Define ds/dx
+    def s_x_net(self, u, t, x):
+        s = self.operator_net(u, t, x)
+        s_x = torch.autograd.grad(s, x, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True)[0]
+        return s_x
+
     # Define PDE residual
     def residual_net(self, u, x, t):
         s = self.operator_net(u, x, t)
@@ -95,11 +101,20 @@ class Trainer():
         u, y = inputs
 
         # Compute forward pass
-        pred = self.operator_net(u, y[:, 0:1], y[:, 1:2])
+        s_bc1_pred = self.operator_net(u, y[:, 0], y[:, 1])
+        s_bc2_pred = self.operator_net(u, y[:, 2], y[:, 3])
+
+        s_x_bc1_pred = self.s_x_net(u, y[:, 0], y[:, 1])
+        s_x_bc2_pred = self.s_x_net(u, y[:, 2], y[:, 3])
 
         # Compute loss
-        loss = torch.mean((pred - outputs) ** 2)
-        return loss
+        s_bc_pred = s_bc1_pred - s_bc2_pred
+        loss_s_bc = self.criterion(s_bc_pred.flatten(), torch.zeros_like(s_bc_pred))
+
+        s_x_bc_pred = s_x_bc1_pred - s_x_bc2_pred
+        loss_s_x_bc = self.criterion(s_x_bc_pred.flatten(), torch.zeros_like(s_x_bc_pred))
+
+        return loss_s_bc + loss_s_x_bc
 
     def loss_res(self, batch):
         # Fetch data
