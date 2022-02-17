@@ -22,15 +22,15 @@ class BranchNet(nn.Module):
     def __init__(self, ):
         super().__init__()
 
-        self.first_layers = MlpBlock(input_dim=101, output_dim=40)
-        self.branch_layers = self._make_layer(MlpBlock, 3)
+        self.first_layers = MlpBlock(input_dim=101, output_dim=100)
+        self.branch_layers = self._make_layer(MlpBlock, 7)
 
     @staticmethod
     def _make_layer(block, num_blocks):
         layers = []
 
         for _ in range(num_blocks):
-            layers.append(block(input_dim=40, output_dim=40))
+            layers.append(block(input_dim=100, output_dim=100))
 
         return nn.Sequential(*layers)
 
@@ -44,15 +44,15 @@ class TrunkNet(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.first_layers = MlpBlock(input_dim=2, output_dim=40)
-        self.trunk_layers = self._make_layer(MlpBlock, 3)
+        self.first_layers = MlpBlock(input_dim=2, output_dim=100)
+        self.trunk_layers = self._make_layer(MlpBlock, 7)
 
     @staticmethod
     def _make_layer(block, num_blocks):
         layers = []
 
         for _ in range(num_blocks):
-            layers.append(block(input_dim=40, output_dim=40))
+            layers.append(block(input_dim=100, output_dim=100))
 
         return nn.Sequential(*layers)
 
@@ -75,8 +75,8 @@ class DeepONet(nn.Module):
         self.trunk_net = TrunkNet()
         self.net_bias = nn.Parameter(torch.zeros([1]))
 
-        self.branch_net.apply(weights_init_xavier_normal)
-        self.trunk_net.apply(weights_init_xavier_normal)
+        # self.branch_net.apply(weights_init_xavier_normal)
+        # self.trunk_net.apply(weights_init_xavier_normal)
 
     def forward(self, u, y):
         B = self.branch_net(u)
