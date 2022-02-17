@@ -17,10 +17,11 @@ Burgers方程：
 3. 数据集。数据集主要采用 [DeepONets](https://github.com/PredictiveIntelligenceLab/Physics-informed-DeepONets.git) 中的数据集
 4. 精度
 
-|            模式            | 精度       |
-|:------------------------:|----------|
-| deeponets（burgers_v2_1）  | 2.49e-03 |
-| 增加隐藏层神经元个数（burgers_v2_2） | 9.64e-03 |
+|              模式               | 精度       |
+|:-----------------------------:|----------|
+|    deeponets（burgers_v2_1）    | 2.49e-03 |
+|   增加隐藏层神经元个数（burgers_v2_2）    | 9.64e-03 |
+| 增加trank隐藏层神经元个数（burgers_v2_2） | 3.36e-03 |
 
 5. 总结
 

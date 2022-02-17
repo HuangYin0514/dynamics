@@ -78,7 +78,7 @@ class BranchNet(nn.Module):
         super().__init__()
 
         self.first_layers = MlpBlock(input_dim=101, output_dim=40)
-        self.branch_layers = self._make_layer(MlpBlock, 3)
+        self.branch_layers = self._make_layer(MlpBlock, num_blocks=7)
 
     @staticmethod
     def _make_layer(block, num_blocks):
