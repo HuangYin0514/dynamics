@@ -1,3 +1,9 @@
+# 版本特性
+
+- DeepONets burgers v1_3
+
+使用PINN数据集
+
 # 项目目的
 
 DeepONets优势：一旦训练完成后，可以更改网络的初始条件U0。即比PINNs多了泛化能力。
