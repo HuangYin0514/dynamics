@@ -44,7 +44,7 @@ if __name__ == '__main__':
     data = scipy.io.loadmat(path)
     usol = np.array(data['output'])
     k = 0
-    N_test = 1
+    N_test = 10
     idx = np.arange(k, k + N_test)
     print('Test list index is : {}'.format(idx))
 
@@ -56,8 +56,13 @@ if __name__ == '__main__':
     trainer.model = model
 
     # # compute_error
-    errors = list(map(compute_error, np.tile([trainer], (idx.shape[0],)), idx, np.tile(usol, (usol.shape[0], 1, 1, 1))))
+    errors = []
+    for i in idx:
+        error = compute_error(trainer, i, usol)
+        errors.append(error)
+
     errors = np.array(errors)
+    print(errors)
     mean_error = errors.mean()
     print('Mean relative L2 error of s: {:.2e}'.format(mean_error))
 
