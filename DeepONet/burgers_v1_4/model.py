@@ -42,27 +42,26 @@ class MlpBlock(nn.Module):
 
 
 class PINN(nn.Module):
-    def __init__(self, num_blocks=7):
+    def __init__(self):
         super().__init__()
-        self.num_blocks = num_blocks
 
         self.encoder = nn.Sequential(
-            nn.Linear(2, 20),
+            nn.Linear(2, 100),
             nn.Tanh()
         )
 
-        self.mlp = self._make_layer(MlpBlock, num_blocks)
+        self.mlp = self._make_layer(MlpBlock, num_blocks=7)
 
-        self.dam = DAM(in_dim=20)
+        self.dam = DAM(in_dim=100)
 
-        self.decoder = nn.Linear(20, 40)
+        self.decoder = nn.Linear(100, 100)
 
     @staticmethod
     def _make_layer(block, num_blocks):
         layers = []
 
         for _ in range(num_blocks):
-            layers.append(block(input_dim=20, output_dim=20))
+            layers.append(block(input_dim=100, output_dim=100))
 
         return nn.Sequential(*layers)
 
@@ -78,15 +77,15 @@ class BranchNet(nn.Module):
     def __init__(self, ):
         super().__init__()
 
-        self.first_layers = MlpBlock(input_dim=101, output_dim=40)
-        self.branch_layers = self._make_layer(MlpBlock, 1)
+        self.first_layers = MlpBlock(input_dim=101, output_dim=100)
+        self.branch_layers = self._make_layer(MlpBlock, 3)
 
     @staticmethod
     def _make_layer(block, num_blocks):
         layers = []
 
         for _ in range(num_blocks):
-            layers.append(block(input_dim=40, output_dim=40))
+            layers.append(block(input_dim=100, output_dim=100))
 
         return nn.Sequential(*layers)
 
@@ -116,7 +115,7 @@ class DeepONet(nn.Module):
         B = self.branch_net(u)
         T = self.trunk_net(y)
         outputs = torch.sum(B * T, dim=1) + self.net_bias
-        return outputs[:,None]
+        return outputs[:, None]
 
 
 if __name__ == '__main__':
