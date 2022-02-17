@@ -28,20 +28,24 @@ class BurgerData():
         self.__init_data()
 
     def __init_data(self):
-        ics_train = list(map(self.generate_one_ics_training_data, self.u0_train))
-        self.u_ics_train = np.array(list(map(lambda x: x[0], ics_train))).reshape(self.N_train * self.P_ics_train, -1)
-        self.y_ics_train = np.array(list(map(lambda x: x[1], ics_train))).reshape(self.N_train * self.P_ics_train, -1)
-        self.s_ics_train = np.array(list(map(lambda x: x[2], ics_train))).reshape(self.N_train * self.P_ics_train, -1)
+        def get_all_training_data(generate_method, P, u0_train=self.u0_train, N_train=self.N_train):
+            u, y, s = [], [], []
+            for u0 in u0_train:
+                u_temp, y_temp, s_temp = generate_method(u0)
+                u.append(u_temp)
+                y.append(y_temp)
+                s.append(s_temp)
+            u = np.array(u).reshape(N_train * P, -1)
+            y = np.array(y).reshape(N_train * P, -1)
+            s = np.array(s).reshape(N_train * P, -1)
+            return u, y, s
 
-        bcs_train = list(map(self.generate_one_bcs_training_data, self.u0_train))
-        self.u_bcs_train = np.array(list(map(lambda x: x[0], bcs_train))).reshape(self.N_train * self.P_bcs_train, -1)
-        self.y_bcs_train = np.array(list(map(lambda x: x[1], bcs_train))).reshape(self.N_train * self.P_bcs_train, -1)
-        self.s_bcs_train = np.array(list(map(lambda x: x[2], bcs_train))).reshape(self.N_train * self.P_bcs_train, -1)
-
-        res_train = list(map(self.generate_one_res_training_data, self.u0_train))
-        self.u_res_train = np.array(list(map(lambda x: x[0], res_train))).reshape(self.N_train * self.P_res_train, -1)
-        self.y_res_train = np.array(list(map(lambda x: x[1], res_train))).reshape(self.N_train * self.P_res_train, -1)
-        self.s_res_train = np.array(list(map(lambda x: x[2], res_train))).reshape(self.N_train * self.P_res_train, -1)
+        self.u_ics_train, self.y_ics_train, self.s_ics_train = get_all_training_data(
+            self.generate_one_ics_training_data, self.P_ics_train)
+        self.u_bcs_train, self.y_bcs_train, self.s_bcs_train = get_all_training_data(
+            self.generate_one_bcs_training_data, self.P_bcs_train)
+        self.u_res_train, self.y_res_train, self.s_res_train = get_all_training_data(
+            self.generate_one_res_training_data, self.P_res_train)
 
     # Geneate ics training data corresponding to one input sample
     def generate_one_ics_training_data(self, u0, P=101):
@@ -123,8 +127,8 @@ if __name__ == '__main__':
     u_bcs_train, y_bcs_train, s_bcs_train = burgerData.u_bcs_train, burgerData.y_bcs_train, burgerData.s_bcs_train
     u_res_train, y_res_train, s_res_train = burgerData.u_res_train, burgerData.y_res_train, burgerData.s_res_train
 
-    ics_dataset = DataGenerator(u_ics_train, y_ics_train, s_ics_train, batch_size)
-    bcs_dataset = DataGenerator(u_bcs_train, y_bcs_train, s_bcs_train, batch_size)
-    res_dataset = DataGenerator(u_res_train, y_res_train, s_res_train, batch_size)
+    ics_dataset = DataGenerator(u_ics_train, y_ics_train, s_ics_train)
+    bcs_dataset = DataGenerator(u_bcs_train, y_bcs_train, s_bcs_train)
+    res_dataset = DataGenerator(u_res_train, y_res_train, s_res_train)
 
     outputs = next(iter(ics_dataset))

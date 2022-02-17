@@ -160,21 +160,21 @@ class Trainer():
 
                 print("Adam\tepoch:{}\tloss:{:.5}".format(it, loss.item()))
 
-        self.counter = 0
-        ics_batch = next(ics_data)
-        bcs_batch = next(bcs_data)
-        res_batch = next(res_data)
+        # self.counter = 0
+        # ics_batch = next(ics_data)
+        # bcs_batch = next(bcs_data)
+        # res_batch = next(res_data)
+        #
+        # def closure():
+        #     self.optimizer_LBFGS.zero_grad()
+        #     loss = self.loss(ics_batch, bcs_batch, res_batch)
+        #     loss.backward()
+        #     if self.counter % 200 == 0:
+        #         print("LBFGS\t epoch:{}\t loss:{:.5}".format(self.counter, loss.item()))
+        #     self.counter = self.counter + 1
+        #     return loss
 
-        def closure():
-            self.optimizer_LBFGS.zero_grad()
-            loss = self.loss(ics_batch, bcs_batch, res_batch)
-            loss.backward()
-            if self.counter % 200 == 0:
-                print("LBFGS\t epoch:{}\t loss:{:.5}".format(self.counter, loss.item()))
-            self.counter = self.counter + 1
-            return loss
-
-        self.optimizer_LBFGS.step(closure)
+        # self.optimizer_LBFGS.step(closure)
 
     def predict_s(self, u_star, x_star):
         self.model.eval()
