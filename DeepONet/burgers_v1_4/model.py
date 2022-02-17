@@ -42,16 +42,15 @@ class MlpBlock(nn.Module):
 
 
 class PINN(nn.Module):
-    def __init__(self, num_blocks=7):
+    def __init__(self):
         super().__init__()
-        self.num_blocks = num_blocks
 
         self.encoder = nn.Sequential(
             nn.Linear(2, 20),
             nn.Tanh()
         )
 
-        self.mlp = self._make_layer(MlpBlock, num_blocks)
+        self.mlp = self._make_layer(MlpBlock, num_blocks=7)
 
         self.dam = DAM(in_dim=20)
 
