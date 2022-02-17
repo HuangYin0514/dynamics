@@ -17,7 +17,7 @@ class BurgerData():
         data = scipy.io.loadmat(path)
         usol = np.array(data['output'])
 
-        self.N_train = 10  # number of input samples used for training
+        self.N_train = 1  # number of input samples used for training
 
         self.P_ics_train = 101  # number of locations for evulating the initial condition
         self.P_bcs_train = 100  # number of locations for evulating the boundary condition
