@@ -29,7 +29,7 @@ def plot(trainer):
     u_test = np.tile(u0, (P_test ** 2, 1))
     y_test = np.hstack([T.flatten()[:, None], X.flatten()[:, None]])
 
-    s_pred = trainer.predict_s(to_tensor(u_test), to_tensor(y_test))[:, None]
+    s_pred = trainer.predict_s(to_tensor(u_test), to_tensor(y_test))
     s_pred  = to_numpy(s_pred)
     S_pred = griddata(y_test, s_pred.flatten(), (T, X), method='cubic')
 
