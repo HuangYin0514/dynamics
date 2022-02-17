@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-from torch import nn
 
 from model import DeepONet
 from utils import get_device
@@ -13,7 +12,6 @@ class Trainer():
     def __init__(self):
         # Network initialization and evaluation functions
         self.model = DeepONet().to(device)
-
 
         # Use optimizers to set optimizer initialization and update functions
         self.optimizer_Adam = torch.optim.Adam(
@@ -49,20 +47,20 @@ class Trainer():
             )
 
     # Define DeepONet architecture
-    def operator_net(self, u, x, t):
-        y = torch.cat([x, t], dim=1)
+    def operator_net(self, u, t, x):
+        y = torch.cat([t, x], dim=1)
         s = self.model(u, y)
         return s
 
     # Define ds/dx
-    def s_x_net(self, u, x, t):
-        s = self.operator_net(u, x, t)
+    def s_x_net(self, u, t, x):
+        s = self.operator_net(u, t, x)
         s_x = torch.autograd.grad(s, x, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True)[0]
         return s_x
 
     # Define PDE residual
-    def residual_net(self, u, x, t):
-        s = self.operator_net(u, x, t)
+    def residual_net(self, u, t, x):
+        s = self.operator_net(u, t, x)
 
         s_t = torch.autograd.grad(
             s, t, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True
@@ -102,7 +100,7 @@ class Trainer():
         s_bc1_pred = self.operator_net(u, y[:, 0:1], y[:, 1:2])
         s_bc2_pred = self.operator_net(u, y[:, 2:3], y[:, 3:4])
 
-        s_x_bc1_pred = self.s_x_net(u,y[:, 0:1], y[:, 1:2])
+        s_x_bc1_pred = self.s_x_net(u, y[:, 0:1], y[:, 1:2])
         s_x_bc2_pred = self.s_x_net(u, y[:, 2:3], y[:, 3:4])
 
         # Compute loss
