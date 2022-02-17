@@ -23,7 +23,7 @@ init_random_state()
 
 if __name__ == '__main__':
 
-    nIter = 10000
+    nIter = 50000
 
     if not torch.cuda.is_available():
         nIter = 10
