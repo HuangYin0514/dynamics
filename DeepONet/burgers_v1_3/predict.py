@@ -30,7 +30,7 @@ def generate_one_test_data():
 def compute_error(trainer):
     u_star, x_test, s_test = generate_one_test_data()
 
-    s_pred = trainer.predict_s(to_tensor(u_star), to_tensor(x_test))[:, None]
+    s_pred = trainer.predict_s(to_tensor(u_star), to_tensor(x_test))
 
     error = np.linalg.norm(s_test - to_numpy(s_pred)) / np.linalg.norm(s_test)
     return error
