@@ -16,15 +16,15 @@ Burgers方程：
 3. 数据集。数据集主要采用 [DeepONets](https://github.com/PredictiveIntelligenceLab/Physics-informed-DeepONets.git) 中的数据集
 4. 精度
 
-|                   模式                   | 精度       |
-|:--------------------------------------:|----------|
-|        deeponets（burgers_v2_1）         | 2.49e-03 |
-|    增加隐藏层神经元个数（burgers_v2_2） 20-->40    | 9.64e-03 |
-|    增加trank隐藏层层数（burgers_v2_2） 1-->3    | 3.36e-03 |
-|    增加trank隐藏层层数（burgers_v2_2） 3-->7    | 3.38e-03 |
-|  增加Adam迭代次数（burgers_v2_2） 500-->5000   | 2.08e-03 |
-| （burgers_v2_3）取消LBFGS优化，Adam优化改成20000次 | 2.09e-02 |
-|  （burgers_v2_4）增加Adam迭代次数 500-->5000   | 2.08e-03 |
+|                 模式                  | 精度       |
+|:-----------------------------------:|----------|
+|       deeponets（burgers_v2_1）       | 2.49e-03 |
+|  增加隐藏层神经元个数（burgers_v2_2） 20-->40   | 9.64e-03 |
+|  增加trank隐藏层层数（burgers_v2_2） 1-->3   | 3.36e-03 |
+|  增加trank隐藏层层数（burgers_v2_2） 3-->7   | 3.38e-03 |
+| 增加Adam迭代次数（burgers_v2_2） 500-->5000 | 2.08e-03 |
+|    （burgers_v2_3）Adam_iter=20000    | 2.09e-02 |
+|  （burgers_v2_4）LBFGS/Adam_iter=500  | 3.38e-03 |
 
 5. 总结
 
