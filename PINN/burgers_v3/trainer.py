@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from model import  PINN
+from model import PINN
 from utils import get_device
 
 device = get_device()
@@ -58,7 +58,7 @@ class Trainer():
 
     # Define PDE residual
     def residual_net(self, x, t):
-        s = self.operator_net( x, t)
+        s = self.operator_net(x, t)
 
         s_t = torch.autograd.grad(
             s, t, grad_outputs=torch.ones_like(s), retain_graph=True, create_graph=True
@@ -83,7 +83,7 @@ class Trainer():
         y = inputs
 
         # Compute forward pass
-        pred = self.operator_net( y[:, 0:1], y[:, 1:2])
+        pred = self.operator_net(y[:, 0:1], y[:, 1:2])
 
         # Compute loss
         loss = torch.mean((pred - outputs) ** 2)
@@ -95,7 +95,7 @@ class Trainer():
         y = inputs
 
         # Compute forward pass
-        pred = self.operator_net( y[:, 0:1], y[:, 1:2])
+        pred = self.operator_net(y[:, 0:1], y[:, 1:2])
 
         # Compute loss
         loss = torch.mean((pred - outputs) ** 2)
@@ -107,7 +107,7 @@ class Trainer():
         y = inputs
 
         # Compute forward pass
-        pred = self.residual_net( y[:, 0:1], y[:, 1:2])
+        pred = self.residual_net(y[:, 0:1], y[:, 1:2])
 
         # Compute loss
         loss = torch.mean((pred - outputs) ** 2)

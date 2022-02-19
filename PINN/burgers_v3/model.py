@@ -74,7 +74,6 @@ class PINN(nn.Module):
         return out
 
 
-
 if __name__ == '__main__':
     model = PINN()
     print(model)

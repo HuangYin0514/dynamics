@@ -4,7 +4,6 @@
 
 使用DeepOnets数据集
 
-
 # 项目贡献
 
 1. 项目主要利用DeepONets，对Burgers方程进行求解。

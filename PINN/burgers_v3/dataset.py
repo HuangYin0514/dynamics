@@ -34,7 +34,7 @@ class BurgerData():
         # ic constraints
         y_ic = np.hstack((x_mesh[0:1, :].T, t_mesh[0:1, :].T))  # 左
         s_ic = exact[0:1, :].T
-        self.y_ics_train, self.s_ics_train = self.generate_ics_training_data( y_ic, s_ic)
+        self.y_ics_train, self.s_ics_train = self.generate_ics_training_data(y_ic, s_ic)
 
         # bc constraints
         y_bc1 = np.hstack((x_mesh[:, 0:1], t_mesh[:, 0:1]))  # 下
@@ -43,35 +43,35 @@ class BurgerData():
         s_bc2 = exact[:, -1:]
         y_bc = np.vstack([y_bc1, y_bc2])
         s_bc = np.vstack([s_bc1, s_bc2])
-        self.y_bcs_train, self.s_bcs_train = self.generate_bcs_training_data( y_bc, s_bc)
+        self.y_bcs_train, self.s_bcs_train = self.generate_bcs_training_data(y_bc, s_bc)
 
         # res constraints
         y_mesh = np.hstack((x_mesh.flatten()[:, None], t_mesh.flatten()[:, None]))  # (n_x*n_t, 2)
         lb = y_mesh.min(axis=0)  # [-1.0, 0.0]
         ub = y_mesh.max(axis=0)  # [1.0, 0.99]
         y_ibc = np.vstack([y_ic, y_bc1, y_bc2])
-        self.y_res_train, self.s_res_train = self.generate_res_training_data( lb, ub, y_ibc)
+        self.y_res_train, self.s_res_train = self.generate_res_training_data(lb, ub, y_ibc)
 
     # ic constraints
     def generate_ics_training_data(self, y_ic, s_ic, n_ic=100):
         idx = np.random.choice(s_ic.shape[0], n_ic, replace=False)
         y = y_ic[idx, :]
         s = s_ic[idx, :]
-        return  y, s
+        return y, s
 
     # ic constraints
     def generate_bcs_training_data(self, y_bc, s_bc, n_bc=100):
         idx = np.random.choice(s_bc.shape[0], n_bc, replace=False)
         y = y_bc[idx, :]
         s = s_bc[idx, :]
-        return  y, s
+        return y, s
 
     # res constraints
     def generate_res_training_data(self, lb, ub, y_ibc, n_res=10000):
         y_sample = lb + (ub - lb) * lhs(2, n_res)
         y = np.vstack([y_sample, y_ibc])
         s = np.zeros((y.shape[0], 1))
-        return  y, s
+        return y, s
 
 
 class DataGenerator(data.Dataset):
@@ -98,7 +98,7 @@ class DataGenerator(data.Dataset):
         s = self.s[idx, :]
 
         # Construct batch
-        inputs =  to_tensor(y)
+        inputs = to_tensor(y)
         outputs = to_tensor(s)
 
         return inputs, outputs
@@ -111,9 +111,9 @@ if __name__ == '__main__':
     y_bcs_train, s_bcs_train = burgerData.y_bcs_train, burgerData.s_bcs_train
     y_res_train, s_res_train = burgerData.y_res_train, burgerData.s_res_train
 
-    ics_dataset = DataGenerator( y_ics_train, s_ics_train)
-    bcs_dataset = DataGenerator( y_bcs_train, s_bcs_train)
-    res_dataset = DataGenerator( y_res_train, s_res_train)
+    ics_dataset = DataGenerator(y_ics_train, s_ics_train)
+    bcs_dataset = DataGenerator(y_bcs_train, s_bcs_train)
+    res_dataset = DataGenerator(y_res_train, s_res_train)
 
     output1 = next(iter(ics_dataset))
     output2 = next(iter(bcs_dataset))

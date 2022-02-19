@@ -23,4 +23,4 @@ Burgers方程：
 结果可以参考文件[deeponets.ipynb](result/deeponets.ipynb)
 
 5. 总结
-   1. 增加ic和bc采样点数目，精度下降
+    1. 增加ic和bc采样点数目，精度下降

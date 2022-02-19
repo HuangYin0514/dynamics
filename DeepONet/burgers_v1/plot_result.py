@@ -30,7 +30,7 @@ def plot(trainer):
     y_test = np.hstack([T.flatten()[:, None], X.flatten()[:, None]])
 
     s_pred = trainer.predict_s(to_tensor(u_test), to_tensor(y_test))[:, None]
-    s_pred  = to_numpy(s_pred)
+    s_pred = to_numpy(s_pred)
     S_pred = griddata(y_test, s_pred.flatten(), (T, X), method='cubic')
 
     error_s = np.linalg.norm(u - S_pred.T, 2) / np.linalg.norm(u, 2)

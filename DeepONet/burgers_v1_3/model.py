@@ -116,7 +116,7 @@ class DeepONet(nn.Module):
         B = self.branch_net(u)
         T = self.trunk_net(y)
         outputs = torch.sum(B * T, dim=1) + self.net_bias
-        return outputs[:,None]
+        return outputs[:, None]
 
 
 if __name__ == '__main__':

@@ -19,7 +19,7 @@ Burgers方程：
 结果可以参考文件[deeponets.ipynb](result/deeponets.ipynb)
 
 5. 总结
-   1. 增加blocks层数不一定对结果有促进作用
-   2. dam对模型有促进作用
-   3. 采用dense模型和u-nets网络可能对结果还有进一步对促进作用。未来精度可以达到e-05左右，详情可以参考[github项目](https://github.com/okada39/pinn_burgers.git)
+    1. 增加blocks层数不一定对结果有促进作用
+    2. dam对模型有促进作用
+    3. 采用dense模型和u-nets网络可能对结果还有进一步对促进作用。未来精度可以达到e-05左右，详情可以参考[github项目](https://github.com/okada39/pinn_burgers.git)
    
