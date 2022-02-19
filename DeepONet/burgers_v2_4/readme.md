@@ -24,6 +24,7 @@ Burgers方程：
 |    增加trank隐藏层层数（burgers_v2_2） 3-->7    | 3.38e-03 |
 |  增加Adam迭代次数（burgers_v2_2） 500-->5000   | 2.08e-03 |
 | （burgers_v2_3）取消LBFGS优化，Adam优化改成20000次 | 2.09e-02 |
+|  （burgers_v2_4）增加Adam迭代次数 500-->5000   | 2.08e-03 |
 
 5. 总结
 
