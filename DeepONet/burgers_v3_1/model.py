@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from DeepONet.burgers_v3_1.model_layers.mlp_mixer import MlpMixer
+from model_layers.mlp_mixer import MlpMixer
 
 
 class DAM(nn.Module):
