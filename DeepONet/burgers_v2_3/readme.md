@@ -27,7 +27,6 @@ Burgers方程：
 | （burgers_v2_3）取消LBFGS优化，Adam优化改成20000次 | 2.09e-02 |
 | （burgers_v2_4）取消LBFGS优化，Adam优化改成20000次 | 3.38e-03 |
 
-
 5. 总结
 
     1. 提高边缘ic的权重，对结果有促进作用

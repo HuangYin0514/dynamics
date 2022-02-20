@@ -83,7 +83,7 @@ class MlpMixer(nn.Module):
         self.T_MixerBlock = T_MixerBlock()
         self.X_MixerBlock = X_MixerBlock()
 
-    def forward(self, u, y):
+    def forward(self, y):
 
         t = y[:, 0:1]
         x = y[:, 1:2]
@@ -104,7 +104,6 @@ if __name__ == '__main__':
     mlp_mixer = MlpMixer(num_classes=100, num_blocks=10, patch_size=10, tokens_hidden_dim=32, channels_hidden_dim=1024,
                          tokens_mlp_dim=2, channels_mlp_dim=1024)
 
-    u = torch.randn(50, 101)
     y = torch.randn(50, 2)
-    output = mlp_mixer(u, y)
+    output = mlp_mixer( y)
     print(output.shape)

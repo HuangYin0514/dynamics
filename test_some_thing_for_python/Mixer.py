@@ -37,32 +37,6 @@ class MixerBlock(nn.Module):
         return y
 
 
-class T_MixerBlock(nn.Module):
-    def __init__(self):
-        super().__init__()
-
-        self.T_MixerBlock_layers = nn.Sequential(
-            nn.Linear(1, 1024),
-            nn.GELU(),
-        )
-
-    def forward(self, x):
-        return self.T_MixerBlock_layers(x)
-
-
-class X_MixerBlock(nn.Module):
-    def __init__(self):
-        super().__init__()
-
-        self.X_MixerBlock_layers = nn.Sequential(
-            nn.Linear(1, 1024),
-            nn.GELU(),
-        )
-
-    def forward(self, x):
-        return self.X_MixerBlock_layers(x)
-
-
 class MlpMixer(nn.Module):
     def __init__(self, num_classes, num_blocks, patch_size, tokens_hidden_dim, channels_hidden_dim, tokens_mlp_dim,
                  channels_mlp_dim):
@@ -79,32 +53,25 @@ class MlpMixer(nn.Module):
             self.mlp_blocks.append(MixerBlock(tokens_mlp_dim, channels_mlp_dim, tokens_hidden_dim, channels_hidden_dim))
         self.fc = nn.Linear(channels_mlp_dim, num_classes)
 
-        # mine
-        self.T_MixerBlock = T_MixerBlock()
-        self.X_MixerBlock = X_MixerBlock()
+    def forward(self, x):
+        y = self.embd(x)  # bs,channels,h,w
+        bs, c, h, w = y.shape
+        y = y.view(bs, c, -1).transpose(1, 2)  # bs,tokens,channels
 
-    def forward(self, u, y):
-
-        t = y[:, 0:1]
-        x = y[:, 1:2]
-        t = self.T_MixerBlock(t).unsqueeze(axis=1)
-        x = self.X_MixerBlock(x).unsqueeze(axis=1)
-        y = torch.cat([t, x], axis=1)
+        if (self.tokens_mlp_dim != y.shape[1]):
+            raise ValueError('Tokens_mlp_dim is not correct.')
 
         for i in range(self.num_blocks):
             y = self.mlp_blocks[i](y)  # bs,tokens,channels
         y = self.ln(y)  # bs,tokens,channels
         y = torch.mean(y, dim=1, keepdim=False)  # bs,channels
         probs = self.fc(y)  # bs,num_classes
-
         return probs
 
 
 if __name__ == '__main__':
-    mlp_mixer = MlpMixer(num_classes=100, num_blocks=10, patch_size=10, tokens_hidden_dim=32, channels_hidden_dim=1024,
-                         tokens_mlp_dim=2, channels_mlp_dim=1024)
-
-    u = torch.randn(50, 101)
-    y = torch.randn(50, 2)
-    output = mlp_mixer(u, y)
+    mlp_mixer = MlpMixer(num_classes=1000, num_blocks=10, patch_size=10, tokens_hidden_dim=32, channels_hidden_dim=1024,
+                         tokens_mlp_dim=16, channels_mlp_dim=1024)
+    input = torch.randn(50, 3, 40, 40)
+    output = mlp_mixer(input)
     print(output.shape)
