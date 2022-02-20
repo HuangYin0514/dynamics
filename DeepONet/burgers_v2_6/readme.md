@@ -25,7 +25,8 @@ Burgers方程：
 | 增加Adam迭代次数（burgers_v2_2） 500-->5000 | 2.08e-03 |
 |    （burgers_v2_3）Adam_iter=20000    | 2.09e-02 |
 |  （burgers_v2_4）LBFGS/Adam_iter=500  | 3.38e-03 |
-| （burgers_v2_5）LBFGS/Adam_iter=5000  | 2.08e-03  |
+| （burgers_v2_5）LBFGS/Adam_iter=5000  | 2.08e-03 |
+| （burgers_v2_6）LBFGS/Adam_iter=5000  | 1.84e-03 |
 
 5. 总结
 
