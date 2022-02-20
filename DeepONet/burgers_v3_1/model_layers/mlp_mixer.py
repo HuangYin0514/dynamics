@@ -42,7 +42,7 @@ class T_MixerBlock(nn.Module):
         super().__init__()
 
         self.T_MixerBlock_layers = nn.Sequential(
-            nn.Linear(1, 128),
+            nn.Linear(1, 40),
             nn.GELU(),
         )
 
@@ -55,7 +55,7 @@ class X_MixerBlock(nn.Module):
         super().__init__()
 
         self.X_MixerBlock_layers = nn.Sequential(
-            nn.Linear(1, 128),
+            nn.Linear(1, 40),
             nn.GELU(),
         )
 
@@ -102,8 +102,8 @@ class MlpMixer(nn.Module):
 
 
 if __name__ == '__main__':
-    mlp_mixer = MlpMixer(num_classes=100, num_blocks=10, patch_size=10, tokens_hidden_dim=32, channels_hidden_dim=128,
-                         tokens_mlp_dim=2, channels_mlp_dim=128)
+    mlp_mixer = MlpMixer(num_classes=40, num_blocks=10, patch_size=10, tokens_hidden_dim=32, channels_hidden_dim=40,
+                         tokens_mlp_dim=2, channels_mlp_dim=40)
 
     y = torch.randn(50, 2)
     output = mlp_mixer(y)
