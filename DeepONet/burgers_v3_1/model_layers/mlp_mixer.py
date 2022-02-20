@@ -6,12 +6,12 @@ class MlpBlock(nn.Module):
     def __init__(self, input_dim, mlp_dim=512):
         super().__init__()
         self.fc1 = nn.Linear(input_dim, mlp_dim)
-        self.gelu = nn.GELU()
+        self.tanh = nn.Tanh()
         self.fc2 = nn.Linear(mlp_dim, input_dim)
 
     def forward(self, x):
         # x: (bs,tokens,channels) or (bs,channels,tokens)
-        return self.fc2(self.gelu(self.fc1(x)))
+        return self.fc2(self.tanh(self.fc1(x)))
 
 
 class MixerBlock(nn.Module):
