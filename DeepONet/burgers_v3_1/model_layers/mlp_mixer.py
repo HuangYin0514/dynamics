@@ -95,8 +95,8 @@ class MlpMixer(nn.Module):
 
         for i in range(self.num_blocks):
             y = self.mlp_blocks[i](y)  # bs,tokens,channels
+            print(y.device)
 
-        print(y.device)
         y = self.ln(y)  # bs,tokens,channels
         y = torch.mean(y, dim=1, keepdim=False)  # bs,channels
         probs = self.fc(y)  # bs,num_classes
