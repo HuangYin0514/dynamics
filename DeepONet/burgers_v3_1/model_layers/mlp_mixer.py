@@ -92,7 +92,7 @@ class MlpMixer(nn.Module):
         x = self.X_MixerBlock(x).unsqueeze(axis=1)
         y = torch.cat([t, x], axis=1)
 
-        self.mlp_blocks(y)
+        # self.mlp_blocks(y)
 
         # y = self.ln(y)  # bs,tokens,channels
         y = torch.mean(y, dim=1, keepdim=False)  # bs,channels
