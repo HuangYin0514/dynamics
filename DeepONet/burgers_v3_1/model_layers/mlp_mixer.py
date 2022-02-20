@@ -74,9 +74,10 @@ class MlpMixer(nn.Module):
         self.channels_mlp_dim = channels_mlp_dim
         self.embd = nn.Conv2d(3, channels_mlp_dim, kernel_size=patch_size, stride=patch_size)
         self.ln = nn.LayerNorm(channels_mlp_dim)
-        self.mlp_blocks = []
+        mlp_blocks = []
         for _ in range(num_blocks):
-            self.mlp_blocks.append(MixerBlock(tokens_mlp_dim, channels_mlp_dim, tokens_hidden_dim, channels_hidden_dim))
+            mlp_blocks.append(MixerBlock(tokens_mlp_dim, channels_mlp_dim, tokens_hidden_dim, channels_hidden_dim))
+        self.mlp_blocks = nn.Sequential(*mlp_blocks)
         self.fc = nn.Linear(channels_mlp_dim, num_classes)
 
         # mine
@@ -93,9 +94,7 @@ class MlpMixer(nn.Module):
 
         print(y.device)
 
-        for i in range(self.num_blocks):
-            y = self.mlp_blocks[i](y)  # bs,tokens,channels
-            print(y.device)
+        self.mlp_blocks(y)
 
         y = self.ln(y)  # bs,tokens,channels
         y = torch.mean(y, dim=1, keepdim=False)  # bs,channels
