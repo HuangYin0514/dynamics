@@ -105,5 +105,5 @@ if __name__ == '__main__':
                          tokens_mlp_dim=2, channels_mlp_dim=128)
 
     y = torch.randn(50, 2)
-    output = mlp_mixer( y)
+    output = mlp_mixer(y)
     print(output.shape)
