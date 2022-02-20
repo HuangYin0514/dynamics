@@ -84,8 +84,7 @@ class Trainer():
         inputs, outputs = batch
         u, y = inputs
 
-        print(u.device)
-        print(y.device)
+
         # Compute forward pass
         pred = self.operator_net(u, y[:, 0:1], y[:, 1:2])
 
