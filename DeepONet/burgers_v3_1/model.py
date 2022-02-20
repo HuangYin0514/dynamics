@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from model_layers.mlp_mixer import MlpMixer
+from model_layers.mlp_mixer2 import MlpMixer
 
 
 class DAM(nn.Module):
@@ -106,8 +106,9 @@ class DeepONet(nn.Module):
     def __init__(self):
         super().__init__()
         self.branch_net = BranchNet()
-        self.trunk_net = MlpMixer(num_classes=40, num_blocks=10, patch_size=10, tokens_hidden_dim=32, channels_hidden_dim=40,
-                         tokens_mlp_dim=2, channels_mlp_dim=40)
+        # self.trunk_net = MlpMixer(num_classes=40, num_blocks=10, patch_size=10, tokens_hidden_dim=32, channels_hidden_dim=40,
+        #                  tokens_mlp_dim=2, channels_mlp_dim=40)
+        self.trunk_net = MlpMixer()
         self.net_bias = nn.Parameter(torch.zeros([1]))
 
         # self.branch_net.apply(weights_init_xavier_normal)
