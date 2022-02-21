@@ -27,7 +27,7 @@ class MixerBlock(nn.Module):
         """
         ### tokens mixing
         y = self.ln(x)
-        y = y.transpose(1, 2)  # (bs,channels,tokens)
+        # y = y.transpose(1, 2)  # (bs,channels,tokens)
         # y = self.tokens_mlp_block(y)  # (bs,channels,tokens)
         ### channels mixing
         # y = y.transpose(1, 2)  # (bs,tokens,channels)
