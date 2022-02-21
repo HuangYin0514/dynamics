@@ -1,5 +1,6 @@
-from torch import nn
 import torch
+from torch import nn
+
 
 class MlpBlock(nn.Module):
     def __init__(self, input_dim, output_dim):
@@ -13,6 +14,7 @@ class MlpBlock(nn.Module):
     def forward(self, x):
         out = self.mlpBlock_layers(x)
         return out
+
 
 class DAM(nn.Module):
     """ Discriminative Amplitude Modulator Layer (1-D) """

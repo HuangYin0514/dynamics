@@ -18,7 +18,6 @@ class MlpBlock(nn.Module):
         return out
 
 
-
 class BranchNet(nn.Module):
     def __init__(self, ):
         super().__init__()
