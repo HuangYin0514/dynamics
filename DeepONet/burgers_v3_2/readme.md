@@ -1,6 +1,6 @@
 # 版本特性
 
-- DeepONets burgers_v2_1
+- DeepONets burgers_v3_2
 
 使用DeepOnets数据集，改进结构
 
