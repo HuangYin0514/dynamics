@@ -79,6 +79,7 @@ class MlpMixer(nn.Module):
             mlp_blocks.append(MixerBlock(tokens_mlp_dim, channels_mlp_dim, tokens_hidden_dim, channels_hidden_dim))
         self.mlp_blocks = nn.Sequential(*mlp_blocks)
         self.fc = nn.Linear(channels_mlp_dim, num_classes)
+        self.fc2 = nn.Linear(40, 40)
 
         # mine
         self.T_MixerBlock = T_MixerBlock()
@@ -92,10 +93,11 @@ class MlpMixer(nn.Module):
         x = self.X_MixerBlock(x).unsqueeze(axis=1)
         y = torch.cat([t, x], axis=1)
 
-        # self.mlp_blocks(y)
+        self.mlp_blocks(y)
 
         # y = self.ln(y)  # bs,tokens,channels
         y = torch.mean(y, dim=1, keepdim=False)  # bs,channels
+        # y = self.fc2(y)
         probs = self.fc(y)  # bs,num_classes
 
         return probs
