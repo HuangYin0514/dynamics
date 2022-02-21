@@ -43,6 +43,7 @@ class T_MixerBlock(nn.Module):
 
         self.T_MixerBlock_layers = nn.Sequential(
             nn.Linear(1, 40),
+            nn.Tanh()
         )
 
     def forward(self, x):
@@ -55,6 +56,7 @@ class X_MixerBlock(nn.Module):
 
         self.X_MixerBlock_layers = nn.Sequential(
             nn.Linear(1, 40),
+            nn.Tanh()
         )
 
     def forward(self, x):
