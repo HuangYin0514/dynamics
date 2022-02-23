@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     starttime = datetime.datetime.now()
 
-    nIter = 500
+    nIter = 5000
 
     if not torch.cuda.is_available():
         nIter = 10
