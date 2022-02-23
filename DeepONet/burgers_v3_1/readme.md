@@ -2,7 +2,7 @@
 
 - DeepONets burgers_v3_1
 
-使用mlp_mixer作为网络模型
+使用DeepOnets数据集，改进结构
 
 # 项目贡献
 
@@ -25,7 +25,9 @@ Burgers方程：
 | 增加Adam迭代次数（burgers_v2_2） 500-->5000 | 2.08e-03 |
 |    （burgers_v2_3）Adam_iter=20000    | 2.09e-02 |
 |  （burgers_v2_4）LBFGS/Adam_iter=500  | 3.38e-03 |
-
+| （burgers_v2_5）LBFGS/Adam_iter=5000  | 2.08e-03 |
+| （burgers_v2_6）LBFGS/Adam_iter=5000  | 1.84e-03 |
+| （burgers_v3_1）LBFGS/Adam_iter=5000  |  |
 5. 总结
 
     1. 提高边缘ic的权重，对结果有促进作用

@@ -84,7 +84,6 @@ class Trainer():
         inputs, outputs = batch
         u, y = inputs
 
-
         # Compute forward pass
         pred = self.operator_net(u, y[:, 0:1], y[:, 1:2])
 
@@ -128,14 +127,14 @@ class Trainer():
         loss_bcs = self.loss_bcs(bcs_batch)
         loss_res = self.loss_res(res_batch)
         loss = 20 * loss_ics + loss_bcs + loss_res
-        return loss
+        return loss, loss_ics, loss_bcs, loss_res
 
     def train_step(self, ics_batch, bcs_batch, res_batch):
         self.optimizer_Adam.zero_grad()
-        loss = self.loss(ics_batch, bcs_batch, res_batch)
+        loss, loss_ics, loss_bcs, loss_res = self.loss(ics_batch, bcs_batch, res_batch)
         loss.backward()
         self.optimizer_Adam.step()
-        return loss
+        return loss, loss_ics, loss_bcs, loss_res
 
     def train(self, ics_dataset, bcs_dataset, res_dataset, nIter=10000):
         self.model.train()
@@ -151,13 +150,17 @@ class Trainer():
             bcs_batch = next(bcs_data)
             res_batch = next(res_data)
 
-            loss = self.train_step(ics_batch, bcs_batch, res_batch)
+            loss, loss_ics, loss_bcs, loss_res = self.train_step(ics_batch, bcs_batch, res_batch)
 
             if it % 1000 == 0:
                 # Store losses
                 self.loss_log.append(loss.item())
 
-                print("Adam\tepoch:{}\tloss:{:.5}".format(it, loss.item()))
+                print(
+                    "Adam\tepoch:{}\tloss:{:.5}\tloss_ics:{:.5}\tloss_bcs:{:.5}\tloss_res:{:.5}".format(it, loss.item(),
+                                                                                                        loss_ics.item(),
+                                                                                                        loss_bcs.item(),
+                                                                                                        loss_res.item()))
 
         self.counter = 0
         ics_batch = next(ics_data)
@@ -166,10 +169,15 @@ class Trainer():
 
         def closure():
             self.optimizer_LBFGS.zero_grad()
-            loss = self.loss(ics_batch, bcs_batch, res_batch)
+            loss, loss_ics, loss_bcs, loss_res = self.loss(ics_batch, bcs_batch, res_batch)
             loss.backward()
             if self.counter % 200 == 0:
-                print("LBFGS\t epoch:{}\t loss:{:.5}".format(self.counter, loss.item()))
+                print(
+                    "LBFGS\t epoch:{}\t loss:{:.5}\tloss_ics:{:.5}\tloss_bcs:{:.5}\tloss_res:{:.5}".format(self.counter,
+                                                                                                           loss.item(),
+                                                                                                           loss_ics.item(),
+                                                                                                           loss_bcs.item(),
+                                                                                                           loss_res.item()))
             self.counter = self.counter + 1
             return loss
 
