@@ -23,6 +23,6 @@ Burgers方程：
 | （burgers_v2_6）LBFGS/Adam_iter=5000  | 1.84e-03 |
 | （burgers_v2_7）LBFGS/Adam_iter=5000  | 1.87e-03 |
 |  （burgers_v2_8）LBFGS/Adam_iter=500  | 6.51e-03 |
-|  （burgers_v3_1）LBFGS/Adam_iter=500  | 6.51e-03 |
+|  （burgers_v3_1）LBFGS/Adam_iter=500  | 3.38e-03 |
 
 

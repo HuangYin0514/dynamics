@@ -65,6 +65,7 @@ class trunk_net(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
+
         x = self.encoder(x)
         x = self.mlp(x)
         x = self.dam(x)

@@ -15,7 +15,7 @@ def init_random_state():
     torch.cuda.manual_seed(random_seed)
     np.random.seed(random_seed)  # Numpy module.
     random.seed(random_seed)  # Python random module.
-    torch.backends.cudnn.deterministic = True  # speed up compution
+    torch.backends.cudnn.deterministic = True  # speed up computation
     torch.backends.cudnn.benchmark = True
 
 
