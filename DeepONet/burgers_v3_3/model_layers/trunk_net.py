@@ -41,14 +41,72 @@ class MlpBlock(nn.Module):
         return out
 
 
+class MixMlpBlock(nn.Module):
+    def __init__(self, input_dim, mlp_dim=512):
+        super().__init__()
+        self.fc1 = nn.Linear(input_dim, mlp_dim)
+        self.gelu = nn.GELU()
+        self.fc2 = nn.Linear(mlp_dim, input_dim)
+
+    def forward(self, x):
+        # x: (bs,tokens,channels) or (bs,channels,tokens)
+        return self.fc2(self.gelu(self.fc1(x)))
+
+
+class MixerBlock(nn.Module):
+    def __init__(self, tokens_mlp_dim=16, channels_mlp_dim=1024, tokens_hidden_dim=32, channels_hidden_dim=1024):
+        super().__init__()
+        self.ln = nn.LayerNorm(channels_mlp_dim)
+        self.tokens_mlp_block = MixMlpBlock(tokens_mlp_dim, mlp_dim=tokens_hidden_dim)
+        self.channels_mlp_block = MixMlpBlock(channels_mlp_dim, mlp_dim=channels_hidden_dim)
+
+    def forward(self, x):
+        """
+        x: (bs,tokens,channels)
+        """
+        ### tokens mixing
+        y = self.ln(x)
+        y = y.transpose(1, 2)  # (bs,channels,tokens)
+        y = self.tokens_mlp_block(y)  # (bs,channels,tokens)
+        ### channels mixing
+        y = y.transpose(1, 2)  # (bs,tokens,channels)
+        out = x + y  # (bs,tokens,channels)
+        y = self.ln(out)  # (bs,tokens,channels)
+        y = out + self.channels_mlp_block(y)  # (bs,tokens,channels)
+        return y
+
+class mlp_blocks(nn.Module):
+    def __init__(self):
+        super().__init__()
+        mlp_blocks = []
+        for _ in range(9):
+            mlp_blocks.append(MixerBlock(tokens_mlp_dim=2, channels_mlp_dim=40, tokens_hidden_dim=4, channels_hidden_dim=40))
+
+        self.mlp_blocks = nn.Sequential(*mlp_blocks)
+    def forward(self,x):
+        x = self.mlp_blocks(x)
+        return x
+
 class trunk_net(nn.Module):
     def __init__(self):
         super().__init__()
+
+        self.t_fc = nn.Sequential(
+            nn.Linear(1, 40),
+            nn.Tanh()
+        )
+
+        self.x_fc = nn.Sequential(
+            nn.Linear(1, 40),
+            nn.Tanh()
+        )
 
         self.encoder = nn.Sequential(
             nn.Linear(2, 40),
             nn.Tanh()
         )
+
+        self.mlp_blocks = mlp_blocks()
 
         self.mlp = self._make_layer(MlpBlock, num_blocks=7)
 
@@ -67,12 +125,14 @@ class trunk_net(nn.Module):
     def forward(self, y):
         t = y[:, 0:1]
         x = y[:, 1:2]
+        t = self.t_fc(t).unsqueeze(axis=1)
+        x = self.x_fc(x).unsqueeze(axis=1)
         x = torch.cat([t, x], 1)
-        x = self.encoder(x)
-        x = self.mlp(x)
+        x = self.mlp_blocks(x)
+        x = torch.mean(x, dim=1, keepdim=False)  # bs,channels
         x = self.dam(x)
-        out = self.decoder(x)
-        return out
+        x = self.decoder(x)
+        return x
 
 
 if __name__ == '__main__':

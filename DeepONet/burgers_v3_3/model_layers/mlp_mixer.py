@@ -54,10 +54,7 @@ class MlpMixer(nn.Module):
         self.fc = nn.Linear(channels_mlp_dim, num_classes)
 
     def forward(self, x):
-        y = self.embd(x)  # bs,channels,h,w
-        bs, c, h, w = y.shape
-        y = y.view(bs, c, -1).transpose(1, 2)  # bs,tokens,channels
-
+        y= x
         if (self.tokens_mlp_dim != y.shape[1]):
             raise ValueError('Tokens_mlp_dim is not correct.')
 
@@ -70,8 +67,8 @@ class MlpMixer(nn.Module):
 
 
 if __name__ == '__main__':
-    mlp_mixer = MlpMixer(num_classes=40, num_blocks=10, patch_size=10, tokens_hidden_dim=2 ,channels_hidden_dim=40,
-                         tokens_mlp_dim=2, channels_mlp_dim=40)
-    input = torch.randn(50, 2, 40, 40)
+    mlp_mixer = MlpMixer(num_classes=40, num_blocks=10, patch_size=10, tokens_hidden_dim=4,
+                         channels_hidden_dim=40, tokens_mlp_dim=2, channels_mlp_dim=40)
+    input = torch.randn(50, 2, 40)
     output = mlp_mixer(input)
     print(output.shape)
