@@ -28,6 +28,7 @@ Burgers方程：
 | （burgers_v2_5）LBFGS/Adam_iter=5000  | 2.08e-03 |
 | （burgers_v2_6）LBFGS/Adam_iter=5000  | 1.84e-03 |
 | （burgers_v3_1）LBFGS/Adam_iter=5000  |  |
+
 5. 总结
 
     1. 提高边缘ic的权重，对结果有促进作用

@@ -1,19 +1,5 @@
 import torch
-from torch import nn
-
-
-class MlpBlock(nn.Module):
-    def __init__(self, input_dim, output_dim):
-        super().__init__()
-
-        self.mlpBlock_layers = nn.Sequential(
-            nn.Linear(input_dim, output_dim),
-            nn.Tanh(),
-        )
-
-    def forward(self, x):
-        out = self.mlpBlock_layers(x)
-        return out
+import torch.nn as nn
 
 
 class DAM(nn.Module):
@@ -41,7 +27,21 @@ class DAM(nn.Module):
         return self.relu(self.tanh((self.alpha ** 2) * (self.mu + self.beta)))
 
 
-class PINN(nn.Module):
+class MlpBlock(nn.Module):
+    def __init__(self, input_dim, output_dim):
+        super().__init__()
+
+        self.mlpBlock_layers = nn.Sequential(
+            nn.Linear(input_dim, output_dim),
+            nn.Tanh(),
+        )
+
+    def forward(self, x):
+        out = self.mlpBlock_layers(x)
+        return out
+
+
+class trunk_net(nn.Module):
     def __init__(self):
         super().__init__()
 
@@ -64,14 +64,12 @@ class PINN(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self, y):
-        t = y[:, 0:1]
-        x = y[:, 1:2]
+    def forward(self, x):
+        t = x[:, 0:1]
+        x = x[:, 1:2]
         x = torch.cat([t, x], axis=1)
-
         x = self.encoder(x)
         x = self.mlp(x)
         x = self.dam(x)
         out = self.decoder(x)
-
         return out
