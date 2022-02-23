@@ -1,6 +1,6 @@
 # 版本特性
 
-- DeepONets burgers_v3_2
+- DeepONets burgers_v2_1
 
 使用DeepOnets数据集，改进结构
 
@@ -27,7 +27,7 @@ Burgers方程：
 |  （burgers_v2_4）LBFGS/Adam_iter=500  | 3.38e-03 |
 | （burgers_v2_5）LBFGS/Adam_iter=5000  | 2.08e-03 |
 | （burgers_v2_6）LBFGS/Adam_iter=5000  | 1.84e-03 |
-|  （burgers_v3_2）LBFGS/Adam_iter=5000  | 1.84e-03 |
+
 5. 总结
 
     1. 提高边缘ic的权重，对结果有促进作用

@@ -64,12 +64,14 @@ class PINN(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self, x):
-        t = x[:, 0:1]
-        x = x[:, 1:2]
+    def forward(self, y):
+        t = y[:, 0:1]
+        x = y[:, 1:2]
         x = torch.cat([t, x], axis=1)
+
         x = self.encoder(x)
         x = self.mlp(x)
         x = self.dam(x)
         out = self.decoder(x)
+
         return out
