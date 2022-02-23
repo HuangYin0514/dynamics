@@ -134,7 +134,7 @@ class trunk_net(nn.Module):
         x = torch.cat([t, x], 1)
         x = self.mlp_blocks(x)
         x = torch.mean(x, dim=1, keepdim=False)  # bs,channels
-        x = self.dam(x)
+        # x = self.dam(x)
         x = self.decoder(x)
         return x
 

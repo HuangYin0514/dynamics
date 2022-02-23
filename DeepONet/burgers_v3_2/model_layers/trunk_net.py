@@ -76,7 +76,7 @@ class trunk_net(nn.Module):
 
 
 if __name__ == '__main__':
-    y = torch.randn(30,2)
+    y = torch.randn(30, 2)
     model = trunk_net()
     output = model(y)
     print(output.shape)
