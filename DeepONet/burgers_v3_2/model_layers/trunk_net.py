@@ -65,7 +65,9 @@ class trunk_net(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-
+        t = x[:, 0:1]
+        x = x[:, 1:2]
+        x = torch.cat([t, x], axis=1)
         x = self.encoder(x)
         x = self.mlp(x)
         x = self.dam(x)
