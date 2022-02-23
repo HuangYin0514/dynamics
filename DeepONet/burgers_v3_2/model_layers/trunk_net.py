@@ -67,7 +67,7 @@ class trunk_net(nn.Module):
     def forward(self, y):
         t = y[:, 0:1]
         x = y[:, 1:2]
-        x = torch.cat([t, x],1)
+        x = torch.cat([t, x], 1)
         x = self.encoder(x)
         x = self.mlp(x)
         x = self.dam(x)
