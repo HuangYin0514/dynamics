@@ -75,17 +75,21 @@ class MixerBlock(nn.Module):
         y = out + self.channels_mlp_block(y)  # (bs,tokens,channels)
         return y
 
+
 class mlp_blocks(nn.Module):
     def __init__(self):
         super().__init__()
         mlp_blocks = []
-        for _ in range(9):
-            mlp_blocks.append(MixerBlock(tokens_mlp_dim=2, channels_mlp_dim=40, tokens_hidden_dim=4, channels_hidden_dim=40))
+        for _ in range(5):
+            mlp_blocks.append(
+                MixerBlock(tokens_mlp_dim=2, channels_mlp_dim=40, tokens_hidden_dim=2, channels_hidden_dim=40))
 
         self.mlp_blocks = nn.Sequential(*mlp_blocks)
-    def forward(self,x):
+
+    def forward(self, x):
         x = self.mlp_blocks(x)
         return x
+
 
 class trunk_net(nn.Module):
     def __init__(self):
@@ -136,7 +140,7 @@ class trunk_net(nn.Module):
 
 
 if __name__ == '__main__':
-    y = torch.randn(30,2)
+    y = torch.randn(30, 2)
     model = trunk_net()
     output = model(y)
     print(output.shape)

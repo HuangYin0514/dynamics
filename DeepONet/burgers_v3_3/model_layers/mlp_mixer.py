@@ -54,7 +54,7 @@ class MlpMixer(nn.Module):
         self.fc = nn.Linear(channels_mlp_dim, num_classes)
 
     def forward(self, x):
-        y= x
+        y = x
         if (self.tokens_mlp_dim != y.shape[1]):
             raise ValueError('Tokens_mlp_dim is not correct.')
 

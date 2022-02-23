@@ -1,3 +1,4 @@
+import datetime
 import random
 
 import numpy as np
@@ -23,6 +24,8 @@ init_random_state()
 
 if __name__ == '__main__':
 
+    starttime = datetime.datetime.now()
+
     nIter = 500
 
     if not torch.cuda.is_available():
@@ -43,5 +46,8 @@ if __name__ == '__main__':
     trainer.train(ics_dataset, bcs_dataset, res_dataset, nIter=nIter)
 
     torch.save(trainer.model, "result/model_final.pkl")
+
+    endtime = datetime.datetime.now()
+    print("produce: " + str(endtime - starttime))
 
     print("done")
