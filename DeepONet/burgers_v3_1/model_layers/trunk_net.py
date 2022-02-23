@@ -40,36 +40,34 @@ class MlpBlock(nn.Module):
         out = self.mlpBlock_layers(x)
         return out
 
-
 class trunk_net(nn.Module):
-    def __init__(self):
-        super().__init__()
+        def __init__(self):
+            super().__init__()
 
-        self.encoder = nn.Sequential(
-            nn.Linear(2, 40),
-            nn.Tanh()
-        )
+            self.encoder = nn.Sequential(
+                nn.Linear(2, 40),
+                nn.Tanh()
+            )
 
-        self.mlp = self._make_layer(MlpBlock, num_blocks=7)
+            self.mlp = self._make_layer(MlpBlock, num_blocks=7)
 
-        self.dam = DAM(in_dim=40)
+            self.dam = DAM(in_dim=40)
 
-        self.decoder = nn.Linear(40, 40)
+            self.decoder = nn.Linear(40, 40)
 
-    @staticmethod
-    def _make_layer(block, num_blocks):
-        layers = []
-        for _ in range(num_blocks):
-            layers.append(block(input_dim=40, output_dim=40))
+        @staticmethod
+        def _make_layer(block, num_blocks):
+            layers = []
+            for _ in range(num_blocks):
+                layers.append(block(input_dim=40, output_dim=40))
 
-        return nn.Sequential(*layers)
+            return nn.Sequential(*layers)
 
-    def forward(self, x):
-        # t = x[:, 0:1]
-        # x = x[:, 1:2]
-        # x = torch.cat([t, x], axis=1)
-        x = self.encoder(x)
-        x = self.mlp(x)
-        x = self.dam(x)
-        out = self.decoder(x)
-        return out
+        def forward(self, x):
+            x = self.encoder(x)
+            x = self.mlp(x)
+            x = self.dam(x)
+            out = self.decoder(x)
+            return out
+
+
