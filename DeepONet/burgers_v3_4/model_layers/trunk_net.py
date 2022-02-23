@@ -105,10 +105,10 @@ class trunk_net(nn.Module):
             nn.Tanh()
         )
 
-        self.encoder = nn.Sequential(
-            nn.Linear(2, 40),
-            nn.Tanh()
-        )
+        # self.encoder = nn.Sequential(
+        #     nn.Linear(2, 40),
+        #     nn.Tanh()
+        # )
 
         self.mlp_blocks = mlp_blocks()
 
