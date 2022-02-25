@@ -9,12 +9,9 @@ from jax.experimental import optimizers
 from jax.experimental import stax
 from jax.tree_util import tree_flatten
 
-sys.path.append('..')
-sys.path.append('../experiment_dblpend/')
 from lnn import lagrangian_eom_rk4
 from utils import wrap_coords
 
-from data import get_trajectory_analytic
 from physics import analytical_fn
 
 
@@ -32,7 +29,7 @@ def learned_dynamics(params):
 
     return dynamics
 
-
+#
 from jax.experimental.stax import Dense, Softplus, Tanh, elementwise, Relu
 
 sigmoid = jit(lambda x: 1 / (1 + jnp.exp(-x)))
@@ -73,15 +70,16 @@ def extended_mlp(args):
 
     return stax.serial(*layers)
 
-
+from data import get_trajectory_analytic
 vfnc = jax.jit(jax.vmap(analytical_fn))
-vget = partial(jax.jit, backend='cpu')(jax.vmap(partial(get_trajectory_analytic, mxsteps=100), (0, None), 0))
+vget = partial(jax.jit, backend='cpu')(jax.vmap(partial(get_trajectory_analytic, mxstep=100), (0, None), 0))
+
 vget_unlimited = partial(jax.jit, backend='cpu')(jax.vmap(partial(get_trajectory_analytic), (0, None), 0))
 
 dataset_size = 50
 fps = 10
 samples = 50
-
+#
 
 def new_get_dataset(rng, samples=1, t_span=[0, 10], fps=100, test_split=0.5, lookahead=1,
                     unlimited_steps=False, **kwargs):
@@ -117,7 +115,7 @@ def new_get_dataset(rng, samples=1, t_span=[0, 10], fps=100, test_split=0.5, loo
         split_data[k], split_data['test_' + k] = data[k][:split_ix], data[k][split_ix:]
     data = split_data
     return data
-
+#
 
 def make_loss(args):
     if args.loss == 'l1':
@@ -195,38 +193,38 @@ def train(args, model, data, rng):
     params = get_params(opt_state)
     return params, train_losses, test_losses, best_loss
 
-
+#
 data = new_get_dataset(jax.random.PRNGKey(0), t_span=[0, dataset_size], fps=fps, samples=samples, test_split=0.9)
-
-
-# args = ObjectView(dict(
-# num_epochs=100, #40000
-# loss='l1',
-# l2reg=1e-6,
-# act='softplus',
-# hidden_dim=500,
-# output_dim=1,
-# dt=1e-1,
-# layers=2,
-# lr=1e-3*0.5,
-# lr2=1e-4*0.5,
-# model='gln',
-# n_updates=3,
-# batch_size=32,
-# ))
-
-def test_args(args):
-    print('Running on', args.__dict__)
-    rng = jax.random.PRNGKey(0)
-    init_random_params, nn_forward_fn = extended_mlp(args)
-    _, init_params = init_random_params(rng + 1, (-1, 4))
-    model = (nn_forward_fn, init_params)
-
-    result = train(args, model, data, rng + 3)
-    print(result[3], 'is the loss for', args.__dict__)
-
-    if not jnp.isfinite(result[3]).sum():
-        return {'status': 'fail', 'loss': float('inf')}
-    return {'status': 'ok', 'loss': float(result[3])}
-
-# test_args(args)
+#
+#
+# # args = ObjectView(dict(
+# # num_epochs=100, #40000
+# # loss='l1',
+# # l2reg=1e-6,
+# # act='softplus',
+# # hidden_dim=500,
+# # output_dim=1,
+# # dt=1e-1,
+# # layers=2,
+# # lr=1e-3*0.5,
+# # lr2=1e-4*0.5,
+# # model='gln',
+# # n_updates=3,
+# # batch_size=32,
+# # ))
+#
+# def test_args(args):
+#     print('Running on', args.__dict__)
+#     rng = jax.random.PRNGKey(0)
+#     init_random_params, nn_forward_fn = extended_mlp(args)
+#     _, init_params = init_random_params(rng + 1, (-1, 4))
+#     model = (nn_forward_fn, init_params)
+#
+#     result = train(args, model, data, rng + 3)
+#     print(result[3], 'is the loss for', args.__dict__)
+#
+#     if not jnp.isfinite(result[3]).sum():
+#         return {'status': 'fail', 'loss': float('inf')}
+#     return {'status': 'ok', 'loss': float(result[3])}
+#
+# # test_args(args)
