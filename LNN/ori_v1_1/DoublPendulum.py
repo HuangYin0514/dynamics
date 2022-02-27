@@ -75,6 +75,7 @@ from lnn import raw_lagrangian_eom
 from HyperparameterSearch import learned_dynamics
 
 
+
 @jax.jit
 def loss(params, batch, l2reg):
     state, targets = batch  # _rk4
