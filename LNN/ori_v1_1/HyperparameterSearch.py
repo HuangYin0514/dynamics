@@ -1,4 +1,3 @@
-import sys
 from functools import partial  # reduces arguments to function by making some subset implicit
 
 import jax
@@ -10,9 +9,8 @@ from jax.experimental import stax
 from jax.tree_util import tree_flatten
 
 from lnn import lagrangian_eom_rk4
-from utils import wrap_coords
-
 from physics import analytical_fn
+from utils import wrap_coords
 
 
 class ObjectView(object):
@@ -28,6 +26,7 @@ def learned_dynamics(params):
         return jnp.squeeze(nn_forward_fn(params, state), axis=-1)
 
     return dynamics
+
 
 #
 from jax.experimental.stax import Dense, Softplus, Tanh, elementwise, Relu
@@ -70,15 +69,17 @@ def extended_mlp(args):
 
     return stax.serial(*layers)
 
-from data import get_trajectory_analytic
-vfnc = jax.jit(jax.vmap(analytical_fn))
-vget = partial(jax.jit, backend='cpu')(jax.vmap(partial(get_trajectory_analytic, mxstep=100), (0, None), 0))
 
-vget_unlimited = partial(jax.jit, backend='cpu')(jax.vmap(partial(get_trajectory_analytic), (0, None), 0))
+from data import get_trajectory_analytic
+
+vfnc = jax.jit(jax.vmap(analytical_fn))
+vget = partial(jax.jit, backend='cpu')(jax.vmap(partial(get_trajectory_analytic), (0, None), 0))
 
 dataset_size = 50
 fps = 10
 samples = 50
+
+
 #
 
 def new_get_dataset(rng, samples=1, t_span=[0, 10], fps=100, test_split=0.5, lookahead=1,
@@ -115,6 +116,8 @@ def new_get_dataset(rng, samples=1, t_span=[0, 10], fps=100, test_split=0.5, loo
         split_data[k], split_data['test_' + k] = data[k][:split_ix], data[k][split_ix:]
     data = split_data
     return data
+
+
 #
 
 def make_loss(args):
@@ -192,6 +195,7 @@ def train(args, model, data, rng):
 
     params = get_params(opt_state)
     return params, train_losses, test_losses, best_loss
+
 
 #
 data = new_get_dataset(jax.random.PRNGKey(0), t_span=[0, dataset_size], fps=fps, samples=samples, test_split=0.9)
