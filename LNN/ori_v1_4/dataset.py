@@ -15,7 +15,7 @@ class DoublePendulumData():
         super().__init__()
 
         self.batch_size = 256
-        self.minibatch_per = 2000
+        self.minibatch_per = 500
 
         self.vfnc = analytical_fn
 
