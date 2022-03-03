@@ -25,7 +25,7 @@ class DoublePendulumData():
 
     def get_derivative_dataset(self):
         y0 = np.concatenate([np.random.uniform(size=(self.batch_size * self.minibatch_per, 2)) * 2 * np.pi,
-                             (np.random.uniform(size=(self.batch_size * self.minibatch_per, 2)) - 0.5) * 10 * 2],
+                             (np.random.uniform(size=(self.batch_size * self.minibatch_per, 2)) * 0.1)],
                             axis=1)
         return y0, np.array(list(map(lambda x: self.vfnc(x), y0)))
 
