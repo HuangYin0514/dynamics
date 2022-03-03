@@ -102,7 +102,7 @@ class Trainer():
         L = self.operator_net(q, q_t)
         q_tt = self.get_qtt(L, q, q_t)
 
-        return q_t,q_tt
+        return q_t, q_tt
 
     # def predict_res(self, U_star, Y_star):
     #     self.model.eval()

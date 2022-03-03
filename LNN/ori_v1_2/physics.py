@@ -2,7 +2,6 @@
 # Miles Cranmer, Sam Greydanus, Stephan Hoyer (...)
 
 import numpy as np
-from scipy.integrate import odeint
 
 
 def kinetic_energy(state, m1=1, m2=1, l1=1, l2=1, g=9.8):
@@ -67,6 +66,3 @@ def analytical_fn(state, t=0, m1=1, m2=1, l1=1, l2=1, g=9.8):
     g1 = (f1 - a1 * f2) / (1 - a1 * a2)
     g2 = (f2 - a2 * f1) / (1 - a1 * a2)
     return np.stack([w1, w2, g1, g2])
-
-
-

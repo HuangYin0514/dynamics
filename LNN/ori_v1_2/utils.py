@@ -52,4 +52,3 @@ def to_numpy(x):
     if isinstance(x, torch.Tensor):
         x = x.cpu().detach().numpy()
     return x
-
