@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     train_loader = torch.utils.data.DataLoader(
         doublePendulum_dataset,
-        batch_size=2000,
+        batch_size=256*500,
     )
 
     trainer = Trainer()
