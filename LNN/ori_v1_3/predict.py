@@ -65,16 +65,15 @@ def get_pred_data(trainer, y0, fps=10, t_span=[0, 100]):
 
     y_pred = get_trajectory_pred(trainer, y0, times)
 
-    return y_pred, 0, 0
-    # k_pred = kinetic_energy(y_pred)
-    # v_pred = potential_energy(y_pred)
-    # return y_pred, k_pred, v_pred
+    k_pred = kinetic_energy(y_pred)
+    v_pred = potential_energy(y_pred)
+    return y_pred, k_pred, v_pred
 
 
 if __name__ == '__main__':
     # data
     fps = 10
-    t_span = [0, 1]
+    t_span = [0, 10]
     y0, y_true, k_true, v_true = generate_test_data(fps=fps, t_span=t_span)
 
     # model
@@ -105,4 +104,4 @@ if __name__ == '__main__':
     plt.xlabel('Time')
     plt.savefig('result/total_true_energy.png')
     # plt.ylim(-30, 30)
-    # plt.show()
+    plt.show()

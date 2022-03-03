@@ -61,7 +61,7 @@ class Trainer():
         pred = torch.cat([q_t, q_tt], 1)
 
         # Compute loss
-        loss = torch.mean((pred - outputs))
+        loss = torch.mean(torch.abs((pred - outputs)))
         return loss
 
     # Define total loss
