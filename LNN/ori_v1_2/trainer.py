@@ -88,7 +88,7 @@ class Trainer():
 
             loss = self.train_step(doublePendulum_batch)
 
-            if it % 1000 == 0:
+            if it % 10 == 0:
                 # Store losses
                 self.loss_log.append(loss.item())
 

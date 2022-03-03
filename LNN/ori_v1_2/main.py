@@ -8,7 +8,7 @@ from trainer import Trainer
 if __name__ == '__main__':
     startTime = datetime.datetime.now()
 
-    nIter = 5000
+    nIter = 200
 
     if not torch.cuda.is_available():
         nIter = 5
