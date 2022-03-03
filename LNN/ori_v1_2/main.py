@@ -5,6 +5,20 @@ import torch
 from dataset import DoublePendulumData, DataGenerator
 from trainer import Trainer
 
+
+def init_random_state():
+    random_seed = 3407
+    torch.manual_seed(random_seed)
+    torch.cuda.manual_seed_all(random_seed)
+    torch.cuda.manual_seed(random_seed)
+    np.random.seed(random_seed)  # Numpy module.
+    random.seed(random_seed)  # Python random module.
+    torch.backends.cudnn.deterministic = True  # speed up computation
+    torch.backends.cudnn.benchmark = True
+
+
+init_random_state()
+
 if __name__ == '__main__':
     startTime = datetime.datetime.now()
 
