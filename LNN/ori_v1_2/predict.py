@@ -84,3 +84,4 @@ if __name__ == '__main__':
     plt.savefig('result/total_true_energy.png')
     # plt.ylim(-30, 30)
     plt.show()
+
