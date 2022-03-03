@@ -33,7 +33,7 @@ class Trainer():
         inputs, outputs = doublePendulum_batch
         q, q_t = inputs[:, 0:2], inputs[:, 2:4]
         # Compute forward pass
-        q = q % (2 * torch.pi)
+        q = q % (2 *  torch.acos(torch.zeros(1)).item() * 2)
         q_tt = self.operator_net(q, q_t)
 
         pred = torch.cat([q_t, q_tt], 1)
@@ -76,7 +76,7 @@ class Trainer():
         self.model.eval()
 
         q, q_t = y0[:, 0:2], y0[:, 2:4]
-        q = q % (2 * torch.pi)
+        q = q % (2 *  torch.acos(torch.zeros(1)).item() * 2)
         q_tt = self.operator_net(q, q_t)
 
         return q_t, q_tt
