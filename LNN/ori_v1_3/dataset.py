@@ -48,13 +48,14 @@ class DataGenerator(data.Dataset):
 
     def __getitem__(self, index):
         'Generate one batch of data'
-        x, y = self.__data_generation()
+        x, y = self.__data_generation(index)
         return x, y
 
-    def __data_generation(self):
+    def __data_generation(self, index):
         'Generates data containing batch_size samples'
-        x = self.x
-        y = self.y
+        minibatch=2000
+        x = self.x[index*minibatch:(index+1)*minibatch]
+        y = self.y[index*minibatch:(index+1)*minibatch]
 
         # Construct batch
         inputs = to_tensor(x)

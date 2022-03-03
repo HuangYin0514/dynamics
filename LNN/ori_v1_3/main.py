@@ -24,7 +24,7 @@ init_random_state()
 if __name__ == '__main__':
     startTime = datetime.datetime.now()
 
-    nIter = 200
+    nIter = 300
 
     if not torch.cuda.is_available():
         nIter = 250
