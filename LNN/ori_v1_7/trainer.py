@@ -63,7 +63,7 @@ class Trainer():
             for data in train_loader:
                 loss = self.train_step(data)
 
-            if it % 1 == 0:
+            if it % 10 == 0:
                 # Store losses
                 self.loss_log.append(loss.item())
 

@@ -23,8 +23,8 @@ class DoublePendulumData():
     def get_derivative_dataset(self):
 
         y0 = np.concatenate([
-            np.random.uniform(size=(3000*1, 2)) * 2.0 * np.pi,
-            np.random.uniform(size=(3000*1, 2)) * 0.1
+            np.random.uniform(size=(3000*10, 2)) * 2.0 * np.pi,
+            np.random.uniform(size=(3000*10, 2)) * 0.1
         ], axis=1)
 
         return y0 ,analytical_fn(y0)[:,2:4]
