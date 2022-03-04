@@ -22,6 +22,7 @@ class Trainer():
         # Logger
         self.loss_log = []
 
+
     # Define DeepONet architecture
     def operator_net(self, q, q_t):
         x = torch.cat([q, q_t], 1)
