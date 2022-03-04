@@ -16,7 +16,7 @@ device = get_device()
 
 
 def init_random_state():
-    random_seed = 3404
+    random_seed = 1308
     torch.manual_seed(random_seed)
     torch.cuda.manual_seed_all(random_seed)
     torch.cuda.manual_seed(random_seed)
@@ -72,8 +72,8 @@ if __name__ == '__main__':
     error = np.sum(np.abs(true-pred))
 
     plt.figure()
-    plt.plot(pred[:100, 0], label="y_pred")
-    plt.plot(true[:100, 0], label="y_true")
+    plt.plot(pred[:30, 0], label="y_pred")
+    plt.plot(true[:30, 0], label="y_true")
     plt.ylabel(r'$\theta_1$')
     plt.xlabel('Time')
     plt.legend()
