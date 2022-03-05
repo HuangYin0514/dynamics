@@ -18,7 +18,7 @@ class Trainer():
             lr=1e-3,
             weight_decay=0.001
         )
-        self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_Adam, milestones=[150,250], gamma=0.1)
+        self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer_Adam, milestones=[150, 250], gamma=0.1)
         # Logger
         self.loss_log = []
 

@@ -58,11 +58,22 @@ def lagrangian_fn(q, q_dot, m1=1, m2=1, l1=1, l2=1, g=9.8):
 
 # Double pendulum dynamics via analytical forces taken from Diego's blog
 def analytical_fn(state, t=0, m1=1, m2=1, l1=1, l2=1, g=9.8):
-    t1, t2, w1, w2 = state[:,0:1],state[:,1:2],state[:,2:3],state[:,3:4]
+    t1, t2, w1, w2 = state[:, 0:1], state[:, 1:2], state[:, 2:3], state[:, 3:4]
     a1 = (l2 / l1) * (m2 / (m1 + m2)) * np.cos(t1 - t2)
     a2 = (l1 / l2) * np.cos(t1 - t2)
     f1 = -(l2 / l1) * (m2 / (m1 + m2)) * (w2 ** 2) * np.sin(t1 - t2) - (g / l1) * np.sin(t1)
     f2 = (l1 / l2) * (w1 ** 2) * np.sin(t1 - t2) - (g / l2) * np.sin(t2)
     g1 = (f1 - a1 * f2) / (1 - a1 * a2)
     g2 = (f2 - a2 * f1) / (1 - a1 * a2)
-    return np.concatenate([w1, w2, g1, g2],1)
+    return np.concatenate([w1, w2, g1, g2], 1)
+
+
+def analytical_fn_NoneVector(state, t=0, m1=1, m2=1, l1=1, l2=1, g=9.8):
+    t1, t2, w1, w2 = state
+    a1 = (l2 / l1) * (m2 / (m1 + m2)) * np.cos(t1 - t2)
+    a2 = (l1 / l2) * np.cos(t1 - t2)
+    f1 = -(l2 / l1) * (m2 / (m1 + m2)) * (w2 ** 2) * np.sin(t1 - t2) - (g / l1) * np.sin(t1)
+    f2 = (l1 / l2) * (w1 ** 2) * np.sin(t1 - t2) - (g / l2) * np.sin(t2)
+    g1 = (f1 - a1 * f2) / (1 - a1 * a2)
+    g2 = (f2 - a2 * f1) / (1 - a1 * a2)
+    return np.stack([w1, w2, g1, g2])

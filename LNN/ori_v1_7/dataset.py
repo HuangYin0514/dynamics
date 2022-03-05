@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.io
 import torch
 from torch.utils import data
 
@@ -21,13 +20,12 @@ class DoublePendulumData():
         self.x, self.y = self.get_derivative_dataset()
 
     def get_derivative_dataset(self):
-
         y0 = np.concatenate([
-            np.random.uniform(size=(3000*340, 2)) * 2.0 * np.pi,
-            np.random.uniform(size=(3000*340, 2)) * 0.1
+            np.random.uniform(size=(3000 * 340, 2)) * 2.0 * np.pi,
+            (np.random.uniform(size=(3000 * 340, 2)) - 0.5) * 10 * 2
         ], axis=1)
 
-        return y0 ,analytical_fn(y0)[:,2:4]
+        return y0, analytical_fn(y0)[:, 2:4]
 
 
 class DataGenerator(data.Dataset):
