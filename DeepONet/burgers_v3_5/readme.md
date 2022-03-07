@@ -29,5 +29,3 @@ Burgers方程：
 |         （burgers_v3_3）-dam          | 2.37e-03 |
 |         （burgers_v3_4）+dam          | 4.16e-03  |
 |  （burgers_v3_5）+dam/Adam_iter=5000  |          |
-
-hello world
